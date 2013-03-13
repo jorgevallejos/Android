@@ -27,8 +27,10 @@ public class Settings extends Activity
 	
 	public void handleSave(View view)
 	{
-//		EditText address = (EditText) findViewById(R.id.editText1);
-//		EditText plaats = (EditText) findViewById(R.id.editText2);
+//		Object object = findViewById(R.id.editText1);
+//		System.out.println(object.getClass());
+		Object object = findViewById(R.id.editText2);
+		System.out.println(object.getClass());
 //		
 //		String locatie = address.getText() + ", " + plaats.getText();
 //		ApplicationLogic.setLocation(locatie);
