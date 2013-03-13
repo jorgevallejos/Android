@@ -24,6 +24,7 @@
         android:layout_below="@+id/toggleButton1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
-        android:text="Button" />
+        android:onClick="handleSettings"
+        android:text="@string/button_settings" />
 
 </RelativeLayout>

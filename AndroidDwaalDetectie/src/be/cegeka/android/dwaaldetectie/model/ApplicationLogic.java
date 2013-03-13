@@ -11,11 +11,13 @@ import android.location.Location;
 public class ApplicationLogic
 {
 	private Context context;
+	private static String location;
 	
 	
 	public ApplicationLogic(Context context)
 	{
 		this.context = context;
+		ApplicationLogic.location = "hier";
 	}
 
 
@@ -73,5 +75,17 @@ public class ApplicationLogic
 		}
 		
 		return baseLocation;
+	}
+
+
+	public static String getLocation()
+	{
+		return location;
+	}
+
+
+	public static void setLocation(String location)
+	{
+		ApplicationLogic.location = location;
 	}
 }
