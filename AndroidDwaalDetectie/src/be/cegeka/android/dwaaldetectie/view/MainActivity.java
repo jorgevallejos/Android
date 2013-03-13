@@ -8,8 +8,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.ToggleButton;
+import android.widget.Toast;
 import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import be.cegeka.android.dwaaldetectie.model.LocationChangeListener;
 import com.example.dwaaldetectie.R;
@@ -19,18 +18,17 @@ public class MainActivity extends Activity
 {
 	ApplicationLogic applicationLogic;
 	private Location baseLocation;
-	private TextView view;
 	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		view = (TextView) findViewById(R.id.locationTextview);
 		setContentView(R.layout.activity_main);
 		applicationLogic = new ApplicationLogic(this);
 		
-		baseLocation = applicationLogic.locationFromAddress("interleuvenlaan 1, heverlee");
+		String locationString = ApplicationLogic.getLocation();
+		baseLocation = applicationLogic.locationFromAddress(locationString);
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new LocationChangeListener(this, baseLocation));
 	}
@@ -47,7 +45,19 @@ public class MainActivity extends Activity
 
 	public void handleSettings(View view)
 	{
-		startActivity(new Intent(this, Settings.class));
+		Intent intent = new Intent(this, Settings.class);
+		startActivityForResult(intent, 10);
 	}
 
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		if (resultCode == RESULT_OK && requestCode == 10)
+		{
+			String locationString = ApplicationLogic.getLocation();
+			baseLocation = applicationLogic.locationFromAddress(locationString);
+			Toast.makeText(this, R.string.toast_address_saved, Toast.LENGTH_LONG).show();
+		}
+	}
 }

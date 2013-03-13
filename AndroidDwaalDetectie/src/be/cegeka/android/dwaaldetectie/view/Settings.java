@@ -2,12 +2,16 @@ package be.cegeka.android.dwaaldetectie.view;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import com.example.dwaaldetectie.R;
 
 
@@ -15,13 +19,23 @@ public class Settings extends Activity
 {
 	public void handleCancel(View view)
 	{
+		Intent intent = new Intent();
+		setResult(RESULT_CANCELED, intent);
 		finish();
 	}
 	
 	
 	public void handleSave(View view)
 	{
-		
+//		EditText address = (EditText) findViewById(R.id.editText1);
+//		EditText plaats = (EditText) findViewById(R.id.editText2);
+//		
+//		String locatie = address.getText() + ", " + plaats.getText();
+//		ApplicationLogic.setLocation(locatie);
+//		
+		Intent intent = new Intent();
+		setResult(RESULT_OK, intent);
+		finish();
 	}
 	
 
@@ -75,5 +89,4 @@ public class Settings extends Activity
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
 }
