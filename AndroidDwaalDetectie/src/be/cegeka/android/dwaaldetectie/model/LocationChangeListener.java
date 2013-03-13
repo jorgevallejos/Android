@@ -12,8 +12,8 @@ public class LocationChangeListener extends Observable implements LocationListen
 {
 	private Context context;
 	private Location baseLocation;
-	
-	
+
+
 	public LocationChangeListener(Context context, Location baseLocation)
 	{
 		this.context = context;
@@ -31,8 +31,9 @@ public class LocationChangeListener extends Observable implements LocationListen
 		// Print to console
 		System.out.println("Longitude Current Address: " + longitude);
 		System.out.println("Latitude Current Address: " + latitude);
-
-		System.out.println(baseLocation.distanceTo(location));
+		if(baseLocation!=null){
+			System.out.println(baseLocation.distanceTo(location));
+		}
 
 		if (baseLocation != null && baseLocation.distanceTo(location) > 2000)
 		{
