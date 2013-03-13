@@ -28,10 +28,6 @@ public class MainActivity extends Activity
 		setContentView(R.layout.activity_main);
 		applicationLogic = new ApplicationLogic(this);
 		
-		ToggleButton toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
-		toggleButton.setTextOn("Start");
-		toggleButton.setTextOff("Stop");
-		
 		baseLocation = applicationLogic.locationFromAddress("interleuvenlaan 1, heverlee");
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new LocationChangeListener(this, baseLocation));
