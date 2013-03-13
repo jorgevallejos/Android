@@ -1,4 +1,4 @@
-package be.cegeka.android.dwaaldetectie;
+package be.cegeka.android.dwaaldetectie.view;
 
 public class GeoPoint {
 
