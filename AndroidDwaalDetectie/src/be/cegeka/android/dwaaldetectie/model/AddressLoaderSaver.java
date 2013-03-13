@@ -41,7 +41,7 @@ public class AddressLoaderSaver {
 			File file = new File(dir, "myData.txt");
 			try {
 				PrintWriter writer = new PrintWriter(file);
-				writer.append(adres);
+				writer.append(adres+"\n");
 				writer.flush();
 				writer.close();
 			} catch (IOException e) {
@@ -55,14 +55,12 @@ public class AddressLoaderSaver {
 	 * Load all the numbers saved by this app.
 	 * @return An {@link ArrayList} of the cell-phone numbers.
 	 */
-	public static String loadNumbers() throws Exception{
+	public static String loadAddress() throws Exception{
 		try{
-		Scanner scanner = null;
+			Scanner scanner = null;
 			File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "/savefiles/myData.txt");
 			scanner = new Scanner(file);
-		
-		
-		return scanner.nextLine();
+			return scanner.nextLine();
 		}catch (Exception e) {
 			throw e;
 		}

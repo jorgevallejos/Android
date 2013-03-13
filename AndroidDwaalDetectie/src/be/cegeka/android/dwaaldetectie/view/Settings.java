@@ -1,5 +1,6 @@
 package be.cegeka.android.dwaaldetectie.view;
 
+import java.io.IOException;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -11,9 +12,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
 import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import com.example.dwaaldetectie.R;
-
 
 public class Settings extends Activity
 {
@@ -30,12 +31,16 @@ public class Settings extends Activity
 		EditText address = (EditText) findViewById(R.id.editText111);
 		EditText place = (EditText) findViewById(R.id.editText2);
 		
-//		if(address.getText().length())
-		
 		ApplicationLogic applicationLogic = new ApplicationLogic(this);
 		String locatie = address.getText() + ", " + place.getText();
 		Location location = applicationLogic.locationFromAddress(locatie);
 		ApplicationLogic.location = location;
+		
+		try {
+			AddressLoaderSaver.saveAddress(locatie);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		Intent intent = new Intent();
 		setResult(RESULT_OK, intent);

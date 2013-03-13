@@ -9,19 +9,19 @@
     tools:context=".MainActivity" >
 
     <ToggleButton
-        android:id="@+id/toggleButton1"
+        android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:textOn="Stop"
-        android:textOff="Start" />
+        android:textOff="Start"
+        android:textOn="Stop" />
 
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/toggleButton1"
+        android:layout_below="@+id/startButton"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:onClick="handleSettings"
