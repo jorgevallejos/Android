@@ -32,6 +32,8 @@ public class MainActivity extends Activity {
 			System.out.println("Longitude Current Address: " + longitude);
 			System.out.println("Latitude Current Address: " + latitude);
 			
+			//test test test test rr
+			
 			addresFromLocation(location);
 			System.out.println(baseLocation.distanceTo(location));
 			
