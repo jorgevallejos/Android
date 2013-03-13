@@ -1,23 +1,21 @@
 package be.cegeka.android.dwaaldetectie.model;
 
 import android.content.Context;
-import android.database.Observable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.widget.Toast;
+import be.cegeka.android.dwaaldetectie.view.MainActivity;
 
 
-public class LocationChangeListener extends Observable implements LocationListener
+public class LocationChangeListener implements LocationListener
 {
 	private Context context;
-	private Location baseLocation;
 
 
-	public LocationChangeListener(Context context, Location baseLocation)
+	public LocationChangeListener(Context context)
 	{
 		this.context = context;
-		this.baseLocation = baseLocation;
 	}
 
 
@@ -31,14 +29,17 @@ public class LocationChangeListener extends Observable implements LocationListen
 		// Print to console
 		System.out.println("Longitude Current Address: " + longitude);
 		System.out.println("Latitude Current Address: " + latitude);
-		if(baseLocation!=null){
-			System.out.println(baseLocation.distanceTo(location));
+		if (ApplicationLogic.location != null)
+		{
+			System.out.println(ApplicationLogic.location.distanceTo(location));
+			((MainActivity) context).updateDistance(ApplicationLogic.location.distanceTo(location));
 		}
 
-		if (baseLocation != null && baseLocation.distanceTo(location) > 2000)
+		if (ApplicationLogic.location != null && ApplicationLogic.location.distanceTo(location) > 2000)
 		{
 			Toast.makeText(context, "Too far", Toast.LENGTH_LONG).show();
 		}
+
 	}
 
 

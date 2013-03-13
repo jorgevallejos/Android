@@ -3,6 +3,7 @@ package be.cegeka.android.dwaaldetectie.view;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -29,8 +30,10 @@ public class Settings extends Activity
 		EditText address = (EditText) findViewById(R.id.editText111);
 		EditText place = (EditText) findViewById(R.id.editText2);
 		
+		ApplicationLogic applicationLogic = new ApplicationLogic(this);
 		String locatie = address.getText() + ", " + place.getText();
-		ApplicationLogic.setLocation(locatie);
+		Location location = applicationLogic.locationFromAddress(locatie);
+		ApplicationLogic.location = location;
 		
 		Intent intent = new Intent();
 		setResult(RESULT_OK, intent);
