@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import be.cegeka.android.dwaaldetectie.model.LocationChangeListener;
 import com.example.dwaaldetectie.R;
@@ -26,6 +27,10 @@ public class MainActivity extends Activity
 		view = (TextView) findViewById(R.id.locationTextview);
 		setContentView(R.layout.activity_main);
 		applicationLogic = new ApplicationLogic(this);
+		
+		ToggleButton toggleButton = (ToggleButton) findViewById(R.id.toggleButton1);
+		toggleButton.setTextOn("Start");
+		toggleButton.setTextOff("Stop");
 		
 		baseLocation = applicationLogic.locationFromAddress("interleuvenlaan 1, heverlee");
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
