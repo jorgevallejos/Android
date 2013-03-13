@@ -1,4 +1,4 @@
-package com.example.dwaaldetectie;
+package be.khleuven.android.dwaaldetectie;
 
 public class GeoPoint {
 
