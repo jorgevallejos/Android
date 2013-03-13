@@ -30,6 +30,8 @@ public class Settings extends Activity
 		EditText address = (EditText) findViewById(R.id.editText111);
 		EditText place = (EditText) findViewById(R.id.editText2);
 		
+//		if(address.getText().length())
+		
 		ApplicationLogic applicationLogic = new ApplicationLogic(this);
 		String locatie = address.getText() + ", " + place.getText();
 		Location location = applicationLogic.locationFromAddress(locatie);
