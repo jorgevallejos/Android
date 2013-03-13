@@ -1,13 +1,14 @@
 package be.cegeka.android.dwaaldetectie.model;
 
 import android.content.Context;
+import android.database.Observable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.widget.Toast;
 
 
-public class LocationChangeListener implements LocationListener
+public class LocationChangeListener extends Observable implements LocationListener
 {
 	private Context context;
 	private Location baseLocation;

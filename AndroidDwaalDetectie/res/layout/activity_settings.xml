@@ -23,8 +23,8 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editText1"
-        android:layout_below="@+id/editText1"
+        android:layout_alignLeft="@+id/editText111"
+        android:layout_below="@+id/editText111"
         android:layout_marginTop="30dp"
         android:text="@string/text_settings_place"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -38,6 +38,15 @@
         android:ems="10" 
         android:inputType="textCapWords"/>
 
+    <EditText
+        android:id="@+id/editText111"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:ems="10"
+        android:inputType="textCapWords" />
+    
     <Button
         android:id="@+id/button2"
         style="?android:attr/buttonStyleSmall"
@@ -48,15 +57,6 @@
         android:layout_alignLeft="@+id/editText2"
         android:onClick="handleCancel"
         android:text="@string/button_cancel" />
-
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:ems="10"
-        android:inputType="textCapWords" />
 
     <Button
         android:id="@+id/button1"

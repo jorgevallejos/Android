@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import com.example.dwaaldetectie.R;
 
@@ -27,14 +26,12 @@ public class Settings extends Activity
 	
 	public void handleSave(View view)
 	{
-//		Object object = findViewById(R.id.editText1);
-//		System.out.println(object.getClass());
-		Object object = findViewById(R.id.editText2);
-		System.out.println(object.getClass());
-//		
-//		String locatie = address.getText() + ", " + plaats.getText();
-//		ApplicationLogic.setLocation(locatie);
-//		
+		EditText address = (EditText) findViewById(R.id.editText111);
+		EditText place = (EditText) findViewById(R.id.editText2);
+		
+		String locatie = address.getText() + ", " + place.getText();
+		ApplicationLogic.setLocation(locatie);
+		
 		Intent intent = new Intent();
 		setResult(RESULT_OK, intent);
 		finish();

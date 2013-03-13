@@ -1,10 +1,13 @@
 package be.cegeka.android.dwaaldetectie.view;
 
+import java.util.Observable;
+import java.util.Observer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -14,7 +17,7 @@ import be.cegeka.android.dwaaldetectie.model.LocationChangeListener;
 import com.example.dwaaldetectie.R;
 
 
-public class MainActivity extends Activity
+public class MainActivity extends Activity implements Observer
 {
 	ApplicationLogic applicationLogic;
 	private Location baseLocation;
@@ -29,8 +32,10 @@ public class MainActivity extends Activity
 		
 		String locationString = ApplicationLogic.getLocation();
 		baseLocation = applicationLogic.locationFromAddress(locationString);
+		
+		ActionListener locationChangeListener = new LocationChangeListener(this, baseLocation);
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new LocationChangeListener(this, baseLocation));
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, );
 	}
 
 
@@ -53,11 +58,19 @@ public class MainActivity extends Activity
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		if (resultCode == RESULT_OK && requestCode == 10)
+		if (resultCode == RESULT_OK)
 		{
 			String locationString = ApplicationLogic.getLocation();
 			baseLocation = applicationLogic.locationFromAddress(locationString);
 			Toast.makeText(this, R.string.toast_address_saved, Toast.LENGTH_LONG).show();
 		}
+	}
+
+
+	@Override
+	public void update(Observable observable, Object data)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
