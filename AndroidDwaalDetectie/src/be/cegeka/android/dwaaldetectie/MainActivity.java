@@ -1,4 +1,4 @@
-package be.khleuven.android.dwaaldetectie;
+package be.cegeka.android.dwaaldetectie;
 
 import java.util.List;
 import java.util.Locale;
