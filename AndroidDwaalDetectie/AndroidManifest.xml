@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
 
     <application
         android:allowBackup="true"
@@ -28,6 +27,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="be.cegeka.android.dwaaldetectie.view.Settings"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="be.cegeka.android.dwaaldetectie.view.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="be.cegeka.android.dwaaldetectie.view.MainActivity" />
         </activity>
     </application>
 
