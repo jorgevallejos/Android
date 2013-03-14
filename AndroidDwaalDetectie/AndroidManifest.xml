@@ -27,6 +27,7 @@
         android:theme="@style/AppTheme" >
         
         <service android:enabled="true" android:name="be.cegeka.android.dwaaldetectie.model.LocationService" />
+        <service android:enabled="true" android:name="be.cegeka.android.dwaaldetectie.model.GPSService" />
         
         <receiver  android:name="be.cegeka.android.dwaaldetectie.model.AutoStart">
             <intent-filter>

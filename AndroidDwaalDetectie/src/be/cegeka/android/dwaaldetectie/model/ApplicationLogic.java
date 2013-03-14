@@ -11,13 +11,13 @@ import android.location.Location;
 public class ApplicationLogic
 {
 	private Context context;
-	public static Location location;
+	
+	public static Location location = new Location("hier");;
 	
 	
 	public ApplicationLogic(Context context)
 	{
 		this.context = context;
-		ApplicationLogic.location = new Location("hier");
 	}
 
 

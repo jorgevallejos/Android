@@ -16,46 +16,59 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
 import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
+import be.cegeka.android.dwaaldetectie.model.GPSService;
 import be.cegeka.android.dwaaldetectie.model.LocationChangeListener;
 import com.example.dwaaldetectie.R;
 
 
 public class MainActivity extends Activity
 {
-	ApplicationLogic applicationLogic;
+	public static ApplicationLogic applicationLogic;
+	public static LocationChangeListener  locationChangeListener;
 	private ToggleButton startButton;
 	private boolean isloaded;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		startButton = (ToggleButton) findViewById(R.id.startButton);
+		if(GPSService.running){
+			startButton.setChecked(true);
+		}
 		initHandlers();
+		
 		applicationLogic = new ApplicationLogic(this);
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new LocationChangeListener(this));
+		locationChangeListener = new LocationChangeListener(this);
+		
+		
 	}
 
 
 	private void initHandlers(){
-		
+
 		startButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				try{
-					ApplicationLogic applicationLogic = new ApplicationLogic(MainActivity.this);
-					String locatie = AddressLoaderSaver.loadAddress();
-					Location location = applicationLogic.locationFromAddress(locatie);
-					ApplicationLogic.location = location;
-					
-				}catch(Exception e){
-					startButton.setChecked(false);
-					Intent intent = new Intent(MainActivity.this, Settings.class);
-					startActivityForResult(intent, 10);
+				if(!startButton.isChecked()){
+					stopService(new Intent(MainActivity.this, GPSService.class));
+				}else{
+					try{
+						String locatie = AddressLoaderSaver.loadAddress();
+						Location location = applicationLogic.locationFromAddress(locatie);
+						ApplicationLogic.location = location;
+						startService(new Intent(MainActivity.this, GPSService.class));
+						
+					}catch(Exception e){
+						e.printStackTrace();
+						startButton.setChecked(false);
+						Intent intent = new Intent(MainActivity.this, Settings.class);
+						startActivityForResult(intent, 10);
+					}
 				}
 			}
 		});
