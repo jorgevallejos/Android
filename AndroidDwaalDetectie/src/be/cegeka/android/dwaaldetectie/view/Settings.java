@@ -1,11 +1,22 @@
 package be.cegeka.android.dwaaldetectie.view;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,6 +26,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +34,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.Toast;
 import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import com.example.dwaaldetectie.R;
@@ -30,7 +44,9 @@ import com.example.dwaaldetectie.R;
 public class Settings extends Activity
 {
 	private List<Address> suggestions;
-	ArrayAdapter<Address> adapter;
+	ArrayAdapter<String> adapter;
+	AutoCompleteTextView autoCompleteTextView;
+	Geocoder geocoder;
 
 
 	public void handleCancel(View view)
@@ -72,61 +88,62 @@ public class Settings extends Activity
 		// Show the Up button in the action bar.
 		setupActionBar();
 
-//		suggestions = new ArrayList<String>();
-//		suggestions.add("Domstraat 15, Willebringen");
-//		suggestions.add("Interleuvenlaan 3, Heverlee");
-//		AutoCompleteTextView autoCompleteText = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
-//		
-//		Geocoder geo = new Geocoder(this.getApplicationContext(), Locale.getDefault());
-//		try
-//		{
-//			suggestions = geo.getFromLocationName(autoCompleteText.getText().toString(), 3);
-//		}
-//		catch (IOException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//	    adapter = new ArrayAdapter<Address>(this, android.R.layout.simple_dropdown_item_1line, suggestions);
-//
-//		
-//		autoCompleteText.setAdapter(adapter);
-//		
-//		autoCompleteText.addTextChangedListener(new TextWatcher()
-//		{
-//			
-//			@Override
-//			public void onTextChanged(CharSequence s, int start, int before, int count)
-//			{
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			
-//			@Override
-//			public void beforeTextChanged(CharSequence s, int start, int count, int after)
-//			{
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			
-//			@Override
-//			public void afterTextChanged(Editable s)
-//			{
-//				Geocoder geo = new Geocoder(getParent().getApplicationContext(), Locale.getDefault());
-//				try
-//				{
-//					suggestions = geo.getFromLocationName(((AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1)).getText().toString(), 3);
-//				}
-//				catch (IOException e)
-//				{
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		});
+		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list_item);
+		adapter.setNotifyOnChange(true);
+
+		autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
+		autoCompleteTextView.setAdapter(adapter);
+		autoCompleteTextView.addTextChangedListener(new TextWatcher()
+		{
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count)
+			{
+				if (count % 3 == 1)
+				{
+					adapter.clear();
+					
+					Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+					System.out.println(autoCompleteTextView.getText().toString());
+					try
+					{
+						List<Address> addresses = geocoder.getFromLocationName(autoCompleteTextView.getText().toString(), 1);
+						
+						if(!addresses.isEmpty())
+						{
+							adapter.add(addresses.get(0).toString());
+							adapter.notifyDataSetChanged();
+						}
+						else
+						{
+							adapter.notifyDataSetInvalidated();
+						}
+					}
+					catch (IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+			}
+
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+
+			@Override
+			public void afterTextChanged(Editable s)
+			{
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
 
