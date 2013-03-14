@@ -57,7 +57,7 @@ public class Settings extends Activity
 
 			try
 			{
-				AddressLoaderSaver.saveAddress(address.getText().toString());
+				AddressLoaderSaver.saveAddress(this, address.getText().toString());
 			}
 			catch (IOException e)
 			{

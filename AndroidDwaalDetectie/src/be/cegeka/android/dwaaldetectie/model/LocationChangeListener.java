@@ -22,16 +22,8 @@ public class LocationChangeListener implements LocationListener
 	@Override
 	public void onLocationChanged(Location location)
 	{
-		// Get Longitude and latitude from current location.
-		double longitude = location.getLongitude();
-		double latitude = location.getLatitude();
-
-		// Print to console
-		System.out.println("Longitude Current Address: " + longitude);
-		System.out.println("Latitude Current Address: " + latitude);
 		if (ApplicationLogic.location != null)
 		{
-			System.out.println(ApplicationLogic.location.distanceTo(location));
 			((MainActivity) context).updateDistance(ApplicationLogic.location.distanceTo(location));
 		}
 

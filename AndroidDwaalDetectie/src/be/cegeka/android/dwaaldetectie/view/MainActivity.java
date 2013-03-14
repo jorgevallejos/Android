@@ -21,9 +21,9 @@ import com.example.dwaaldetectie.R;
 public class MainActivity extends Activity
 {
 	public static ApplicationLogic applicationLogic;
-	public static LocationChangeListener  locationChangeListener;
+	public static LocationChangeListener locationChangeListener;
 	private ToggleButton startButton;
-	
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -32,34 +32,44 @@ public class MainActivity extends Activity
 		setContentView(R.layout.activity_main);
 
 		startButton = (ToggleButton) findViewById(R.id.startButton);
-		if(GPSService.running){
+		if (GPSService.running)
+		{
 			startButton.setChecked(true);
 		}
 		initHandlers();
-		
+
 		applicationLogic = new ApplicationLogic(this);
 		locationChangeListener = new LocationChangeListener(this);
-		
-		
+
+		updateDistance(getString(R.string.service_disabled));
 	}
 
 
-	private void initHandlers(){
-
-		startButton.setOnClickListener(new OnClickListener() {
+	private void initHandlers()
+	{
+		startButton.setOnClickListener(new OnClickListener()
+		{
 
 			@Override
-			public void onClick(View v) {
-				if(!startButton.isChecked()){
+			public void onClick(View v)
+			{
+				if (!startButton.isChecked())
+				{
 					stopService(new Intent(MainActivity.this, GPSService.class));
-				}else{
-					try{
-						String locatie = AddressLoaderSaver.loadAddress();
+					updateDistance(getString(R.string.service_disabled));
+				}
+				else
+				{
+					try
+					{
+						String locatie = AddressLoaderSaver.loadAddress(MainActivity.this);
 						Location location = applicationLogic.locationFromAddress(locatie);
 						ApplicationLogic.location = location;
 						startService(new Intent(MainActivity.this, GPSService.class));
-						
-					}catch(Exception e){
+
+					}
+					catch (Exception e)
+					{
 						e.printStackTrace();
 						startButton.setChecked(false);
 						Intent intent = new Intent(MainActivity.this, Settings.class);
@@ -69,6 +79,8 @@ public class MainActivity extends Activity
 			}
 		});
 	}
+
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
@@ -113,5 +125,12 @@ public class MainActivity extends Activity
 
 		TextView textView = (TextView) findViewById(R.id.textView1);
 		textView.setText("" + result);
+	}
+
+
+	public void updateDistance(String distance)
+	{
+		TextView textView = (TextView) findViewById(R.id.textView1);
+		textView.setText(distance);
 	}
 }
