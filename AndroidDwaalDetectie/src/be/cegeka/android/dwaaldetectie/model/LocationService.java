@@ -1,11 +1,10 @@
 package be.cegeka.android.dwaaldetectie.model;
 
-import be.cegeka.android.dwaaldetectie.view.MainActivity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.Toast;
+import be.cegeka.android.dwaaldetectie.view.MainActivity;
 
 public class LocationService extends Service{
 

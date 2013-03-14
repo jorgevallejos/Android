@@ -1,13 +1,12 @@
 package be.cegeka.android.dwaaldetectie.model;
 
-import be.cegeka.android.dwaaldetectie.view.MainActivity;
-import android.app.IntentService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.IBinder;
 import android.widget.Toast;
+import be.cegeka.android.dwaaldetectie.view.MainActivity;
 
 public class GPSService extends Service{
 

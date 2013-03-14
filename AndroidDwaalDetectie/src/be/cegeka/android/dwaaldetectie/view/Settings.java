@@ -1,7 +1,6 @@
 package be.cegeka.android.dwaaldetectie.view;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import android.annotation.TargetApi;
@@ -19,13 +18,11 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
 import android.widget.Toast;
+import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
 import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import com.example.dwaaldetectie.R;
 
@@ -46,23 +43,21 @@ public class Settings extends Activity
 
 	public void handleSave(View view)
 	{
-		EditText address = (EditText) findViewById(R.id.editText111);
-		EditText place = (EditText) findViewById(R.id.editText2);
+		EditText address = (EditText) findViewById(R.id.autoCompleteTextView1);
 
-		if (address.getText().length() == 0 || place.getText().length() == 0)
+		if (address.getText().length() == 0)
 		{
 			Toast.makeText(this, R.string.toast_invalid_input, Toast.LENGTH_LONG).show();
 		}
 		else
 		{
 			ApplicationLogic applicationLogic = new ApplicationLogic(this);
-			String locatie = address.getText() + ", " + place.getText();
-			Location location = applicationLogic.locationFromAddress(locatie);
+			Location location = applicationLogic.locationFromAddress(address.getText().toString());
 			ApplicationLogic.location = location;
 
 			try
 			{
-				AddressLoaderSaver.saveAddress(locatie);
+				AddressLoaderSaver.saveAddress(address.getText().toString());
 			}
 			catch (IOException e)
 			{
