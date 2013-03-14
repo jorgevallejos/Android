@@ -19,18 +19,21 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
 import android.widget.Toast;
 import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import com.example.dwaaldetectie.R;
 
+
 public class Settings extends Activity
 {
-	private List<Address> suggestions;
-	ArrayAdapter<Address> adapter;
+	private AutoCompleteTextView autoCompleteTextView;
+	ArrayAdapter<String> adapter;
 
 
 	public void handleCancel(View view)
@@ -46,7 +49,6 @@ public class Settings extends Activity
 		EditText address = (EditText) findViewById(R.id.editText111);
 		EditText place = (EditText) findViewById(R.id.editText2);
 
-
 		if (address.getText().length() == 0 || place.getText().length() == 0)
 		{
 			Toast.makeText(this, R.string.toast_invalid_input, Toast.LENGTH_LONG).show();
@@ -57,10 +59,13 @@ public class Settings extends Activity
 			String locatie = address.getText() + ", " + place.getText();
 			Location location = applicationLogic.locationFromAddress(locatie);
 			ApplicationLogic.location = location;
-			
-			try {
+
+			try
+			{
 				AddressLoaderSaver.saveAddress(locatie);
-			} catch (IOException e) {
+			}
+			catch (IOException e)
+			{
 				e.printStackTrace();
 			}
 
@@ -79,61 +84,55 @@ public class Settings extends Activity
 		// Show the Up button in the action bar.
 		setupActionBar();
 
-//		suggestions = new ArrayList<String>();
-//		suggestions.add("Domstraat 15, Willebringen");
-//		suggestions.add("Interleuvenlaan 3, Heverlee");
-//		AutoCompleteTextView autoCompleteText = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
-//		
-//		Geocoder geo = new Geocoder(this.getApplicationContext(), Locale.getDefault());
-//		try
-//		{
-//			suggestions = geo.getFromLocationName(autoCompleteText.getText().toString(), 3);
-//		}
-//		catch (IOException e)
-//		{
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//	    adapter = new ArrayAdapter<Address>(this, android.R.layout.simple_dropdown_item_1line, suggestions);
-//
-//		
-//		autoCompleteText.setAdapter(adapter);
-//		
-//		autoCompleteText.addTextChangedListener(new TextWatcher()
-//		{
-//			
-//			@Override
-//			public void onTextChanged(CharSequence s, int start, int before, int count)
-//			{
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			
-//			@Override
-//			public void beforeTextChanged(CharSequence s, int start, int count, int after)
-//			{
-//				// TODO Auto-generated method stub
-//				
-//			}
-//			
-//			
-//			@Override
-//			public void afterTextChanged(Editable s)
-//			{
-//				Geocoder geo = new Geocoder(getParent().getApplicationContext(), Locale.getDefault());
-//				try
-//				{
-//					suggestions = geo.getFromLocationName(((AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1)).getText().toString(), 3);
-//				}
-//				catch (IOException e)
-//				{
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		});
+
+		adapter = new ArrayAdapter<String>(this, R.layout.list_item);
+		adapter.setNotifyOnChange(true);
+		
+		autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
+		autoCompleteTextView.setAdapter(adapter);
+		
+		autoCompleteTextView.addTextChangedListener(new TextWatcher()
+		{
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count)
+			{
+				adapter.clear();
+				Geocoder geocoder = new Geocoder(Settings.this.getApplicationContext(), Locale.getDefault());
+				try
+				{
+					List<Address> addresses = geocoder.getFromLocationName(autoCompleteTextView.getText().toString(), 5);
+					if(!addresses.isEmpty())
+					{
+						for(int i = 0; i < addresses.size(); i++)
+						{
+							adapter.add(addresses.get(i).getAddressLine(0) + ", " + addresses.get(i).getAddressLine(1) + ", " + addresses.get(i).getAddressLine(2));
+						}
+					}
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			
+			@Override
+			public void afterTextChanged(Editable s)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 
 

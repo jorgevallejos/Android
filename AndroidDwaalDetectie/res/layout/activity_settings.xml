@@ -8,27 +8,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Settings" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/text_settings_address"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editText111"
-        android:layout_below="@+id/editText111"
-        android:layout_marginTop="30dp"
-        android:text="@string/text_settings_place"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
     <EditText
         android:id="@+id/editText2"
         android:layout_width="wrap_content"
@@ -37,15 +16,6 @@
         android:layout_below="@+id/textView2"
         android:ems="10" 
         android:inputType="textCapWords"/>
-
-    <EditText
-        android:id="@+id/editText111"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:ems="10"
-        android:inputType="textCapWords" />
     
     <Button
         android:id="@+id/button2"
@@ -58,23 +28,52 @@
         android:onClick="handleCancel"
         android:text="@string/button_cancel" />
 
-    <Button
-        android:id="@+id/button1"
+    <EditText
+        android:id="@+id/editText111"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/editText2"
-        android:layout_marginBottom="96dp"
-        android:onClick="handleSave"
-        android:text="@string/button_save" />
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:ems="10"
+        android:inputType="textCapWords" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="38dp"
+        android:text="@string/text_settings_address"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editText111"
+        android:layout_below="@+id/editText111"
+        android:text="@string/text_settings_place"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/editText2"
+        android:layout_below="@+id/editText2"
+        android:ems="10" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/autoCompleteTextView1"
         android:layout_centerVertical="true"
-        android:ems="10"
-        android:text="AutoCompleteTextView" />
+        android:onClick="handleSave"
+        android:text="@string/button_save" />
 
 </RelativeLayout>
