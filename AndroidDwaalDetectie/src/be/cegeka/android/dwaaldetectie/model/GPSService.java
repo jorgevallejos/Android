@@ -11,21 +11,18 @@ import android.widget.Toast;
 
 public class GPSService extends Service{
 
-	public static ApplicationLogic applicationLogic;
-	public static LocationChangeListener  locationChangeListener;
 	private LocationManager lm;
 	private static GPSService gpsService;
 	public static boolean running;
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	public void onDestroy() {
-		lm.removeUpdates(locationChangeListener);
+		lm.removeUpdates(GPSConfig.changeListener);
 		running=false;
 		Toast.makeText(this, "GPS Stopped", Toast.LENGTH_LONG).show();
 	}
@@ -36,10 +33,8 @@ public class GPSService extends Service{
 		if(!running){
 			running=true;
 			gpsService=this;
-			applicationLogic = MainActivity.applicationLogic;
-			locationChangeListener=MainActivity.locationChangeListener;
 			lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationChangeListener);
+			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, GPSConfig.changeListener);
 			Toast.makeText(this, "GPS Started", Toast.LENGTH_LONG).show();
 		}
 	}

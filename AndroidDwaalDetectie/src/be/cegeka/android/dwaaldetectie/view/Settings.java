@@ -23,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
+import be.cegeka.android.dwaaldetectie.model.GPSConfig;
 import android.widget.Toast;
 import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import com.example.dwaaldetectie.R;
@@ -56,7 +57,7 @@ public class Settings extends Activity
 			ApplicationLogic applicationLogic = new ApplicationLogic(this);
 			String locatie = address.getText() + ", " + place.getText();
 			Location location = applicationLogic.locationFromAddress(locatie);
-			ApplicationLogic.location = location;
+			GPSConfig.location = location;
 			
 			try {
 				AddressLoaderSaver.saveAddress(locatie);

@@ -29,13 +29,13 @@ public class LocationChangeListener implements LocationListener
 		// Print to console
 		System.out.println("Longitude Current Address: " + longitude);
 		System.out.println("Latitude Current Address: " + latitude);
-		if (ApplicationLogic.location != null)
+		if (GPSConfig.location != null && MainActivity.interfaceup)
 		{
-			System.out.println(ApplicationLogic.location.distanceTo(location));
-			((MainActivity) context).updateDistance(ApplicationLogic.location.distanceTo(location));
+			System.out.println(GPSConfig.location.distanceTo(location));
+			MainActivity.updateDistance(GPSConfig.location.distanceTo(location));
 		}
 
-		if (ApplicationLogic.location != null && ApplicationLogic.location.distanceTo(location) > 2000)
+		if (GPSConfig.location != null && GPSConfig.location.distanceTo(location) > 2000)
 		{
 			Toast.makeText(context, "Too far", Toast.LENGTH_LONG).show();
 		}

@@ -12,8 +12,6 @@ public class ApplicationLogic
 {
 	private Context context;
 	
-	public static Location location = new Location("hier");;
-	
 	
 	public ApplicationLogic(Context context)
 	{
