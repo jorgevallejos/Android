@@ -15,7 +15,7 @@ public class LocationChangeListener implements LocationListener
 
 	public LocationChangeListener(Context context)
 	{
-		this.context = context;
+		LocationChangeListener.context = context;
 	}
 
 

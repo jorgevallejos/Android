@@ -52,7 +52,9 @@ public class ApplicationLogic
 	public Location locationFromAddress(String address)
 	{
 		Geocoder geoCoder = new Geocoder(context, Locale.getDefault());
-		Location baseLocation = null;
+		Location baseLocation = new Location("hier");
+		baseLocation.setLongitude(20);
+		baseLocation.setLatitude(2);
 		
 		try
 		{

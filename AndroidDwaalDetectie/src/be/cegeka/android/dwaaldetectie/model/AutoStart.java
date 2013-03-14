@@ -14,7 +14,7 @@ public class AutoStart extends BroadcastReceiver {
 	{
 		try{
 			ApplicationLogic applicationLogic = new ApplicationLogic(ctx);
-			String locatie = AddressLoaderSaver.loadAddress();
+			String locatie = AddressLoaderSaver.loadAddress(ctx);
 			Location location = applicationLogic.locationFromAddress(locatie);
 			GPSConfig.location = location;
 			GPSConfig.changeListener = new LocationChangeListener(ctx);

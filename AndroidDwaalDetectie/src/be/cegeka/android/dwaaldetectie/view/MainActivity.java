@@ -2,15 +2,12 @@ package be.cegeka.android.dwaaldetectie.view;
 
 import java.text.DecimalFormat;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -24,11 +21,12 @@ import com.example.dwaaldetectie.R;
 
 public class MainActivity extends Activity
 {
+
 	private ToggleButton startButton;
 	private boolean isloaded;
 	private static TextView textView;
 	public static boolean interfaceup;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -44,27 +42,38 @@ public class MainActivity extends Activity
 		}
 		interfaceup=true;
 		initHandlers();
+		updateDistance(getString(R.string.service_disabled));
 	}
 
 
 
-	private void initHandlers(){
-
-		startButton.setOnClickListener(new OnClickListener() {
+	private void initHandlers()
+	{
+		startButton.setOnClickListener(new OnClickListener()
+		{
 
 			@Override
-			public void onClick(View v) {
-				if(!startButton.isChecked()){
+			public void onClick(View v)
+			{
+				if (!startButton.isChecked())
+				{
 					stopService(new Intent(MainActivity.this, GPSService.class));
-				}else{
-					try{
+
+					updateDistance(getString(R.string.service_disabled));
+				}
+				else
+				{
+					try
+					{
 						ApplicationLogic applicationLogic = new ApplicationLogic(MainActivity.this);
-						String locatie = AddressLoaderSaver.loadAddress();
+						String locatie = AddressLoaderSaver.loadAddress(MainActivity.this);
 						Location location = applicationLogic.locationFromAddress(locatie);
 						GPSConfig.location = location;
 						startService(new Intent(MainActivity.this, GPSService.class));
-						
-					}catch(Exception e){
+
+					}
+					catch (Exception e)
+					{
 						e.printStackTrace();
 						startButton.setChecked(false);
 						Intent intent = new Intent(MainActivity.this, Settings.class);
@@ -74,6 +83,8 @@ public class MainActivity extends Activity
 			}
 		});
 	}
+
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
@@ -118,5 +129,12 @@ public class MainActivity extends Activity
 
 		
 		textView.setText("" + result);
+	}
+
+
+	public void updateDistance(String distance)
+	{
+		TextView textView = (TextView) findViewById(R.id.textView1);
+		textView.setText(distance);
 	}
 }
