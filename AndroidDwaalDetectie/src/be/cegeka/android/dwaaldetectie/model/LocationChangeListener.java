@@ -10,7 +10,7 @@ import be.cegeka.android.dwaaldetectie.view.MainActivity;
 
 public class LocationChangeListener implements LocationListener
 {
-	private Context context;
+	private static Context context;
 
 
 	public LocationChangeListener(Context context)
