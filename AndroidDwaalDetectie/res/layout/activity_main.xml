@@ -17,16 +17,6 @@
         android:textOff="Start"
         android:textOn="Stop" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/startButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
-        android:onClick="handleSettings"
-        android:text="@string/button_settings" />
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -35,5 +25,15 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="54dp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/startButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:onClick="handleShowMap"
+        android:text="@string/button_settings" />
 
 </RelativeLayout>

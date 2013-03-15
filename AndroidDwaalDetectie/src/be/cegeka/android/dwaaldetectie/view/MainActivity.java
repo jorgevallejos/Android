@@ -1,31 +1,28 @@
 package be.cegeka.android.dwaaldetectie.view;
 
-import java.text.DecimalFormat;
 import android.app.Activity;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
+import be.cegeka.android.dwaaldetectie.R;
 import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
-import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import be.cegeka.android.dwaaldetectie.model.GPSConfig;
 import be.cegeka.android.dwaaldetectie.model.GPSService;
 import be.cegeka.android.dwaaldetectie.model.LocationChangeListener;
-import com.example.dwaaldetectie.R;
+import com.google.android.gms.maps.model.LatLng;
 
 
 public class MainActivity extends Activity
 {
 
 	private ToggleButton startButton;
-	private boolean isloaded;
 	private static TextView textView;
 	public static boolean interfaceup;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -34,17 +31,18 @@ public class MainActivity extends Activity
 		setContentView(R.layout.activity_main);
 		startButton = (ToggleButton) findViewById(R.id.startButton);
 		textView = (TextView) findViewById(R.id.textView1);
-		if(GPSConfig.changeListener==null){
+		if (GPSConfig.changeListener == null)
+		{
 			GPSConfig.changeListener = new LocationChangeListener(this);
 		}
-		if(GPSService.running){
+		if (GPSService.running)
+		{
 			startButton.setChecked(true);
 		}
-		interfaceup=true;
+		interfaceup = true;
 		initHandlers();
-		updateDistance(getString(R.string.service_disabled));
+		updateDistance();
 	}
-
 
 
 	private void initHandlers()
@@ -58,25 +56,24 @@ public class MainActivity extends Activity
 				if (!startButton.isChecked())
 				{
 					stopService(new Intent(MainActivity.this, GPSService.class));
-
-					updateDistance(getString(R.string.service_disabled));
+					textView.setText("");
 				}
 				else
 				{
 					try
 					{
-						ApplicationLogic applicationLogic = new ApplicationLogic(MainActivity.this);
-						String locatie = AddressLoaderSaver.loadAddress(MainActivity.this);
-						Location location = applicationLogic.locationFromAddress(locatie);
-						GPSConfig.location = location;
+						String address = AddressLoaderSaver.loadAddressDescription(MainActivity.this);
+						LatLng latLng = AddressLoaderSaver.loadAddress(MainActivity.this);
+						GPSConfig.address = address;
+						GPSConfig.setLocation(MainActivity.this, latLng);
 						startService(new Intent(MainActivity.this, GPSService.class));
-
+						updateDistance();
 					}
 					catch (Exception e)
 					{
 						e.printStackTrace();
 						startButton.setChecked(false);
-						Intent intent = new Intent(MainActivity.this, Settings.class);
+						Intent intent = new Intent(MainActivity.this, MapView.class);
 						startActivityForResult(intent, 10);
 					}
 				}
@@ -96,45 +93,27 @@ public class MainActivity extends Activity
 
 	public void handleSettings(View view)
 	{
-		Intent intent = new Intent(this, Settings.class);
-		startActivityForResult(intent, 10);
+		Intent intent = new Intent(this, MapView.class);
+		startActivity(intent);
 	}
 
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	public void handleShowMap(View view)
 	{
-		if (resultCode == RESULT_OK)
-		{
-			Toast.makeText(this, R.string.toast_address_saved, Toast.LENGTH_LONG).show();
-		}
+		Intent intent = new Intent(this, MapView.class);
+		startActivity(intent);
 	}
 
 
-	public static void updateDistance(float distance)
+	public static void updateDistance()
 	{
-		String result = null;
-
-		if (distance < 1000)
+		if(GPSConfig.address != null)
 		{
-			DecimalFormat decimalFormat = new DecimalFormat("#");
-			result = decimalFormat.format(distance) + " m";
+			textView.setText(GPSConfig.address + "\n\n" + GPSConfig.getDistance());
 		}
 		else
 		{
-			DecimalFormat decimalFormat = new DecimalFormat("#.#");
-			distance = distance / 1000;
-			result = decimalFormat.format(distance) + " km";
+			textView.setText(GPSConfig.getDistance());
 		}
-
-		
-		textView.setText("" + result);
-	}
-
-
-	public void updateDistance(String distance)
-	{
-		TextView textView = (TextView) findViewById(R.id.textView1);
-		textView.setText(distance);
 	}
 }

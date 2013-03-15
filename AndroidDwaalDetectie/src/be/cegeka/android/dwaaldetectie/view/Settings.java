@@ -22,11 +22,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
+import be.cegeka.android.dwaaldetectie.R;
 import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
-import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import be.cegeka.android.dwaaldetectie.model.GPSConfig;
 
-import com.example.dwaaldetectie.R;
 
 
 public class Settings extends Activity
@@ -53,18 +52,18 @@ public class Settings extends Activity
 		}
 		else
 		{
-			ApplicationLogic applicationLogic = new ApplicationLogic(this);
-			Location location = applicationLogic.locationFromAddress(address.getText().toString());
-			GPSConfig.location = location;
+//			ApplicationLogic applicationLogic = new ApplicationLogic(this);
+//			Location location = applicationLogic.locationFromAddress(address.getText().toString());
+//			GPSConfig.location = location;
 
-			try
-			{
-				AddressLoaderSaver.saveAddress(this, address.getText().toString());
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
+//			try
+//			{
+//				AddressLoaderSaver.saveAddress(this, address.getText().toString());
+//			}
+//			catch (IOException e)
+//			{
+//				e.printStackTrace();
+//			}
 
 			Intent intent = new Intent();
 			setResult(RESULT_OK, intent);

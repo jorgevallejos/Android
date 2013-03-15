@@ -1,5 +1,6 @@
 package be.cegeka.android.dwaaldetectie.model;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -10,36 +11,37 @@ import be.cegeka.android.dwaaldetectie.view.MainActivity;
 
 public class LocationChangeListener implements LocationListener
 {
-	private static Context context;
+	private Toast toast;
 
-
+	@SuppressLint("ShowToast")
 	public LocationChangeListener(Context context)
 	{
-		LocationChangeListener.context = context;
+		toast = Toast.makeText(context, "Too far", Toast.LENGTH_LONG);
 	}
 
 
 	@Override
 	public void onLocationChanged(Location location)
 	{
-		// Get Longitude and latitude from current location.
-		double longitude = location.getLongitude();
-		double latitude = location.getLatitude();
 
-		// Print to console
-		System.out.println("Longitude Current Address: " + longitude);
-		System.out.println("Latitude Current Address: " + latitude);
-		if (GPSConfig.location != null && MainActivity.interfaceup)
+		if (GPSConfig.getLocation() != null)
 		{
-			System.out.println(GPSConfig.location.distanceTo(location));
-			MainActivity.updateDistance(GPSConfig.location.distanceTo(location));
+			GPSConfig.setDistance(location);
+			MainActivity.updateDistance();
+			
+			Location location2 = new Location("");
+			location2.setLatitude(GPSConfig.getLocation().latitude);
+			location2.setLongitude(GPSConfig.getLocation().longitude);
+			
+			if (location.distanceTo(location2) > 2000)
+			{
+				toast.show();
+			}
+			else
+			{
+				toast.cancel();
+			}
 		}
-
-		if (GPSConfig.location != null && GPSConfig.location.distanceTo(location) > 2000)
-		{
-			Toast.makeText(context, "Too far", Toast.LENGTH_LONG).show();
-		}
-
 	}
 
 
