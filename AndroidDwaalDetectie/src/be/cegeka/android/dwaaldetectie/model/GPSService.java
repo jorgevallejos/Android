@@ -24,11 +24,11 @@ public class GPSService extends Service{
 		lm.removeUpdates(GPSConfig.changeListener);
 		running=false;
 		Toast.makeText(this, "GPS Stopped", Toast.LENGTH_LONG).show();
+		super.onDestroy();
 	}
 
 	@Override
-	public void onStart(Intent intent, int startid)
-	{
+	public int onStartCommand(Intent intent, int flags, int startId) {
 		if(!running){
 			running=true;
 			gpsService=this;
@@ -36,12 +36,8 @@ public class GPSService extends Service{
 			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, GPSConfig.changeListener);
 			Toast.makeText(this, "GPS Started", Toast.LENGTH_LONG).show();
 		}
+		return START_STICKY;
 	}
-
-	//	@Override
-	//	public int onStartCommand(Intent intent, int flags, int startId) {
-	//	    return START_STICKY;
-	//	}
 
 	public static GPSService getInstance(){
 		return gpsService;
