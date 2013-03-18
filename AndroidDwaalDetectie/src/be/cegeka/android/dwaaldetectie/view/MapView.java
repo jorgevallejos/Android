@@ -126,7 +126,7 @@ public class MapView extends Activity
 				{
 					GPSConfig.address = message2;
 					GPSConfig.setLocation(MapView.this, latLng);
-					
+
 					Toast.makeText(MapView.this, "Adres succesvol ingesteld", Toast.LENGTH_LONG).show();
 					finish();
 				}
