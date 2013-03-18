@@ -10,4 +10,4 @@
     map:cameraTargetLng="4"
     map:cameraZoom="6"
     map:cameraTilt="0"
-    map:mapType="normal" />
+    map:mapType="normal" /> 
