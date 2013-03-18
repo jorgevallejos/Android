@@ -40,7 +40,6 @@ public class LocationChangeListener implements LocationListener
 			if (location.distanceTo(location2) > 2000)
 			{
 				toast.show();
-				createNotification();
 			}
 			else
 			{
@@ -72,20 +71,4 @@ public class LocationChangeListener implements LocationListener
 		// TODO Auto-generated method stub
 
 	}
-	
-	@SuppressLint("NewApi")
-	public void createNotification() {
-	    // Prepare intent which is triggered if the
-	    // notification is selected
-	    //Intent intent = new Intent(context, NotificationReceiverActivity.class);
-	    //PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-	    Notification noti = new Notification.Builder(context).build();
-	    // Hide the notification after its selected
-	    noti.flags |= Notification.FLAG_AUTO_CANCEL;
-
-	    notificationManager.notify(0, noti);
-
-	  }
 }
