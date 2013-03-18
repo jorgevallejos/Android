@@ -9,8 +9,11 @@ CONSTRAINT PRIMARY_KEY_USER PRIMARY KEY (UserId));
 
 CREATE TABLE Alarm
 ( AlarmID SERIAL NOT NULL UNIQUE,
+title varchar(50) not null,
 info varchar(50) not null,
-Datum DATE not null,
+repeated boolean not null,
+repeat_unit varchar(8),
+date_in_millis bigint not null,
 CONSTRAINT PRIMARY_KEY_ALARM PRIMARY KEY (AlarmId));
 
 CREATE TABLE User_Alarm
