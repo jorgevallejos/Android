@@ -3,13 +3,11 @@ package be.cegeka.android.dwaaldetectie.view;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -23,8 +21,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 import be.cegeka.android.dwaaldetectie.R;
-import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
-import be.cegeka.android.dwaaldetectie.model.GPSConfig;
 
 
 

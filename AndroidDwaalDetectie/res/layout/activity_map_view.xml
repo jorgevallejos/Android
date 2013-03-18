@@ -5,11 +5,9 @@
     android:name="com.google.android.gms.maps.MapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    
     map:cameraBearing="0"
     map:cameraTargetLat="51"
     map:cameraTargetLng="4"
-    map:cameraZoom="6"
     map:cameraTilt="0"
-    map:mapType="normal"
-     /> 
+    map:cameraZoom="7"
+    map:mapType="normal" />
