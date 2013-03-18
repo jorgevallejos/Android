@@ -1,14 +1,19 @@
 package be.cegeka.android.dwaaldetectie.view;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -98,13 +103,46 @@ public class MainActivity extends Activity
 	{
 		if(!isOnline())
 		{
-			Toast.makeText(this, "There is no internet connection, so you cannot change the address atm", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.map_info_no_internet, Toast.LENGTH_SHORT).show();
 		}
 		else
 		{
 			Intent intent = new Intent(this, MapView.class);
 			startActivity(intent);
 		}
+	}
+	
+	
+	public void handleMaxDistance(View view)
+	{
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		
+		final EditText editText = new EditText(this);
+		editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+		alertDialogBuilder.setTitle(R.string.main_dialogMaxDistance_title);
+		alertDialogBuilder.setMessage(R.string.main_dialogMaxDistance_message);
+		alertDialogBuilder.setView(editText);
+		alertDialogBuilder.setNegativeButton("Cancel", new AlertDialog.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				finish();
+			}
+		});
+		alertDialogBuilder.setPositiveButton("Ok", new AlertDialog.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				String text = editText.getText().toString();
+				int distance = Integer.parseInt(text);
+				GPSConfig.maxDistance = distance;
+			}
+		});
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		alertDialog.show();
 	}
 
 

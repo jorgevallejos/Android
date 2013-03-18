@@ -13,6 +13,7 @@ public class GPSConfig
 	public static LocationChangeListener changeListener;
 	private static String distance = "";
 	private static LatLng location;
+	public static int maxDistance;
 	
 	
 	public static String getDistance()

@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.widget.Toast;
@@ -59,44 +62,51 @@ public class MapView extends Activity
 		@Override
 		public void onMapLongClick(LatLng point)
 		{
-			latLng = point;
-			map.clear();
-
-			Geocoder geocoder = new Geocoder(MapView.this);
-			try
+			if (!isOnline())
 			{
-				List<Address> addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
-				if (addresses.size() > 0)
-				{
-					Address address = geocoder.getFromLocation(point.latitude, point.longitude, 1).get(0);
-					message = address.getAddressLine(0);
-					if (address.getAddressLine(1) != null)
-					{
-						message += ", " + address.getAddressLine(1);
-						if (address.getAddressLine(2) != null)
-						{
-							message += ", " + address.getAddressLine(2);
-						}
-
-					}
-					message2 = message;
-				}
-				else
-				{
-					message = getString(R.string.map_marker_message_no_address_found);
-					message2 = latLng.latitude + ", " + latLng.longitude;
-				}
-
-				MarkerOptions markerOptions = new MarkerOptions();
-				markerOptions.position(point);
-				markerOptions.title(message);
-				markerOptions.draggable(false);
-				Marker marker = map.addMarker(markerOptions);
-				marker.showInfoWindow();
+				Toast.makeText(MapView.this, R.string.map_info_no_internet, Toast.LENGTH_SHORT).show();
 			}
-			catch (IOException e)
+			else
 			{
-				e.printStackTrace();
+				latLng = point;
+				map.clear();
+
+				Geocoder geocoder = new Geocoder(MapView.this);
+				try
+				{
+					List<Address> addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+					if (addresses.size() > 0)
+					{
+						Address address = geocoder.getFromLocation(point.latitude, point.longitude, 1).get(0);
+						message = address.getAddressLine(0);
+						if (address.getAddressLine(1) != null)
+						{
+							message += ", " + address.getAddressLine(1);
+							if (address.getAddressLine(2) != null)
+							{
+								message += ", " + address.getAddressLine(2);
+							}
+
+						}
+						message2 = message;
+					}
+					else
+					{
+						message = getString(R.string.map_marker_message_no_address_found);
+						message2 = latLng.latitude + ", " + latLng.longitude;
+					}
+
+					MarkerOptions markerOptions = new MarkerOptions();
+					markerOptions.position(point);
+					markerOptions.title(message);
+					markerOptions.draggable(false);
+					Marker marker = map.addMarker(markerOptions);
+					marker.showInfoWindow();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -163,4 +173,15 @@ public class MapView extends Activity
 		return true;
 	}
 
+	
+	public boolean isOnline()
+	{
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting())
+		{
+			return true;
+		}
+		return false;
+	}
 }

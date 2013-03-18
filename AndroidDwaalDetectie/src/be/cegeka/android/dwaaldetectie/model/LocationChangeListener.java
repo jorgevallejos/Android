@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.widget.Toast;
+import be.cegeka.android.dwaaldetectie.R;
 import be.cegeka.android.dwaaldetectie.view.MainActivity;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -23,7 +24,7 @@ public class LocationChangeListener extends Service implements LocationListener
 	public LocationChangeListener(Context context)
 	{
 
-		toast = Toast.makeText(context, "Too far", Toast.LENGTH_LONG);
+		toast = Toast.makeText(context, R.string.toast_too_far, Toast.LENGTH_LONG);
 	}
 
 
@@ -39,7 +40,7 @@ public class LocationChangeListener extends Service implements LocationListener
 				MainActivity.updateDistance();
 			}
 			
-			if (location.distanceTo(locationFromLatLng(GPSConfig.getLocation())) > 2000)
+			if (location.distanceTo(locationFromLatLng(GPSConfig.getLocation())) > GPSConfig.maxDistance)
 			{
 				toast.show();
 			}
