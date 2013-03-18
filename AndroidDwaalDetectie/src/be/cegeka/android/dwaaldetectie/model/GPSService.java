@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.IBinder;
-import android.widget.Toast;
 
 
 public class GPSService extends Service
@@ -28,7 +27,6 @@ public class GPSService extends Service
 		GPSConfig.setDistanceInfo("");
 		lm.removeUpdates(GPSConfig.changeListener);
 		running = false;
-		Toast.makeText(this, "GPS Stopped", Toast.LENGTH_LONG).show();
 		super.onDestroy();
 	}
 
@@ -40,11 +38,13 @@ public class GPSService extends Service
 			running = true;
 			gpsService = this;
 			lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, GPSConfig.changeListener);
-			Toast.makeText(this, "GPS Started", Toast.LENGTH_LONG).show();
+
+			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 1, GPSConfig.changeListener);
+			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 1, GPSConfig.changeListener);
 		}
 		return START_STICKY;
 	}
+	
 	
 	public static GPSService getInstance()
 	{

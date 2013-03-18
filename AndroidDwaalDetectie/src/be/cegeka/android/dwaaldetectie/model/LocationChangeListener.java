@@ -1,26 +1,29 @@
 package be.cegeka.android.dwaaldetectie.model;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.widget.Toast;
 import be.cegeka.android.dwaaldetectie.view.MainActivity;
+import com.google.android.gms.maps.model.LatLng;
 
 
-public class LocationChangeListener implements LocationListener
+public class LocationChangeListener extends Service implements LocationListener
 {
-	private Context context;
+	private static final int TWO_MINUTES = 1000 * 60 * 2;
 	private Toast toast;
+
 
 	@SuppressLint("ShowToast")
 	public LocationChangeListener(Context context)
 	{
+
 		toast = Toast.makeText(context, "Too far", Toast.LENGTH_LONG);
-		this.context = context;
 	}
 
 
@@ -30,14 +33,13 @@ public class LocationChangeListener implements LocationListener
 
 		if (GPSConfig.getLocation() != null)
 		{
-			GPSConfig.setDistance(location);
-			MainActivity.updateDistance();
-		
-			Location location2 = new Location("");
-			location2.setLatitude(GPSConfig.getLocation().latitude);
-			location2.setLongitude(GPSConfig.getLocation().longitude);
+			if (isBetterLocation(location, locationFromLatLng(GPSConfig.getLocation())))
+			{
+				GPSConfig.setDistance(location);
+				MainActivity.updateDistance();
+			}
 			
-			if (location.distanceTo(location2) > 2000)
+			if (location.distanceTo(locationFromLatLng(GPSConfig.getLocation())) > 2000)
 			{
 				toast.show();
 			}
@@ -70,5 +72,99 @@ public class LocationChangeListener implements LocationListener
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+
+	@Override
+	public IBinder onBind(Intent intent)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	private Location locationFromLatLng(LatLng latLng)
+	{
+		Location location = new Location("location");
+		location.setLatitude(latLng.latitude);
+		location.setLongitude(latLng.longitude);
+		
+		return location;
+	}
+
+
+	/**
+	 * Determines whether one Location reading is better than the current
+	 * Location fix
+	 * 
+	 * @param location
+	 *            The new Location that you want to evaluate
+	 * @param currentBestLocation
+	 *            The current Location fix, to which you want to compare the new
+	 *            one
+	 */
+	protected boolean isBetterLocation(Location location, Location currentBestLocation)
+	{
+		if (currentBestLocation == null)
+		{
+			// A new location is always better than no location
+			return true;
+		}
+
+		// Check whether the new location fix is newer or older
+		long timeDelta = location.getTime() - currentBestLocation.getTime();
+		boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+		boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+		boolean isNewer = timeDelta > 0;
+
+		// If it's been more than two minutes since the current location, use
+		// the new location
+		// because the user has likely moved
+		if (isSignificantlyNewer)
+		{
+			return true;
+			// If the new location is more than two minutes older, it must be
+			// worse
+		}
+		else if (isSignificantlyOlder)
+		{
+			return false;
+		}
+
+		// Check whether the new location fix is more or less accurate
+		int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+		boolean isLessAccurate = accuracyDelta > 0;
+		boolean isMoreAccurate = accuracyDelta < 0;
+		boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+		// Check if the old and new location are from the same provider
+		boolean isFromSameProvider = isSameProvider(location.getProvider(), currentBestLocation.getProvider());
+
+		// Determine location quality using a combination of timeliness and
+		// accuracy
+		if (isMoreAccurate)
+		{
+			return true;
+		}
+		else if (isNewer && !isLessAccurate)
+		{
+			return true;
+		}
+		else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider)
+		{
+			return true;
+		}
+		return false;
+	}
+
+
+	/** Checks whether two providers are the same */
+	private boolean isSameProvider(String provider1, String provider2)
+	{
+		if (provider1 == null)
+		{
+			return provider2 == null;
+		}
+		return provider1.equals(provider2);
 	}
 }

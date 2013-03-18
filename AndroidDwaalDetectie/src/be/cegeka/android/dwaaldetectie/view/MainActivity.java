@@ -1,12 +1,16 @@
 package be.cegeka.android.dwaaldetectie.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 import be.cegeka.android.dwaaldetectie.R;
 import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
@@ -73,8 +77,7 @@ public class MainActivity extends Activity
 					{
 						e.printStackTrace();
 						startButton.setChecked(false);
-						Intent intent = new Intent(MainActivity.this, MapView.class);
-						startActivityForResult(intent, 10);
+						handleShowMap(null);
 					}
 				}
 			}
@@ -91,23 +94,23 @@ public class MainActivity extends Activity
 	}
 
 
-	public void handleSettings(View view)
-	{
-		Intent intent = new Intent(this, MapView.class);
-		startActivity(intent);
-	}
-
-
 	public void handleShowMap(View view)
 	{
-		Intent intent = new Intent(this, MapView.class);
-		startActivity(intent);
+		if(!isOnline())
+		{
+			Toast.makeText(this, "There is no internet connection, so you cannot change the address atm", Toast.LENGTH_SHORT).show();
+		}
+		else
+		{
+			Intent intent = new Intent(this, MapView.class);
+			startActivity(intent);
+		}
 	}
 
 
 	public static void updateDistance()
 	{
-		if(GPSConfig.address != null)
+		if (GPSConfig.address != null)
 		{
 			textView.setText(GPSConfig.address + "\n\n" + GPSConfig.getDistance());
 		}
@@ -115,5 +118,17 @@ public class MainActivity extends Activity
 		{
 			textView.setText(GPSConfig.getDistance());
 		}
+	}
+
+
+	public boolean isOnline()
+	{
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting())
+		{
+			return true;
+		}
+		return false;
 	}
 }
