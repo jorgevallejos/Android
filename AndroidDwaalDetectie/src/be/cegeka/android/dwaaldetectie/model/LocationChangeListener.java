@@ -1,6 +1,8 @@
 package be.cegeka.android.dwaaldetectie.model;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -11,12 +13,14 @@ import be.cegeka.android.dwaaldetectie.view.MainActivity;
 
 public class LocationChangeListener implements LocationListener
 {
+	private Context context;
 	private Toast toast;
 
 	@SuppressLint("ShowToast")
 	public LocationChangeListener(Context context)
 	{
 		toast = Toast.makeText(context, "Too far", Toast.LENGTH_LONG);
+		this.context = context;
 	}
 
 
@@ -28,7 +32,7 @@ public class LocationChangeListener implements LocationListener
 		{
 			GPSConfig.setDistance(location);
 			MainActivity.updateDistance();
-			
+		
 			Location location2 = new Location("");
 			location2.setLatitude(GPSConfig.getLocation().latitude);
 			location2.setLongitude(GPSConfig.getLocation().longitude);
@@ -36,6 +40,7 @@ public class LocationChangeListener implements LocationListener
 			if (location.distanceTo(location2) > 2000)
 			{
 				toast.show();
+				createNotification();
 			}
 			else
 			{
@@ -67,4 +72,20 @@ public class LocationChangeListener implements LocationListener
 		// TODO Auto-generated method stub
 
 	}
+	
+	@SuppressLint("NewApi")
+	public void createNotification() {
+	    // Prepare intent which is triggered if the
+	    // notification is selected
+	    //Intent intent = new Intent(context, NotificationReceiverActivity.class);
+	    //PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+	    Notification noti = new Notification.Builder(context).build();
+	    // Hide the notification after its selected
+	    noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+	    notificationManager.notify(0, noti);
+
+	  }
 }
