@@ -15,6 +15,7 @@ public class WebServiceConnector implements ConnectionInterface{
 
 	@Override
 	public ArrayList<Alarm> getAlarmsFromUser(User u) {
+		
 		new RequestTask().execute(RequestTask.GET_ALARMS_FROM_USER,"david.s.maes@gmail.com");
 		return RequestTask.alarms;
 	}
