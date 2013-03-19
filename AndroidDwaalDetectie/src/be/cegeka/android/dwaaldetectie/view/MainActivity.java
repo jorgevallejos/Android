@@ -1,31 +1,37 @@
 package be.cegeka.android.dwaaldetectie.view;
 
-import java.text.DecimalFormat;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import be.cegeka.android.dwaaldetectie.R;
 import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
-import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
 import be.cegeka.android.dwaaldetectie.model.GPSConfig;
 import be.cegeka.android.dwaaldetectie.model.GPSService;
 import be.cegeka.android.dwaaldetectie.model.LocationChangeListener;
-import com.example.dwaaldetectie.R;
+import com.google.android.gms.maps.model.LatLng;
 
 
 public class MainActivity extends Activity
 {
 
 	private ToggleButton startButton;
-	private boolean isloaded;
 	private static TextView textView;
 	public static boolean interfaceup;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -34,17 +40,18 @@ public class MainActivity extends Activity
 		setContentView(R.layout.activity_main);
 		startButton = (ToggleButton) findViewById(R.id.startButton);
 		textView = (TextView) findViewById(R.id.textView1);
-		if(GPSConfig.changeListener==null){
+		if (GPSConfig.changeListener == null)
+		{
 			GPSConfig.changeListener = new LocationChangeListener(this);
 		}
-		if(GPSService.running){
+		if (GPSService.running)
+		{
 			startButton.setChecked(true);
 		}
-		interfaceup=true;
+		interfaceup = true;
 		initHandlers();
-		updateDistance(getString(R.string.service_disabled));
+		updateDistance();
 	}
-
 
 
 	private void initHandlers()
@@ -58,26 +65,24 @@ public class MainActivity extends Activity
 				if (!startButton.isChecked())
 				{
 					stopService(new Intent(MainActivity.this, GPSService.class));
-
-					updateDistance(getString(R.string.service_disabled));
+					textView.setText("");
 				}
 				else
 				{
 					try
 					{
-						ApplicationLogic applicationLogic = new ApplicationLogic(MainActivity.this);
-						String locatie = AddressLoaderSaver.loadAddress(MainActivity.this);
-						Location location = applicationLogic.locationFromAddress(locatie);
-						GPSConfig.location = location;
+						String address = AddressLoaderSaver.loadAddressDescription(MainActivity.this);
+						LatLng latLng = AddressLoaderSaver.loadAddress(MainActivity.this);
+						GPSConfig.address = address;
+						GPSConfig.setLocation(MainActivity.this, latLng);
 						startService(new Intent(MainActivity.this, GPSService.class));
-
+						updateDistance();
 					}
 					catch (Exception e)
 					{
 						e.printStackTrace();
 						startButton.setChecked(false);
-						Intent intent = new Intent(MainActivity.this, Settings.class);
-						startActivityForResult(intent, 10);
+						handleShowMap(null);
 					}
 				}
 			}
@@ -94,47 +99,74 @@ public class MainActivity extends Activity
 	}
 
 
-	public void handleSettings(View view)
+	public void handleShowMap(View view)
 	{
-		Intent intent = new Intent(this, Settings.class);
-		startActivityForResult(intent, 10);
-	}
-
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		if (resultCode == RESULT_OK)
+		if(!isOnline())
 		{
-			Toast.makeText(this, R.string.toast_address_saved, Toast.LENGTH_LONG).show();
-		}
-	}
-
-
-	public static void updateDistance(float distance)
-	{
-		String result = null;
-
-		if (distance < 1000)
-		{
-			DecimalFormat decimalFormat = new DecimalFormat("#");
-			result = decimalFormat.format(distance) + " m";
+			Toast.makeText(this, R.string.map_info_no_internet, Toast.LENGTH_SHORT).show();
 		}
 		else
 		{
-			DecimalFormat decimalFormat = new DecimalFormat("#.#");
-			distance = distance / 1000;
-			result = decimalFormat.format(distance) + " km";
+			Intent intent = new Intent(this, MapView.class);
+			startActivity(intent);
 		}
-
+	}
+	
+	
+	public void handleMaxDistance(View view)
+	{
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		
-		textView.setText("" + result);
+		final EditText editText = new EditText(this);
+		editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+		alertDialogBuilder.setTitle(R.string.main_dialogMaxDistance_title);
+		alertDialogBuilder.setMessage(R.string.main_dialogMaxDistance_message);
+		alertDialogBuilder.setView(editText);
+		alertDialogBuilder.setNegativeButton("Cancel", new AlertDialog.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				finish();
+			}
+		});
+		alertDialogBuilder.setPositiveButton("Ok", new AlertDialog.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				String text = editText.getText().toString();
+				int distance = Integer.parseInt(text);
+				GPSConfig.maxDistance = distance;
+			}
+		});
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		alertDialog.show();
 	}
 
 
-	public void updateDistance(String distance)
+	public static void updateDistance()
 	{
-		TextView textView = (TextView) findViewById(R.id.textView1);
-		textView.setText(distance);
+		if (GPSConfig.address != null)
+		{
+			textView.setText(GPSConfig.address + "\n\n" + GPSConfig.getDistance());
+		}
+		else
+		{
+			textView.setText(GPSConfig.getDistance());
+		}
+	}
+
+
+	public boolean isOnline()
+	{
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting())
+		{
+			return true;
+		}
+		return false;
 	}
 }

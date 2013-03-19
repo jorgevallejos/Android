@@ -3,13 +3,11 @@ package be.cegeka.android.dwaaldetectie.view;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -22,11 +20,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
-import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
-import be.cegeka.android.dwaaldetectie.model.ApplicationLogic;
-import be.cegeka.android.dwaaldetectie.model.GPSConfig;
+import be.cegeka.android.dwaaldetectie.R;
 
-import com.example.dwaaldetectie.R;
 
 
 public class Settings extends Activity
@@ -53,18 +48,18 @@ public class Settings extends Activity
 		}
 		else
 		{
-			ApplicationLogic applicationLogic = new ApplicationLogic(this);
-			Location location = applicationLogic.locationFromAddress(address.getText().toString());
-			GPSConfig.location = location;
+//			ApplicationLogic applicationLogic = new ApplicationLogic(this);
+//			Location location = applicationLogic.locationFromAddress(address.getText().toString());
+//			GPSConfig.location = location;
 
-			try
-			{
-				AddressLoaderSaver.saveAddress(this, address.getText().toString());
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
+//			try
+//			{
+//				AddressLoaderSaver.saveAddress(this, address.getText().toString());
+//			}
+//			catch (IOException e)
+//			{
+//				e.printStackTrace();
+//			}
 
 			Intent intent = new Intent();
 			setResult(RESULT_OK, intent);

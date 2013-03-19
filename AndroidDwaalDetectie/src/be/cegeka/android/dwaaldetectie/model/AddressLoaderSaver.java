@@ -1,15 +1,10 @@
 package be.cegeka.android.dwaaldetectie.model;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Scanner;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
-import android.util.Log;
+import com.google.android.gms.maps.model.LatLng;
 
 
 public class AddressLoaderSaver
@@ -23,58 +18,14 @@ public class AddressLoaderSaver
 	 *            need to be saved.
 	 * @throws IOException
 	 */
-	public static void saveAddress(Activity activity, String adres) throws IOException
+	public static void saveAddress(Context ctx, LatLng latLng, String address) throws IOException
 	{
-		SharedPreferences settings = activity.getSharedPreferences("file", 0);
+		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("address", adres);
-
-		// Commit the edits!
+		editor.putFloat("latitude", (float) latLng.latitude);
+		editor.putFloat("longitude", (float) latLng.longitude);
+		editor.putString("address", address);
 		editor.commit();
-
-		// boolean mExternalStorageAvailable = false;
-		// boolean mExternalStorageWriteable = false;
-		// String state = Environment.getExternalStorageState();
-		//
-		// if (Environment.MEDIA_MOUNTED.equals(state))
-		// {
-		// // We can read and write the media
-		// mExternalStorageAvailable = mExternalStorageWriteable = true;
-		// }
-		// else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state))
-		// {
-		// // We can only read the media
-		// mExternalStorageAvailable = true;
-		// mExternalStorageWriteable = false;
-		// }
-		// else
-		// {
-		// // Something else is wrong. It may be one of many other states, but
-		// // all we need
-		// // to know is we can neither read nor write
-		// mExternalStorageAvailable = mExternalStorageWriteable = false;
-		// }
-		//
-		// if (mExternalStorageAvailable && mExternalStorageWriteable)
-		// {
-		// // Create a path where we will place our private file on external
-		// File root = Environment.getExternalStorageDirectory();
-		// File dir = new File(root.getAbsolutePath() + "/savefiles");
-		// dir.mkdirs();
-		// File file = new File(dir, "myData.txt");
-		// try
-		// {
-		// PrintWriter writer = new PrintWriter(file);
-		// writer.append(adres + "\n");
-		// writer.flush();
-		// writer.close();
-		// }
-		// catch (IOException e)
-		// {
-		// Log.w("ExternalStorage", "Error writing " + file, e);
-		// }
-		//
-		// }
 	}
 
 
@@ -83,27 +34,31 @@ public class AddressLoaderSaver
 	 * 
 	 * @return An {@link ArrayList} of the cell-phone numbers.
 	 */
-	public static String loadAddress(Context ctx) throws Exception
+	public static LatLng loadAddress(Context ctx) throws Exception
 	{
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
-		String address = settings.getString("address", null);
 		
-		if(address == null) throw new Exception();
+		if(!(settings.contains("latitude") || settings.contains("longitude")))
+		{
+			throw new Exception();
+		}
 		
-		return address;
-
-		// try
-		// {
-		// Scanner scanner = null;
-		// File file = new
-		// File(Environment.getExternalStorageDirectory().getAbsolutePath(),
-		// "/savefiles/myData.txt");
-		// scanner = new Scanner(file);
-		// return scanner.nextLine();
-		// }
-		// catch (Exception e)
-		// {
-		// throw e;
-		// }
+		double latitude = settings.getFloat("latitude", 0);
+		double longitude = settings.getFloat("longitude", 0);
+		
+		return new LatLng(latitude, longitude);
+	}
+	
+	
+	public static String loadAddressDescription(Context ctx) throws Exception
+	{
+		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
+		
+		if(!settings.contains("address"))
+		{
+			throw new Exception();
+		}
+		
+		return settings.getString("address", null);
 	}
 }

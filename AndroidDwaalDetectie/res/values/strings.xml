@@ -12,6 +12,19 @@
     <string name="button_cancel">Annuleer</string>
     <string name="toast_address_saved">Adres opgeslagen</string>
     <string name="toast_invalid_input">Geef een waarde in voor de invulvelden</string>
+    <string name="toast_too_far">U bent te ver verwijderd van uw thuislocatie</string>
     <string name="service_disabled">De service is niet ingeschakeld</string>
-
+    <string name="title_activity_map_view">MapView</string>
+    <string name="view_map">Toon kaart</string>
+    <string name="map_dialog_title">Gebruik adres</string>
+    <string name="map_dialog_message">Wilt u het volgende adres instellen als thuisadres?</string>
+    <string name="map_dialog_button_positive">Ja</string>
+    <string name="map_dialog_button_negative">Nee</string>
+    <string name="map_marker_message_no_address_found">Locatie zonder beschrijving</string>
+    <string name="map_info_click_here">Klik lang op de map om een punt toe te voegen, klik dan op de beschrijving om het adres op te slaan.</string>
+    <string name="map_info_no_internet">Er is momenteel geen internetconnectie. Daarom is het niet mogelijk een nieuw adres in te stellen.</string>
+	<string name="main_button_set_maxDistance">Maximale afstand instellen</string>
+    <string name="main_dialogMaxDistance_title">Maximale afstand instellen</string>
+    <string name="main_dialogMaxDistance_message">Gelieve de maximale afstand in te stellen in meters. Wanneer de afstand groter wordt dan de maximale afstand zal er een alarm weerklinken</string>
+    
 </resources>
