@@ -28,6 +28,7 @@ public class RequestTask extends AsyncTask<String, String, String>{
 	public static String GET_USER = "getUser";
 	public static String GET_ALARMS_FROM_USER = "getAlarmsFromUser";
 
+	public static boolean done = true;
 	public static User user;
 	public static ArrayList<Alarm> alarms = new ArrayList<Alarm>();
 
@@ -39,12 +40,11 @@ public class RequestTask extends AsyncTask<String, String, String>{
 		try {
 			if(METHOD_NAME.equals(GET_USER)){
 				String naam = uri[1];
-				user = soapGetUser(naam);
+				soapGetUser(naam);
 			}
 			if(METHOD_NAME.equals(GET_ALARMS_FROM_USER)){
 				String naam = uri[1];
-				
-				alarms = soapGetAlarmsFromUser(naam);
+				soapGetAlarmsFromUser(naam);
 			}
 
 		} catch (IOException e) {
@@ -62,7 +62,8 @@ public class RequestTask extends AsyncTask<String, String, String>{
 	}
 
 
-	public User soapGetUser(String username) throws IOException, XmlPullParserException {
+	public void soapGetUser(String username) throws IOException, XmlPullParserException {
+		done=false;
 		SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);          
 		request.addProperty("emailadres", username);
 		SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
@@ -82,10 +83,13 @@ public class RequestTask extends AsyncTask<String, String, String>{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return u;
+		
+		user= u;
+		done=true;
 	}
 	
-	public ArrayList<Alarm> soapGetAlarmsFromUser(String username) throws IOException, XmlPullParserException {
+	public void soapGetAlarmsFromUser(String username) throws IOException, XmlPullParserException {
+		done=false;
 		ArrayList<Alarm> alarms = new ArrayList<Alarm>();
 		SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);          
 		request.addProperty("emailadres", username);
@@ -102,18 +106,24 @@ public class RequestTask extends AsyncTask<String, String, String>{
 				int id = Integer.parseInt(o.getProperty("id").toString());
 				Alarm a = new Alarm();
 				a.setId(id);
+				a.setTitle(o.getProperty("title").toString());
 				a.setInfo(info);
+				a.setRepeated(Boolean.parseBoolean(o.getProperty("repeated").toString()));
+				a.setRepeatUnit(o.getProperty("repeatUnit").toString());
+				a.setRepeatQuantity(Integer.parseInt(o.getProperty("repeatQuantity").toString()));
 				a.setDate(Long.parseLong(o.getProperty("date").toString()));
+				a.setRepeatEndDate(Long.parseLong(o.getProperty("repeatEndDate").toString()));
 				alarms.add(a);
 		    }
-//			for(Alarm a : alarms){
-//				System.out.println(a.toString());
-//			}
+			for(Alarm a : alarms){
+				System.out.println(a.toString());
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return alarms;
+		RequestTask.alarms=alarms;
+		done=true;
 	}
 
 
