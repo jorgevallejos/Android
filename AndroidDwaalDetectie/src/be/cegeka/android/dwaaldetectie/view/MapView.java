@@ -1,12 +1,12 @@
 package be.cegeka.android.dwaaldetectie.view;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.DataSetObserver;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
@@ -17,12 +17,13 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 import be.cegeka.android.dwaaldetectie.R;
+import be.cegeka.android.dwaaldetectie.model.AddressConverter;
+import be.cegeka.android.dwaaldetectie.model.DavidsAdapter;
 import be.cegeka.android.dwaaldetectie.model.GPSConfig;
-import be.cegeka.android.dwaaldetectie.model.SuggestionsThread;
+import be.cegeka.android.dwaaldetectie.model.SuggestionsTask;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,14 +38,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapView extends Activity
 {
-	private SuggestionsThread suggestionsThread;
 	private LatLng latLng;
 	private GoogleMap map;
 	private String message;
 	private String message2;
-	public ArrayAdapter<String> adapter;
+	public DavidsAdapter adapter;
 	public AutoCompleteTextView textView;
-	public List<String> arrayList;
+	private SuggestionsTask suggestionsTask;
 
 
 	@Override
@@ -52,8 +52,9 @@ public class MapView extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map_view);
-		arrayList = new ArrayList<String>(5);
-		adapter = new ArrayAdapter<String>(MapView.this, R.layout.list_item, arrayList);
+		adapter = new DavidsAdapter(this, android.R.layout.simple_list_item_1);
+		adapter.setNotifyOnChange(true);
+		suggestionsTask = new SuggestionsTask();
 		setUpMap();
 	}
 
@@ -66,7 +67,6 @@ public class MapView extends Activity
 		}
 		if (map != null)
 		{
-
 			map.setMyLocationEnabled(true);
 			map.setOnMapClickListener(new MyMapClickListener());
 			map.setOnMapLongClickListener(new MyMapLongClickListener());
@@ -77,106 +77,106 @@ public class MapView extends Activity
 
 	private void createDialog()
 	{
-
-		
-
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapView.this);
 		dialogBuilder.setTitle(getString(R.string.map_dialog_search_title));
 
 		textView = new AutoCompleteTextView(MapView.this);
+		textView.setThreshold(3);
 		textView.setInputType(InputType.TYPE_CLASS_TEXT);
 		textView.setAdapter(adapter);
 		textView.addTextChangedListener(new TextWatcher()
 		{
-			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count)
 			{
-				System.out.println(textView.getAdapter().getCount());
+				suggestionsTask = new SuggestionsTask();
+				suggestionsTask.execute(MapView.this);
 			}
-			
-			
+
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after)
 			{
-				// TODO Auto-generated method stub
-				
 			}
-			
-			
+
+
 			@Override
 			public void afterTextChanged(Editable s)
 			{
-				// TODO Auto-generated method stub
-				
 			}
 		});
-		
-		suggestionsThread = new SuggestionsThread(this);
-		adapter.setNotifyOnChange(true);
-		suggestionsThread.start();
-		System.out.println("lalalla");
 
 		dialogBuilder.setView(textView);
+		textView.setPadding(50, 20, 50, 20);
+
 		dialogBuilder.setPositiveButton(getString(R.string.map_dialog_search_button_positive), new DialogInterface.OnClickListener()
 		{
 			@Override
 			public void onClick(DialogInterface dialog, int which)
 			{
-
-				try
+				if (!isOnline())
 				{
-					Geocoder geocoder = new Geocoder(MapView.this);
-					List<Address> addresses = geocoder.getFromLocationName(textView.getText().toString(), 1);
-
-					if (!addresses.isEmpty())
+					AlertDialog.Builder alertDialog = new AlertDialog.Builder(MapView.this);
+					alertDialog.setTitle(getString(R.string.map_info_no_internet_title));
+					alertDialog.setMessage(getString(R.string.map_info_no_internet));
+					alertDialog.setPositiveButton(getString(R.string.map_dialog_not_found_button), new DialogInterface.OnClickListener()
 					{
-						Address address = addresses.get(0);
-						message = address.getAddressLine(0);
-						if (address.getAddressLine(1) != null)
+						@Override
+						public void onClick(DialogInterface dialog, int which)
 						{
-							message += ", " + address.getAddressLine(1);
-							if (address.getAddressLine(2) != null)
-							{
-								message += ", " + address.getAddressLine(2);
-							}
+							dialog.dismiss();
+							createDialog();
 						}
-						message2 = message;
-						latLng = new LatLng(address.getLatitude(), address.getLongitude());
-
-						map.clear();
-
-						MarkerOptions markerOptions = new MarkerOptions();
-						markerOptions.position(latLng);
-						markerOptions.title(message);
-						markerOptions.draggable(false);
-						Marker marker = map.addMarker(markerOptions);
-						marker.showInfoWindow();
-
-						CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-						map.animateCamera(cameraUpdate);
-					}
-
-					else
-					{
-						AlertDialog.Builder alertDialog = new AlertDialog.Builder(MapView.this);
-						alertDialog.setTitle("niet gevonden");
-						alertDialog.setMessage("geen adres gevonden");
-						alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener()
-						{
-							@Override
-							public void onClick(DialogInterface dialog, int which)
-							{
-								dialog.dismiss();
-								createDialog();
-							}
-						});
-						alertDialog.create().show();
-					}
+					});
+					alertDialog.create().show();
 				}
-				catch (IOException e)
+				else
 				{
-					e.printStackTrace();
+					try
+					{
+						Geocoder geocoder = new Geocoder(MapView.this);
+						List<Address> addresses = geocoder.getFromLocationName(textView.getText().toString(), 1);
+
+						if (!addresses.isEmpty())
+						{
+							Address address = addresses.get(0);
+							message = AddressConverter.convertAddress(address);
+							message2 = message;
+							latLng = new LatLng(address.getLatitude(), address.getLongitude());
+
+							map.clear();
+
+							MarkerOptions markerOptions = new MarkerOptions();
+							markerOptions.position(latLng);
+							markerOptions.title(message);
+							markerOptions.draggable(false);
+							Marker marker = map.addMarker(markerOptions);
+							marker.showInfoWindow();
+
+							CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+							map.animateCamera(cameraUpdate);
+						}
+						else
+						{
+							AlertDialog.Builder alertDialog = new AlertDialog.Builder(MapView.this);
+							alertDialog.setTitle(getString(R.string.map_dialog_not_found_title));
+							alertDialog.setMessage(getString(R.string.map_dialog_not_found_message));
+							alertDialog.setPositiveButton(getString(R.string.map_dialog_not_found_button), new DialogInterface.OnClickListener()
+							{
+								@Override
+								public void onClick(DialogInterface dialog, int which)
+								{
+									dialog.dismiss();
+									createDialog();
+								}
+							});
+							alertDialog.create().show();
+						}
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -223,16 +223,7 @@ public class MapView extends Activity
 					if (addresses.size() > 0)
 					{
 						Address address = geocoder.getFromLocation(point.latitude, point.longitude, 1).get(0);
-						message = address.getAddressLine(0);
-						if (address.getAddressLine(1) != null)
-						{
-							message += ", " + address.getAddressLine(1);
-							if (address.getAddressLine(2) != null)
-							{
-								message += ", " + address.getAddressLine(2);
-							}
-
-						}
+						message = AddressConverter.convertAddress(address);
 						message2 = message;
 					}
 					else
@@ -282,19 +273,19 @@ public class MapView extends Activity
 					GPSConfig.address = message2;
 					GPSConfig.setLocation(MapView.this, latLng);
 
-					Toast.makeText(MapView.this, "Adres succesvol ingesteld", Toast.LENGTH_LONG).show();
+					Toast.makeText(MapView.this, getString(R.string.map_address_success), Toast.LENGTH_LONG).show();
 					finish();
 				}
 				catch (IOException e)
 				{
-					Toast.makeText(MapView.this, "Adres kon niet worden opgeslagen", Toast.LENGTH_LONG).show();
+					Toast.makeText(MapView.this, getString(R.string.map_address_fail), Toast.LENGTH_LONG).show();
 					finish();
 					e.printStackTrace();
 				}
 			}
 			else
 			{
-				Toast.makeText(MapView.this, "Geen idee waar", Toast.LENGTH_LONG).show();
+				Toast.makeText(MapView.this, getString(R.string.map_address_fail), Toast.LENGTH_LONG).show();
 				finish();
 			}
 		}

@@ -39,9 +39,7 @@
         <meta-data
         android:name="com.google.android.maps.v2.API_KEY"
         android:value="AIzaSyBZ7WRQCoWqeqrShunuVdR1ygx8miFf2gk" />
-        <service
-            android:name="be.cegeka.android.dwaaldetectie.model.LocationService"
-            android:enabled="true" />
+   
         <service
             android:name="be.cegeka.android.dwaaldetectie.model.GPSService"
             android:enabled="true" />

@@ -23,11 +23,19 @@
     <string name="map_marker_message_no_address_found">Locatie zonder beschrijving</string>
     <string name="map_info_click_here">Klik lang op de map om een punt toe te voegen, klik dan op de beschrijving om het adres op te slaan.</string>
     <string name="map_info_no_internet">Er is momenteel geen internetconnectie. Daarom is het niet mogelijk een nieuw adres in te stellen.</string>
+    <string name="map_info_no_internet_title">Geen internet!</string>
 	<string name="main_button_set_maxDistance">Maximale afstand instellen</string>
     <string name="main_dialogMaxDistance_title">Maximale afstand instellen</string>
-    <string name="main_dialogMaxDistance_message">Gelieve de maximale afstand in te stellen in meters. Wanneer de afstand groter wordt dan de maximale afstand zal er een alarm weerklinken</string>
-    <string name="map_dialog_search_title">Geef een adres is om naar te zoeken</string>
+    <string name="main_dialogMaxDistance_message">Gelieve de maximale afstand in te stellen in meters. Wanneer de afstand te groot wordt dan vergaat de wereld.</string>
+    <string name="map_dialog_search_title">Geef een adres in</string>
     <string name="map_dialog_search_button_positive">Zoeken</string>
     <string name="map_dialog_search_button_negative">Annuleer</string>
+    <string name="map_address_success">Adres succesvol ingesteld</string>
+    <string name="map_address_fail">Adres kon niet ingesteld worden</string>
+    <string name="map_dialog_not_found_title">Geen resultaat</string>
+    <string name="map_dialog_not_found_message">Het ingevoerde adres kon niet gevonden worden</string>
+    <string name="map_dialog_not_found_button">Okay :(</string>
+    <string name="error_unable_to_start">Dwaaldetectie kon door een probleem niet worden gestart</string>
+    <string name="error_unable_to_save">Het adres kon niet opgeslagen worden</string>
     
 </resources>

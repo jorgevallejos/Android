@@ -3,6 +3,7 @@ package be.cegeka.android.dwaaldetectie.model;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -14,6 +15,11 @@ public class GPSConfig
 	private static String distance = "";
 	private static LatLng location;
 	public static long maxDistance;
+	public static boolean interfaceUp = false;
+	
+	public static int RESULT_OK = 0;
+	public static int RESULT_ERROR = 1;
+	public static int RESULT_NO_ADDRESS_SET = 2;
 	
 	
 	public static String getDistance()
@@ -65,5 +71,35 @@ public class GPSConfig
 	public static void setDistanceInfo(String distanceInfo)
 	{
 		distance = distanceInfo;
+	}
+	
+	
+	public static int initialiseApp(Context context)
+	{
+		int result;
+
+		LatLng latLng = AddressLoaderSaver.loadAddress(context);
+		GPSConfig.address = AddressLoaderSaver.loadAddressDescription(context);
+		GPSConfig.maxDistance = AddressLoaderSaver.loadMaxDistance(context);
+		if (latLng == null || GPSConfig.address == null || GPSConfig.maxDistance == -1)
+		{
+			result = RESULT_NO_ADDRESS_SET;
+		}
+		else
+		{
+			try
+			{
+				GPSConfig.setLocation(context, latLng);
+			}
+			catch(Exception e)
+			{
+				result = RESULT_ERROR;
+			}
+			GPSConfig.changeListener = new LocationChangeListener(context);
+			context.startService(new Intent(context, GPSService.class));
+			result = RESULT_OK;
+		}
+		
+		return result;
 	}
 }

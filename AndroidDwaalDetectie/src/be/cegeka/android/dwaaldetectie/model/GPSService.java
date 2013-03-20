@@ -17,6 +17,7 @@ public class GPSService extends Service
 	private LocationManager lm;
 	private static GPSService gpsService;
 	public static boolean running;
+	private boolean lmRunning;
 	private Timer timer = new Timer();
 
 
@@ -33,6 +34,7 @@ public class GPSService extends Service
 		lm.removeUpdates(GPSConfig.changeListener);
 		timer.cancel();
 		running = false;
+		lmRunning = false;
 		super.onDestroy();
 	}
 
@@ -47,6 +49,7 @@ public class GPSService extends Service
 			lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, GPSConfig.changeListener);
 			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, GPSConfig.changeListener);
+			lmRunning = true;
 
 			timer.scheduleAtFixedRate(new TimerTask()
 			{
@@ -55,10 +58,10 @@ public class GPSService extends Service
 				@Override
 				public void run()
 				{
-					if (running)
+					if (lmRunning)
 					{
 						lm.removeUpdates(GPSConfig.changeListener);
-						running = false;
+						lmRunning = false;
 					}
 					else
 					{
@@ -72,7 +75,7 @@ public class GPSService extends Service
 								lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, GPSConfig.changeListener);
 							}
 						});
-						running = true;
+						lmRunning = true;
 					}
 				}
 			}, 10000, 10000);

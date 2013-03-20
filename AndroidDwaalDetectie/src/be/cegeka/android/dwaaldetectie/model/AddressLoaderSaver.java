@@ -18,23 +18,23 @@ public class AddressLoaderSaver
 	 *            need to be saved.
 	 * @throws IOException
 	 */
-	public static void saveAddress(Context ctx, LatLng latLng, String address, long distance) throws IOException
+	public static void saveAddress(Context ctx, LatLng latLng, String address, long maxDistance) throws IOException
 	{
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putFloat("latitude", (float) latLng.latitude);
 		editor.putFloat("longitude", (float) latLng.longitude);
 		editor.putString("address", address);
-		editor.putLong("distance", distance);
+		editor.putLong("distance", maxDistance);
 		editor.commit();
 	}
 	
 	
-	public static void saveDistance(Context ctx, long distance)
+	public static void saveMaxDistance(Context ctx, long maxDistance)
 	{
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
 		SharedPreferences.Editor editor = settings.edit();
-		editor.putLong("distance", distance);
+		editor.putLong("distance", maxDistance);
 		editor.commit();
 	}
 
@@ -44,44 +44,47 @@ public class AddressLoaderSaver
 	 * 
 	 * @return An {@link ArrayList} of the cell-phone numbers.
 	 */
-	public static LatLng loadAddress(Context ctx) throws Exception
+	public static LatLng loadAddress(Context ctx)
 	{
+		LatLng latLng = null;
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
 
-		if (!(settings.contains("latitude") || settings.contains("longitude")))
+		if (settings.contains("latitude") && settings.contains("longitude"))
 		{
-			throw new Exception();
+			double latitude = settings.getFloat("latitude", 0);
+			double longitude = settings.getFloat("longitude", 0);
+
+			latLng = new LatLng(latitude, longitude);
 		}
 
-		double latitude = settings.getFloat("latitude", 0);
-		double longitude = settings.getFloat("longitude", 0);
-
-		return new LatLng(latitude, longitude);
+		return latLng;
 	}
 
 
-	public static String loadAddressDescription(Context ctx) throws Exception
+	public static String loadAddressDescription(Context ctx)
 	{
+		String description = null;
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
 
-		if (!settings.contains("address"))
+		if (settings.contains("address"))
 		{
-			throw new Exception();
+			description = settings.getString("address", null);
 		}
 
-		return settings.getString("address", null);
+		return description;
 	}
 
 
-	public static long loadAddressDistance(Context context) throws Exception
+	public static long loadMaxDistance(Context context)
 	{
+		long maxDistance = -1;
 		SharedPreferences settings = context.getSharedPreferences("file", 0);
 
-		if (!settings.contains("distance"))
+		if (settings.contains("distance"))
 		{
-			throw new Exception();
+			maxDistance = settings.getLong("distance", 0);
 		}
 
-		return settings.getLong("distance", 0);
+		return maxDistance;
 	}
 }

@@ -37,9 +37,12 @@ public class LocationChangeListener extends Service implements LocationListener
 			if (isBetterLocation(location, locationFromLatLng(GPSConfig.getLocation())))
 			{
 				GPSConfig.setDistance(location);
-				MainActivity.updateDistance();
+				if (GPSConfig.interfaceUp)
+				{
+					MainActivity.updateDistance();
+				}
 			}
-			
+
 			if (location.distanceTo(locationFromLatLng(GPSConfig.getLocation())) > GPSConfig.maxDistance)
 			{
 				toast.show();
@@ -82,14 +85,14 @@ public class LocationChangeListener extends Service implements LocationListener
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
+
+
 	private Location locationFromLatLng(LatLng latLng)
 	{
 		Location location = new Location("location");
 		location.setLatitude(latLng.latitude);
 		location.setLongitude(latLng.longitude);
-		
+
 		return location;
 	}
 

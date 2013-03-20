@@ -22,7 +22,6 @@ import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
 import be.cegeka.android.dwaaldetectie.model.GPSConfig;
 import be.cegeka.android.dwaaldetectie.model.GPSService;
 import be.cegeka.android.dwaaldetectie.model.LocationChangeListener;
-import com.google.android.gms.maps.model.LatLng;
 
 
 public class MainActivity extends Activity
@@ -30,7 +29,6 @@ public class MainActivity extends Activity
 
 	private ToggleButton startButton;
 	private static TextView textView;
-	public static boolean interfaceup;
 
 
 	@Override
@@ -48,9 +46,17 @@ public class MainActivity extends Activity
 		{
 			startButton.setChecked(true);
 		}
-		interfaceup = true;
+		GPSConfig.interfaceUp = true;
 		initHandlers();
 		updateDistance();
+	}
+	
+
+	@Override
+	protected void onDestroy()
+	{
+		GPSConfig.interfaceUp = false;
+		super.onDestroy();
 	}
 
 
@@ -58,7 +64,6 @@ public class MainActivity extends Activity
 	{
 		startButton.setOnClickListener(new OnClickListener()
 		{
-
 			@Override
 			public void onClick(View v)
 			{
@@ -69,20 +74,19 @@ public class MainActivity extends Activity
 				}
 				else
 				{
-					try
+					int result = GPSConfig.initialiseApp(MainActivity.this);
+					if(result == GPSConfig.RESULT_NO_ADDRESS_SET)
 					{
-						GPSConfig.address = AddressLoaderSaver.loadAddressDescription(MainActivity.this);
-						GPSConfig.maxDistance = AddressLoaderSaver.loadAddressDistance(MainActivity.this);
-						LatLng latLng = AddressLoaderSaver.loadAddress(MainActivity.this);
-						GPSConfig.setLocation(MainActivity.this, latLng);
-						startService(new Intent(MainActivity.this, GPSService.class));
-						updateDistance();
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
 						startButton.setChecked(false);
 						handleShowMap(null);
+					}
+					else if(result == GPSConfig.RESULT_OK)
+					{
+						updateDistance();
+					}
+					else
+					{
+						Toast.makeText(MainActivity.this, R.string.error_unable_to_start, Toast.LENGTH_LONG).show();
 					}
 				}
 			}
@@ -93,7 +97,6 @@ public class MainActivity extends Activity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
@@ -119,10 +122,11 @@ public class MainActivity extends Activity
 
 		final EditText editText = new EditText(this);
 		editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+		editText.setPadding(50, 20, 50, 20);
 		alertDialogBuilder.setTitle(R.string.main_dialogMaxDistance_title);
 		alertDialogBuilder.setMessage(R.string.main_dialogMaxDistance_message);
 		alertDialogBuilder.setView(editText);
-		alertDialogBuilder.setNegativeButton("Cancel", new AlertDialog.OnClickListener()
+		alertDialogBuilder.setNegativeButton(getString(R.string.button_cancel), new AlertDialog.OnClickListener()
 		{
 			@Override
 			public void onClick(DialogInterface dialog, int which)
@@ -130,7 +134,7 @@ public class MainActivity extends Activity
 				dialog.dismiss();
 			}
 		});
-		alertDialogBuilder.setPositiveButton("Ok", new AlertDialog.OnClickListener()
+		alertDialogBuilder.setPositiveButton(getString(R.string.button_save), new AlertDialog.OnClickListener()
 		{
 			@Override
 			public void onClick(DialogInterface dialog, int which)
@@ -140,7 +144,7 @@ public class MainActivity extends Activity
 				{
 					long distance = Long.parseLong(text);
 					GPSConfig.maxDistance = distance;
-					AddressLoaderSaver.saveDistance(MainActivity.this, distance);
+					AddressLoaderSaver.saveMaxDistance(MainActivity.this, distance);
 				}
 				catch (NumberFormatException e)
 				{
