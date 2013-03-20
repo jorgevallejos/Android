@@ -26,5 +26,8 @@
 	<string name="main_button_set_maxDistance">Maximale afstand instellen</string>
     <string name="main_dialogMaxDistance_title">Maximale afstand instellen</string>
     <string name="main_dialogMaxDistance_message">Gelieve de maximale afstand in te stellen in meters. Wanneer de afstand groter wordt dan de maximale afstand zal er een alarm weerklinken</string>
+    <string name="map_dialog_search_title">Geef een adres is om naar te zoeken</string>
+    <string name="map_dialog_search_button_positive">Zoeken</string>
+    <string name="map_dialog_search_button_negative">Annuleer</string>
     
 </resources>

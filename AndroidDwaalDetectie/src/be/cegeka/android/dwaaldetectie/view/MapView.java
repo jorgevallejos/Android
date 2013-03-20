@@ -1,6 +1,7 @@
 package be.cegeka.android.dwaaldetectie.view;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,12 +12,22 @@ import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 import be.cegeka.android.dwaaldetectie.R;
 import be.cegeka.android.dwaaldetectie.model.GPSConfig;
+import be.cegeka.android.dwaaldetectie.model.SuggestionsThread;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -26,10 +37,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapView extends Activity
 {
+	private SuggestionsThread suggestionsThread;
 	private LatLng latLng;
 	private GoogleMap map;
 	private String message;
 	private String message2;
+	public ArrayAdapter<String> adapter;
+	public AutoCompleteTextView textView;
+	public List<String> arrayList;
 
 
 	@Override
@@ -37,7 +52,8 @@ public class MapView extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map_view);
-
+		arrayList = new ArrayList<String>(5);
+		adapter = new ArrayAdapter<String>(MapView.this, R.layout.list_item, arrayList);
 		setUpMap();
 	}
 
@@ -52,8 +68,137 @@ public class MapView extends Activity
 		{
 
 			map.setMyLocationEnabled(true);
+			map.setOnMapClickListener(new MyMapClickListener());
 			map.setOnMapLongClickListener(new MyMapLongClickListener());
 			map.setOnInfoWindowClickListener(new MyInfoWindowClickListener());
+		}
+	}
+
+
+	private void createDialog()
+	{
+
+		
+
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapView.this);
+		dialogBuilder.setTitle(getString(R.string.map_dialog_search_title));
+
+		textView = new AutoCompleteTextView(MapView.this);
+		textView.setInputType(InputType.TYPE_CLASS_TEXT);
+		textView.setAdapter(adapter);
+		textView.addTextChangedListener(new TextWatcher()
+		{
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count)
+			{
+				System.out.println(textView.getAdapter().getCount());
+			}
+			
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			
+			@Override
+			public void afterTextChanged(Editable s)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		suggestionsThread = new SuggestionsThread(this);
+		adapter.setNotifyOnChange(true);
+		suggestionsThread.start();
+		System.out.println("lalalla");
+
+		dialogBuilder.setView(textView);
+		dialogBuilder.setPositiveButton(getString(R.string.map_dialog_search_button_positive), new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+
+				try
+				{
+					Geocoder geocoder = new Geocoder(MapView.this);
+					List<Address> addresses = geocoder.getFromLocationName(textView.getText().toString(), 1);
+
+					if (!addresses.isEmpty())
+					{
+						Address address = addresses.get(0);
+						message = address.getAddressLine(0);
+						if (address.getAddressLine(1) != null)
+						{
+							message += ", " + address.getAddressLine(1);
+							if (address.getAddressLine(2) != null)
+							{
+								message += ", " + address.getAddressLine(2);
+							}
+						}
+						message2 = message;
+						latLng = new LatLng(address.getLatitude(), address.getLongitude());
+
+						map.clear();
+
+						MarkerOptions markerOptions = new MarkerOptions();
+						markerOptions.position(latLng);
+						markerOptions.title(message);
+						markerOptions.draggable(false);
+						Marker marker = map.addMarker(markerOptions);
+						marker.showInfoWindow();
+
+						CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+						map.animateCamera(cameraUpdate);
+					}
+
+					else
+					{
+						AlertDialog.Builder alertDialog = new AlertDialog.Builder(MapView.this);
+						alertDialog.setTitle("niet gevonden");
+						alertDialog.setMessage("geen adres gevonden");
+						alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener()
+						{
+							@Override
+							public void onClick(DialogInterface dialog, int which)
+							{
+								dialog.dismiss();
+								createDialog();
+							}
+						});
+						alertDialog.create().show();
+					}
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
+		dialogBuilder.setNegativeButton(getString(R.string.map_dialog_search_button_negative), new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				dialog.dismiss();
+			}
+		});
+		AlertDialog alertDialog = dialogBuilder.create();
+		alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		alertDialog.show();
+	}
+
+	public class MyMapClickListener implements OnMapClickListener
+	{
+		@Override
+		public void onMapClick(LatLng arg0)
+		{
+			createDialog();
 		}
 	}
 
@@ -173,7 +318,7 @@ public class MapView extends Activity
 		return true;
 	}
 
-	
+
 	public boolean isOnline()
 	{
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

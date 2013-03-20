@@ -13,7 +13,7 @@ public class GPSConfig
 	public static LocationChangeListener changeListener;
 	private static String distance = "";
 	private static LatLng location;
-	public static int maxDistance;
+	public static long maxDistance;
 	
 	
 	public static String getDistance()
@@ -31,7 +31,7 @@ public class GPSConfig
 	public static void setLocation(Context ctx, LatLng latLng) throws IOException
 	{
 		location = latLng;
-	    AddressLoaderSaver.saveAddress(ctx, latLng, address);
+	    AddressLoaderSaver.saveAddress(ctx, latLng, address, maxDistance);
 	}
 	
 	

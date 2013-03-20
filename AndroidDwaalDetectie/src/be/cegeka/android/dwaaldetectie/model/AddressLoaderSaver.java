@@ -18,13 +18,23 @@ public class AddressLoaderSaver
 	 *            need to be saved.
 	 * @throws IOException
 	 */
-	public static void saveAddress(Context ctx, LatLng latLng, String address) throws IOException
+	public static void saveAddress(Context ctx, LatLng latLng, String address, long distance) throws IOException
 	{
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putFloat("latitude", (float) latLng.latitude);
 		editor.putFloat("longitude", (float) latLng.longitude);
 		editor.putString("address", address);
+		editor.putLong("distance", distance);
+		editor.commit();
+	}
+	
+	
+	public static void saveDistance(Context ctx, long distance)
+	{
+		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putLong("distance", distance);
 		editor.commit();
 	}
 
@@ -37,28 +47,41 @@ public class AddressLoaderSaver
 	public static LatLng loadAddress(Context ctx) throws Exception
 	{
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
-		
-		if(!(settings.contains("latitude") || settings.contains("longitude")))
+
+		if (!(settings.contains("latitude") || settings.contains("longitude")))
 		{
 			throw new Exception();
 		}
-		
+
 		double latitude = settings.getFloat("latitude", 0);
 		double longitude = settings.getFloat("longitude", 0);
-		
+
 		return new LatLng(latitude, longitude);
 	}
-	
-	
+
+
 	public static String loadAddressDescription(Context ctx) throws Exception
 	{
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
-		
-		if(!settings.contains("address"))
+
+		if (!settings.contains("address"))
 		{
 			throw new Exception();
 		}
-		
+
 		return settings.getString("address", null);
+	}
+
+
+	public static long loadAddressDistance(Context context) throws Exception
+	{
+		SharedPreferences settings = context.getSharedPreferences("file", 0);
+
+		if (!settings.contains("distance"))
+		{
+			throw new Exception();
+		}
+
+		return settings.getLong("distance", 0);
 	}
 }

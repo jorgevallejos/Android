@@ -71,9 +71,9 @@ public class MainActivity extends Activity
 				{
 					try
 					{
-						String address = AddressLoaderSaver.loadAddressDescription(MainActivity.this);
+						GPSConfig.address = AddressLoaderSaver.loadAddressDescription(MainActivity.this);
+						GPSConfig.maxDistance = AddressLoaderSaver.loadAddressDistance(MainActivity.this);
 						LatLng latLng = AddressLoaderSaver.loadAddress(MainActivity.this);
-						GPSConfig.address = address;
 						GPSConfig.setLocation(MainActivity.this, latLng);
 						startService(new Intent(MainActivity.this, GPSService.class));
 						updateDistance();
@@ -101,7 +101,7 @@ public class MainActivity extends Activity
 
 	public void handleShowMap(View view)
 	{
-		if(!isOnline())
+		if (!isOnline())
 		{
 			Toast.makeText(this, R.string.map_info_no_internet, Toast.LENGTH_SHORT).show();
 		}
@@ -111,12 +111,12 @@ public class MainActivity extends Activity
 			startActivity(intent);
 		}
 	}
-	
-	
+
+
 	public void handleMaxDistance(View view)
 	{
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-		
+
 		final EditText editText = new EditText(this);
 		editText.setInputType(InputType.TYPE_CLASS_NUMBER);
 		alertDialogBuilder.setTitle(R.string.main_dialogMaxDistance_title);
@@ -127,7 +127,7 @@ public class MainActivity extends Activity
 			@Override
 			public void onClick(DialogInterface dialog, int which)
 			{
-				finish();
+				dialog.dismiss();
 			}
 		});
 		alertDialogBuilder.setPositiveButton("Ok", new AlertDialog.OnClickListener()
@@ -136,8 +136,16 @@ public class MainActivity extends Activity
 			public void onClick(DialogInterface dialog, int which)
 			{
 				String text = editText.getText().toString();
-				int distance = Integer.parseInt(text);
-				GPSConfig.maxDistance = distance;
+				try
+				{
+					long distance = Long.parseLong(text);
+					GPSConfig.maxDistance = distance;
+					AddressLoaderSaver.saveDistance(MainActivity.this, distance);
+				}
+				catch (NumberFormatException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		});
 		AlertDialog alertDialog = alertDialogBuilder.create();

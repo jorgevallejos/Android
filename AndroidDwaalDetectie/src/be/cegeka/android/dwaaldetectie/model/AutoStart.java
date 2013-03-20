@@ -16,6 +16,8 @@ public class AutoStart extends BroadcastReceiver
 	{
 		try
 		{
+			GPSConfig.address = AddressLoaderSaver.loadAddressDescription(ctx);
+			GPSConfig.maxDistance = AddressLoaderSaver.loadAddressDistance(ctx);
 			LatLng latLng = AddressLoaderSaver.loadAddress(ctx);
 			
 			GPSConfig.setLocation(ctx, latLng);

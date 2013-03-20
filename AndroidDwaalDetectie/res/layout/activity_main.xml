@@ -21,8 +21,9 @@
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button2"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="26dp"
         android:onClick="handleMaxDistance"
         android:text="@string/main_button_set_maxDistance" />
 
@@ -30,7 +31,7 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/startButton"
+        android:layout_above="@+id/button1"
         android:layout_centerHorizontal="true"
         android:onClick="handleShowMap"
         android:text="@string/button_settings" />
@@ -39,9 +40,8 @@
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
+        android:layout_above="@+id/button2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="126dp"
         android:textOff="Start"
         android:textOn="Stop" />
 
