@@ -1,6 +1,6 @@
 package be.cegeka.android.dwaaldetectie.model;
 
-import static be.cegeka.android.dwaaldetectie.model.GPSConfig.getGPSConfig;
+import static be.cegeka.android.dwaaldetectie.model.TrackingConfiguration.trackingConfig;
 import java.util.Timer;
 import java.util.TimerTask;
 import android.app.Service;
@@ -12,7 +12,7 @@ import android.os.IBinder;
 import android.os.Looper;
 
 
-public class GPSService extends Service
+public class TrackingService extends Service
 {
 	private LocationManager lm;
 	private Timer timer;
@@ -20,7 +20,7 @@ public class GPSService extends Service
 	private static boolean lmRunning;
 
 
-	public GPSService()
+	public TrackingService()
 	{
 		timer = new Timer();
 		running = false;
@@ -44,8 +44,8 @@ public class GPSService extends Service
 			running = true;
 			lmRunning = true;
 
-			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, getGPSConfig().getChangeListener());
-			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, getGPSConfig().getChangeListener());
+			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, trackingConfig().getChangeListener());
+			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, trackingConfig().getChangeListener());
 
 			timer.scheduleAtFixedRate(new TimerTask()
 			{
@@ -57,7 +57,7 @@ public class GPSService extends Service
 				{
 					if (lmRunning)
 					{
-						lm.removeUpdates(getGPSConfig().getChangeListener());
+						lm.removeUpdates(trackingConfig().getChangeListener());
 						
 						lmRunning = false;
 					}
@@ -69,8 +69,8 @@ public class GPSService extends Service
 							@Override
 							public void run()
 							{
-								lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, getGPSConfig().getChangeListener());
-								lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, getGPSConfig().getChangeListener());
+								lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, trackingConfig().getChangeListener());
+								lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, trackingConfig().getChangeListener());
 							}
 						});
 						
@@ -86,8 +86,8 @@ public class GPSService extends Service
 
 	public void onDestroy()
 	{
-		GPSConfig.getGPSConfig().setDistanceInfo("");
-		lm.removeUpdates(getGPSConfig().getChangeListener());
+		TrackingConfiguration.trackingConfig().setDistanceInfo("");
+		lm.removeUpdates(trackingConfig().getChangeListener());
 		timer.cancel();
 		
 		running = false;

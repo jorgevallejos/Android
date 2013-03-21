@@ -1,6 +1,6 @@
 package be.cegeka.android.dwaaldetectie.view;
 
-import static be.cegeka.android.dwaaldetectie.model.GPSConfig.getGPSConfig;
+import static be.cegeka.android.dwaaldetectie.model.TrackingConfiguration.trackingConfig;
 import java.io.IOException;
 import java.util.List;
 import android.app.Activity;
@@ -33,6 +33,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
+/**
+ * Activity which holds the map on which the user can set a home address.
+ */
 public class MapView extends Activity
 {
 	private NetworkCheck networkCheck;
@@ -55,6 +58,9 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * Initialises instance variables.
+	 */
 	private void initFields()
 	{
 		networkCheck = new NetworkCheck(this);
@@ -64,6 +70,10 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * Gets the reference to the GoogleMap object and adds ActionListeners to
+	 * it.
+	 */
 	private void initMap()
 	{
 		if (map == null)
@@ -85,16 +95,23 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * @return AddressSuggestionListAdapter
+	 */
 	public AddressSuggestionListAdapter getAdapter()
 	{
 		return adapter;
 	}
 
 
+	/**
+	 * Creates and displays a dialog in which the user can search for an
+	 * address. The user gets suggestions based on GoogleMaps suggestions.
+	 */
 	private void createAddressSearchDialog()
 	{
 		textView = new AutoCompleteTextView(MapView.this);
-		textView.setThreshold(3);
+		textView.setThreshold(2);
 		textView.setInputType(InputType.TYPE_CLASS_TEXT);
 		textView.setAdapter(adapter);
 		textView.setPadding(50, 20, 50, 20);
@@ -112,6 +129,16 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * Creates and displays a generic error dialog.
+	 * 
+	 * @param title
+	 *            Title of the error dialog.
+	 * @param message
+	 *            Message of the error dialog.
+	 * @param buttonText
+	 *            Text of the button of the dialog.
+	 */
 	private void createErrorDialog(String title, String message, String buttonText)
 	{
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(MapView.this);
@@ -122,6 +149,11 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * Searches for the address typed by the user. If found, the location is
+	 * displayed on the map and the camera zooms in on it. If not found, an
+	 * error dialog is displayed.
+	 */
 	private void searchForAddress()
 	{
 		try
@@ -154,6 +186,13 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * Looks up the address that corresponds to a location on the map. If not
+	 * found, the latidue and longitude of the location will be used.
+	 * 
+	 * @param point
+	 *            Location on the map.
+	 */
 	private void searchAddressForPoint(LatLng point)
 	{
 		latLng = point;
@@ -184,6 +223,14 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * Places a marker on the map at a certain point and with an InfoWindow.
+	 * 
+	 * @param point
+	 *            Location where the marker will be placed.
+	 * @param message
+	 *            Text which will be shown in the InfoWindow.
+	 */
 	private void showLatLngOnMap(LatLng point, String message)
 	{
 		MarkerOptions markerOptions = new MarkerOptions();
@@ -195,6 +242,10 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * OnMapClickListener for the map. Displays an address search dialog when
+	 * the user taps the map.
+	 */
 	private class MyMapClickListener implements OnMapClickListener
 	{
 		@Override
@@ -205,6 +256,10 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * OnMapLongClickListener for the map. Places a marker on the map where the
+	 * user holds down on the map for a while.
+	 */
 	private class MyMapLongClickListener implements OnMapLongClickListener
 	{
 		@Override
@@ -222,6 +277,10 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * TextWatcher for the address search TextInput. Starts a new AsyncTask when
+	 * the text is changed so new suggestions are displayed for the user.
+	 */
 	private class AddressTextWatcher extends TextWatcherAdapter
 	{
 		@Override
@@ -232,6 +291,9 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * OnClickListener for the search button in the address search dialog.
+	 */
 	private class SearchForAddressClickListener implements DialogInterface.OnClickListener
 	{
 		@Override
@@ -249,6 +311,10 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * OnClickListener for the InfoWindow of a marker. Opens a dialog prompting
+	 * if the user wants to use the selected address as home address.
+	 */
 	private class MyInfoWindowClickListener implements OnInfoWindowClickListener
 	{
 		@Override
@@ -265,6 +331,9 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * OnClickListener that sets and saves a new home address.
+	 */
 	private class NewAddressClickListener implements DialogInterface.OnClickListener
 	{
 		@Override
@@ -274,8 +343,8 @@ public class MapView extends Activity
 			{
 				try
 				{
-					getGPSConfig().setAddress(addressDescription);
-					getGPSConfig().setLocation(MapView.this, latLng);
+					trackingConfig().setAddress(addressDescription);
+					trackingConfig().setLocation(MapView.this, latLng);
 
 					Toast.makeText(MapView.this, getString(R.string.map_address_success), Toast.LENGTH_LONG).show();
 					finish();
@@ -296,6 +365,9 @@ public class MapView extends Activity
 	}
 
 
+	/**
+	 * OnClickListener to close cancel a dialog.
+	 */
 	private class DialogNegativeClickListener implements DialogInterface.OnClickListener
 	{
 		@Override

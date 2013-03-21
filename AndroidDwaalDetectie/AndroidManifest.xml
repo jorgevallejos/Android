@@ -41,7 +41,7 @@
         android:value="AIzaSyBZ7WRQCoWqeqrShunuVdR1ygx8miFf2gk" />
    
         <service
-            android:name="be.cegeka.android.dwaaldetectie.model.GPSService"
+            android:name="be.cegeka.android.dwaaldetectie.model.TrackingService"
             android:enabled="true" />
 
         <receiver android:name="be.cegeka.android.dwaaldetectie.model.AutoStart" >

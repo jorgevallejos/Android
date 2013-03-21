@@ -1,6 +1,6 @@
 package be.cegeka.android.dwaaldetectie.view.listeners;
 
-import static be.cegeka.android.dwaaldetectie.model.GPSConfig.getGPSConfig;
+import static be.cegeka.android.dwaaldetectie.model.TrackingConfiguration.trackingConfig;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
@@ -9,12 +9,25 @@ import be.cegeka.android.dwaaldetectie.R;
 import com.google.android.gms.maps.model.LatLng;
 
 
+/**
+ * The onLocationChanged method is called when the Location has changed and the
+ * listener is registered to receive LocationUpdates from the LocationManager.
+ * It will calculate the current distance from the home location and update the
+ * TrackingConfiguration variables.
+ */
 public class LocationChangeListener extends LocationChangeAdapter
 {
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 	private Toast toast;
 
 
+	/**
+	 * Constructor initialises Toast which is shown when the distance becomes
+	 * too big.
+	 * 
+	 * @param context
+	 *            The Context of the Application.
+	 */
 	@SuppressLint("ShowToast")
 	public LocationChangeListener(Context context)
 	{
@@ -25,14 +38,14 @@ public class LocationChangeListener extends LocationChangeAdapter
 	@Override
 	public void onLocationChanged(Location location)
 	{
-		if (getGPSConfig().getLocation() != null)
+		if (trackingConfig().getLocation() != null)
 		{
-			if (isBetterLocation(location, locationFromLatLng(getGPSConfig().getLocation())))
+			if (isBetterLocation(location, locationFromLatLng(trackingConfig().getLocation())))
 			{
-				getGPSConfig().setDistance(location);
+				trackingConfig().setDistance(location);
 			}
 
-			if (location.distanceTo(locationFromLatLng(getGPSConfig().getLocation())) > getGPSConfig().getMaxDistance())
+			if (location.distanceTo(locationFromLatLng(trackingConfig().getLocation())) > trackingConfig().getMaxDistance())
 			{
 				toast.show();
 			}
@@ -43,7 +56,15 @@ public class LocationChangeListener extends LocationChangeAdapter
 		}
 	}
 
-	
+
+	/**
+	 * Converts a LatLng object into a Location object. The distance between two
+	 * point can only be calculated on the Location object, therefore the LatLng
+	 * object needs to be converted sometimes.
+	 * 
+	 * @param latLng LatLng object that needs to be converted.
+	 * @return Location.
+	 */
 	private Location locationFromLatLng(LatLng latLng)
 	{
 		Location location = new Location("location");

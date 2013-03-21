@@ -10,7 +10,7 @@ import be.cegeka.android.dwaaldetectie.view.listeners.LocationChangeListener;
 import com.google.android.gms.maps.model.LatLng;
 
 
-public class GPSConfig extends Observable
+public class TrackingConfiguration extends Observable
 {
 	/**
 	 * Result variables for starting the service
@@ -22,7 +22,7 @@ public class GPSConfig extends Observable
 	/**
 	 * Instance of GPSConfig (SINGLETON)
 	 */
-	private static final GPSConfig INSTANCE = new GPSConfig();
+	private static final TrackingConfiguration INSTANCE = new TrackingConfiguration();
 
 	private LocationChangeListener changeListener;
 	private LatLng location;
@@ -31,7 +31,7 @@ public class GPSConfig extends Observable
 	private long maxDistance;
 
 
-	private GPSConfig()
+	private TrackingConfiguration()
 	{
 		/**
 		 * Construcotor needs to be private (SINGLETON).
@@ -39,7 +39,7 @@ public class GPSConfig extends Observable
 	}
 
 
-	public static GPSConfig getGPSConfig()
+	public static TrackingConfiguration trackingConfig()
 	{
 		return INSTANCE;
 	}
@@ -155,7 +155,7 @@ public class GPSConfig extends Observable
 				changeListener = new LocationChangeListener(context);
 			}
 
-			context.startService(new Intent(context, GPSService.class));
+			context.startService(new Intent(context, TrackingService.class));
 			result = RESULT_OK;
 		}
 
