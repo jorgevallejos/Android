@@ -1,5 +1,6 @@
 package be.cegeka.android.dwaaldetectie.model;
 
+import static be.cegeka.android.dwaaldetectie.model.GPSConfig.getGPSConfig;
 import java.util.Timer;
 import java.util.TimerTask;
 import android.app.Service;
@@ -13,54 +14,51 @@ import android.os.Looper;
 
 public class GPSService extends Service
 {
-
 	private LocationManager lm;
-	private static GPSService gpsService;
-	public static boolean running;
-	private boolean lmRunning;
-	private Timer timer = new Timer();
+	private Timer timer;
+	private static boolean running;
+	private static boolean lmRunning;
 
 
-	@Override
-	public IBinder onBind(Intent intent)
+	public GPSService()
 	{
-		return null;
+		timer = new Timer();
+		running = false;
+		lmRunning = true;
 	}
 
 
-	public void onDestroy()
+	public static boolean isRunning()
 	{
-		GPSConfig.setDistanceInfo("");
-		lm.removeUpdates(GPSConfig.changeListener);
-		timer.cancel();
-		running = false;
-		lmRunning = false;
-		super.onDestroy();
+		return running;
 	}
 
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
+		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		
 		if (!running)
 		{
 			running = true;
-			gpsService = this;
-			lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, GPSConfig.changeListener);
-			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, GPSConfig.changeListener);
 			lmRunning = true;
+
+			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, getGPSConfig().getChangeListener());
+			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, getGPSConfig().getChangeListener());
 
 			timer.scheduleAtFixedRate(new TimerTask()
 			{
 				Handler handler;
-				
+
+
 				@Override
 				public void run()
 				{
 					if (lmRunning)
 					{
-						lm.removeUpdates(GPSConfig.changeListener);
+						lm.removeUpdates(getGPSConfig().getChangeListener());
+						
 						lmRunning = false;
 					}
 					else
@@ -71,22 +69,37 @@ public class GPSService extends Service
 							@Override
 							public void run()
 							{
-								lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, GPSConfig.changeListener);
-								lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, GPSConfig.changeListener);
+								lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, getGPSConfig().getChangeListener());
+								lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, getGPSConfig().getChangeListener());
 							}
 						});
+						
 						lmRunning = true;
 					}
 				}
 			}, 10000, 10000);
 		}
+		
 		return START_STICKY;
 	}
 
 
-	public static GPSService getInstance()
+	public void onDestroy()
 	{
-		return gpsService;
+		GPSConfig.getGPSConfig().setDistanceInfo("");
+		lm.removeUpdates(getGPSConfig().getChangeListener());
+		timer.cancel();
+		
+		running = false;
+		lmRunning = false;
+		
+		super.onDestroy();
 	}
 
+
+	@Override
+	public IBinder onBind(Intent intent)
+	{
+		return null;
+	}
 }

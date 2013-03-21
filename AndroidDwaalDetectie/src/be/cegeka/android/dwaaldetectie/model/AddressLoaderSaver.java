@@ -1,7 +1,6 @@
 package be.cegeka.android.dwaaldetectie.model;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import android.content.Context;
 import android.content.SharedPreferences;
 import com.google.android.gms.maps.model.LatLng;
@@ -9,15 +8,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class AddressLoaderSaver
 {
-
-	/**
-	 * Save the numbers. The numbers file will be completely overwritten.
-	 * 
-	 * @param selectedNumbers
-	 *            An {@link ArrayList} of Strings representing the numbers that
-	 *            need to be saved.
-	 * @throws IOException
-	 */
 	public static void saveAddress(Context ctx, LatLng latLng, String address, long maxDistance) throws IOException
 	{
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
@@ -39,11 +29,6 @@ public class AddressLoaderSaver
 	}
 
 
-	/**
-	 * Load all the numbers saved by this app.
-	 * 
-	 * @return An {@link ArrayList} of the cell-phone numbers.
-	 */
 	public static LatLng loadAddress(Context ctx)
 	{
 		LatLng latLng = null;

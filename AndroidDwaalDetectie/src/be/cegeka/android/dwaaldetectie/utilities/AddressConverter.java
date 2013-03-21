@@ -1,4 +1,4 @@
-package be.cegeka.android.dwaaldetectie.model;
+package be.cegeka.android.dwaaldetectie.utilities;
 
 import android.location.Address;
 

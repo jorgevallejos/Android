@@ -6,6 +6,8 @@ import java.util.List;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
+import be.cegeka.android.dwaaldetectie.utilities.AddressConverter;
+import be.cegeka.android.dwaaldetectie.utilities.NetworkCheck;
 import be.cegeka.android.dwaaldetectie.view.MapView;
 
 
@@ -13,12 +15,19 @@ public class SuggestionsTask extends AsyncTask<MapView, Void, MapView>
 {
 	Geocoder geocoder;
 	List<String> addresses;
+	private String locationName;
+
+
+	public SuggestionsTask(String locationName)
+	{
+		super();
+		this.locationName = locationName;
+	}
 
 
 	@Override
 	protected void onPreExecute()
 	{
-
 		super.onPreExecute();
 	}
 
@@ -28,24 +37,27 @@ public class SuggestionsTask extends AsyncTask<MapView, Void, MapView>
 	{
 		MapView mapView = params[0];
 
-		geocoder = new Geocoder(mapView);
-		addresses = new ArrayList<String>();
-		List<Address> addressesResult = null;
+		if (new NetworkCheck(mapView).isOnline())
+		{
+			geocoder = new Geocoder(mapView);
+			addresses = new ArrayList<String>();
+			List<Address> addressesResult = null;
 
-		try
-		{
-			addressesResult = geocoder.getFromLocationName(mapView.textView.getText().toString() + ", belgium", 20);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-
-		if (addressesResult != null && !addressesResult.isEmpty())
-		{
-			for (Address address : addressesResult)
+			try
 			{
-				addresses.add(AddressConverter.convertAddress(address));
+				addressesResult = geocoder.getFromLocationName(locationName + ", belgium", 20);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+
+			if (addressesResult != null && !addressesResult.isEmpty())
+			{
+				for (Address address : addressesResult)
+				{
+					addresses.add(AddressConverter.convertAddress(address));
+				}
 			}
 		}
 
@@ -58,17 +70,17 @@ public class SuggestionsTask extends AsyncTask<MapView, Void, MapView>
 	{
 		super.onPostExecute(result);
 
-		result.adapter.clear();
+		result.getAdapter().clear();
 
 		if (addresses != null)
 		{
 			for (String adres : addresses)
 			{
-				result.adapter.add(adres);
+				result.getAdapter().add(adres);
 			}
 		}
 
-		result.adapter.notifyDataSetChanged();
+		result.getAdapter().notifyDataSetChanged();
 	}
 
 }

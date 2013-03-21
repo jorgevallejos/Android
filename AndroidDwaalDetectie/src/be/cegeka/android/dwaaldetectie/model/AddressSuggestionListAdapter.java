@@ -5,15 +5,18 @@ import java.util.Collection;
 import android.content.Context;
 import android.widget.ArrayAdapter;
 
-public class DavidsAdapter extends ArrayAdapter<String>
+
+public class AddressSuggestionListAdapter extends ArrayAdapter<String>
 {
 	private ArrayList<String> adapter;
 
-	public DavidsAdapter(Context context, int textViewResourceId)
+
+	public AddressSuggestionListAdapter(Context context, int textViewResourceId)
 	{
 		super(context, textViewResourceId);
 		adapter = new ArrayList<String>();
 	}
+
 
 	@Override
 	public void add(String object)
@@ -21,11 +24,13 @@ public class DavidsAdapter extends ArrayAdapter<String>
 		adapter.add(object);
 	}
 
+
 	@Override
 	public void addAll(Collection<? extends String> collection)
 	{
 		adapter.addAll(collection);
 	}
+
 
 	@Override
 	public int getCount()
@@ -33,18 +38,17 @@ public class DavidsAdapter extends ArrayAdapter<String>
 		return adapter.size();
 	}
 
+
 	@Override
 	public String getItem(int position)
 	{
 		return adapter.get(position);
 	}
 
+
 	@Override
 	public void clear()
 	{
 		adapter.clear();
 	}
-
-	
-	
 }
