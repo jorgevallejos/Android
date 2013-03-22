@@ -21,6 +21,7 @@ public interface DatabaseInterface {
     public List<Alarm> getAlarmsFromUser(User user) throws DatabaseException;
     public User getUser(String email) throws DatabaseException;
     public boolean checkIfEmailExists(String email) throws DatabaseException;
+    public void clearAlarmsFromUser(User user) throws DatabaseException;
     
     // Alarm CRUD methods
     public Alarm createAlarm(Alarm alarm) throws DatabaseException;
