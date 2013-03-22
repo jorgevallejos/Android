@@ -1,5 +1,6 @@
 package com.cegeka.alarmmanager.exceptions;
 
+@SuppressWarnings("serial")
 public class WebserviceException extends Exception{
 	public WebserviceException(){
 		super();

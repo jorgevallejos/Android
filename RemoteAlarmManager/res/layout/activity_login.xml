@@ -21,7 +21,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/linearLayout1"
-        android:layout_below="@+id/emailtextBox"
         android:orientation="vertical" >
     </LinearLayout>
 
@@ -32,7 +31,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="19dp"
         android:onClick="login"
-        android:text="Login" />
+        android:text="@string/buttonLogIn" />
 
     <TextView
         android:id="@+id/textView2"
@@ -40,16 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:text="Paswoord:" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/emailtextBox"
-        android:layout_alignBottom="@+id/emailtextBox"
-        android:layout_alignLeft="@+id/linearLayout2"
-        android:text="Email:" />
+        android:text="@string/paswoordTextViewString" />
 
     <EditText
         android:id="@+id/paswoordTextBox"
@@ -64,9 +54,18 @@
         android:id="@+id/emailtextBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView1"
+        android:layout_alignLeft="@+id/paswoordTextBox"
+        android:ems="10"
+        android:inputType="textEmailAddress" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/paswoordTextBox"
-        android:layout_alignRight="@+id/paswoordTextBox"
-        android:layout_marginBottom="19dp"
-        android:ems="10" />
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_marginBottom="20dp"
+        android:text="@string/emailTextViewString" />
 
 </RelativeLayout>

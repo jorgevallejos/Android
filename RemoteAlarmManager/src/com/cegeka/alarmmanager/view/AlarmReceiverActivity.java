@@ -2,24 +2,19 @@ package com.cegeka.alarmmanager.view;
 
 import java.io.IOException;
 import java.util.Calendar;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
-import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.cegeka.alarmmanager.db.Alarm;
 import com.cegeka.alarmmanager.db.AlarmsDataSource;
 import com.cegeka.alarmmanager.db.RepeatedAlarm;
@@ -30,8 +25,6 @@ public class AlarmReceiverActivity extends Activity {
 
 	private MediaPlayer mMediaPlayer;
 	private Alarm alarm;
-	private SoundPool soundPool;
-	private int soundID;
 	boolean loaded = false;
 	Dialog mDialog; 
 	@Override

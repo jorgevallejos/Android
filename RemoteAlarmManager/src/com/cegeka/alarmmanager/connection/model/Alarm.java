@@ -1,11 +1,5 @@
 package com.cegeka.alarmmanager.connection.model;
 
-import java.util.Calendar;
-
-/**
- *
- * @author davidm
- */
 public class Alarm {
 
     private long date;

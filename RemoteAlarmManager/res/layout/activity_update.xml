@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:onClick="updateAlarms"
-        android:text="Update Alarms" />
+        android:text="@string/buttonUpdateAlarmString" />
 
     <ListView
         android:id="@+id/listViewAlarms"
@@ -31,6 +31,6 @@
         android:layout_alignBottom="@+id/updateButton"
         android:layout_alignRight="@+id/listViewAlarms"
         android:onClick="logOut"
-        android:text="Log out" />
+        android:text="@string/buttonLogOut" />
 
 </RelativeLayout>

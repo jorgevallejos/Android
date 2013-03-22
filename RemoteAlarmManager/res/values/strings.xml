@@ -9,5 +9,11 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_login">LoginActivity</string>
     <color name="backgroundBlack">#EEEEEE</color>
+    <string name="noInternetConnection">No internetconnection is available. You can not update your alarms right now. Come back later.</string>
+    <string name="buttonUpdateAlarmString">Update Alarms</string>
+    <string name="buttonLogOut">Log Out</string>
+    <string name="buttonLogIn">Log In</string>
+    <string name="paswoordTextViewString">Paswoord:</string>
+    <string name="emailTextViewString">Email:</string>
 
 </resources>

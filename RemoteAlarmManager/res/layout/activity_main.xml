@@ -7,7 +7,7 @@
         android:id="@+id/textView1"
         android:layout_width="208dp"
         android:layout_height="83dp"
-        android:text="No internetconnection is available. You can not update your alarms right now. Come back later." />
+        android:text="@string/noInternetConnection" />
 
 
 </LinearLayout>

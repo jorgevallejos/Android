@@ -1,9 +1,6 @@
 package com.cegeka.alarmmanager.db;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import android.content.ContentValues;
 
 import com.cegeka.alarmmanager.exceptions.AlarmException;
 
