@@ -12,9 +12,12 @@ import com.cegeka.alarmmanager.connection.model.User;
 import com.cegeka.alarmmanager.db.Alarm;
 import com.cegeka.alarmtest.R;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
@@ -47,11 +50,23 @@ public class UpdateActivity extends Activity {
 	}
 
 	public void updateAlarms(View view){
-		final ProgressDialog myPd_ring=ProgressDialog.show(UpdateActivity.this, "Please wait", "Loading please wait..", true);
-		myPd_ring.setCancelable(true);
-		new UpdateThread(myPd_ring).start();
+		if(isNetworkAvailable()){
+			final ProgressDialog myPd_ring=ProgressDialog.show(UpdateActivity.this, "Please wait", "Loading please wait..", true);
+			myPd_ring.setCancelable(true);
+			new UpdateThread(myPd_ring).start();
+		}else{
+			redirectToMainActivity();
+			finish();
+		}
 	}
-	
+
+	private boolean isNetworkAvailable() {
+		ConnectivityManager connectivityManager 
+		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
+
 	public void logOut(View view){
 		try {
 			UserLoaderSaver.deleteUser(this);
@@ -78,7 +93,7 @@ public class UpdateActivity extends Activity {
 	public void setAlarmen(ArrayList<Alarm> alarmen) {
 		UpdateActivity.alarmen = alarmen;
 	}
-	
+
 	private void redirectToMainActivity() {
 		Intent intent = new Intent(UpdateActivity.this, MainActivity.class);
 		startActivity(intent);
@@ -89,7 +104,6 @@ public class UpdateActivity extends Activity {
 
 	private class UpdateThread extends Thread{
 		private ProgressDialog dialog;
-
 
 		public UpdateThread(ProgressDialog progressDialog){
 			this.dialog=progressDialog;

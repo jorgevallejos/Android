@@ -7,6 +7,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+
 import com.cegeka.alarmmanager.connection.UserLoaderSaver;
 import com.cegeka.alarmmanager.connection.model.User;
 import com.cegeka.alarmtest.R;
@@ -18,7 +20,10 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		initializeStart();
+	}
+
+	private void initializeStart() {
 		u = UserLoaderSaver.loadUser(this);
 		if(isNetworkAvailable()){
 			if(u==null){
@@ -30,8 +35,10 @@ public class MainActivity extends Activity {
 		}else{
 			setContentView(R.layout.activity_main);
 		}
-		
-		
+	}
+	
+	public void retry(View view){
+		initializeStart();
 	}
 
 	@Override

@@ -9,5 +9,11 @@
         android:layout_height="83dp"
         android:text="@string/noInternetConnection" />
 
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="retry"
+        android:text="Retry connection" />
 
 </LinearLayout>

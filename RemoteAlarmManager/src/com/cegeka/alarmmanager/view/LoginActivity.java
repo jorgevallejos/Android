@@ -8,10 +8,13 @@ import com.cegeka.alarmmanager.connection.model.User;
 import com.cegeka.alarmmanager.exceptions.WebserviceException;
 import com.cegeka.alarmtest.R;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.Menu;
@@ -43,19 +46,29 @@ public class LoginActivity extends Activity {
 	}
 
 	public void login(View view){
-		final ProgressDialog myPd_ring=ProgressDialog.show(LoginActivity.this, "Please wait", "Loading please wait..", true);
-		myPd_ring.setCancelable(true);
-		new Thread(new Runnable() {  
-			@Override
-			public void run() {
-				doLogin();
-				myPd_ring.dismiss();
-			}
+		if(isNetworkAvailable()){
+			final ProgressDialog myPd_ring=ProgressDialog.show(LoginActivity.this, "Please wait", "Loading please wait..", true);
+			myPd_ring.setCancelable(true);
+			new Thread(new Runnable() {  
+				@Override
+				public void run() {
+					doLogin();
+					myPd_ring.dismiss();
+				}
 
 
-		}).start();
+			}).start();
+		}else{
+			redirectToMainActivity();
+			finish();
+		}
 	}
-
+	private boolean isNetworkAvailable() {
+		ConnectivityManager connectivityManager 
+		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
 	private void doLogin() {
 		String email = emailEditText.getText().toString();
 		String pass = paswoordEditText.getText().toString();
@@ -109,6 +122,11 @@ public class LoginActivity extends Activity {
 
 	private void redirectToUpdateActivity() {
 		Intent intent = new Intent(LoginActivity.this, UpdateActivity.class);
+		startActivity(intent);
+	}
+
+	private void redirectToMainActivity() {
+		Intent intent = new Intent(LoginActivity.this, MainActivity.class);
 		startActivity(intent);
 	}
 
