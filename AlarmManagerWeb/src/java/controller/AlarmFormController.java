@@ -3,9 +3,6 @@ package controller;
 import domain.AlarmOrganizer;
 import entities.Alarm;
 import exceptions.DatabaseException;
-import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import transferobjects.AlarmTO;
+import utils.LoginChecker;
 import utils.TransferObjectConverter;
 import validators.AlarmValidator;
 
@@ -29,8 +27,11 @@ public class AlarmFormController {
 
     //Show Form
     @RequestMapping(method = RequestMethod.GET)
-    public String initForm(ModelMap model) throws Exception {
-        return "AlarmForm";
+    public String initForm(ModelMap model, HttpServletRequest request) throws Exception {
+        if (LoginChecker.userLoggedIn(request)) {
+            return "AlarmForm";
+        }
+        return "redirect:loginForm.htm?info='You have to be logged in to view this page.'";
     }
 
     //Set Command Object
@@ -50,19 +51,24 @@ public class AlarmFormController {
 
     // Set submit processing
     @RequestMapping(method = RequestMethod.POST)
-    public String processSubmit(@ModelAttribute("editAlarm") AlarmTO alarmTO, BindingResult result) throws Exception {
-        AlarmValidator validator = new AlarmValidator();
-        validator.validate(alarmTO, result);
-        if (result.hasErrors()) {
-            return "AlarmForm";
-        } else {
-            Alarm alarm = TransferObjectConverter.getAlarm(alarmTO);
-            if (alarmTO.getId() == null || alarmTO.getId() == -1) {
-                organizer.createAlarm(alarm);
+    public String processSubmit(@ModelAttribute("editAlarm") AlarmTO alarmTO, BindingResult result, HttpServletRequest request) throws Exception {
+        if (LoginChecker.userLoggedIn(request)) {
+            AlarmValidator validator = new AlarmValidator();
+            validator.validate(alarmTO, result);
+            if (result.hasErrors()) {
+                return "AlarmForm";
             } else {
-                organizer.updateAlarm(alarm);
+                Alarm alarm = TransferObjectConverter.getAlarm(alarmTO);
+                if (alarmTO.getId() == null || alarmTO.getId() == -1) {
+                    organizer.createAlarm(alarm);
+                } else {
+                    organizer.updateAlarm(alarm);
+                }
+                return "forward:/alarms.htm";
             }
-            return "forward:/alarms.htm";
+        } else {
+            return "redirect:loginForm.htm?info='You have to be logged in to view this page.'";
         }
     }
+
 }

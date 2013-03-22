@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,8 +26,9 @@ public class LoginController {
     AlarmOrganizer organizer;
     
     @RequestMapping(method = RequestMethod.GET)
-    public String initForm(ModelMap model) throws Exception {
-        return "Login";
+    public ModelAndView initForm(ModelMap model, HttpServletRequest request) throws Exception {
+        String info = ServletRequestUtils.getStringParameter(request, "info");
+        return new ModelAndView("Login", "info", info);
     }
 
     @RequestMapping(method = RequestMethod.POST)

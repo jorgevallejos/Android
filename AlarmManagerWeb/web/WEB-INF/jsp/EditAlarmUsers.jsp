@@ -4,83 +4,103 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <%@include file="../jspf/css.jspf" %>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Add User To Alarm</title>
+        <title>Edit Alarm Users</title>
     </head>
     <body>
-        
-        <h1>Add User To Alarm</h1>
-        
-        <h2>Alarm Info</h2>
-        <table>
-            <tr>
-                <td>ID: </td>
-                <td>${alarm.id}</td>
-            </tr>
-            <tr>
-                <td>Title: </td>
-                <td>${alarm.title}</td>
-            </tr>
-            <tr>
-                <td>Info: </td>
-                <td>${alarm.info}</td>
-            </tr>
-            <tr>
-                <td>Date: </td>
-                <td>${alarm.eventDateTimeString}</td>
-            </tr>
-            <tr>
-                <td>Repeated: </td>
-                <td>${alarm.repeated}</td>
-            </tr>
-            <tr>
-                <td>Repeat unit: </td>
-                <td>${alarm.repeatunit}</td>
-            </tr>
-            <tr>
-                <td>Repeat quantity: </td>
-                <td>${alarm.repeatQuantity}</td>
-            </tr>
-            <tr>
-                <td>Repeat End Date: </td>
-                <td>${alarm.endRepeatDateTimeString}</td>
-            </tr>
-        </table>
-        
-        <h2>Available Users</h2>
-        
-        <table>
-            <tr>
-                <td>Naam</td>
-                <td>Achternaam</td>
-                <td>E-mail</td>
-            </tr>
-            <c:forEach items="${usersAvailable}" var="u">
+        <%@include file="../jspf/navbar.jspf" %>
+        <div id="container" class="well">
+            <ul class="breadcrumb">
+                <li><a href="home.htm">Home</a><span class="divider">/</span></li>
+                <li><a href="alarms.htm">Alarms</a><span class="divider">/</span></li>
+                <li class="active">Edit Alarm Users</li>
+            </ul>
+            <legend>Alarm Info</legend>
+            <table class="table">
                 <tr>
-                    <td>${u.naam}</td>
-                    <td>${u.achternaam}</td>
-                    <td>${u.email}</td>
-                    <td><a href="addUserToAlarmAction.htm?uID=${u.id}&aID=${alarm.id}">Add</a></td>
+                    <td>ID: </td>
+                    <td>${alarm.id}</td>
                 </tr>
-            </c:forEach>
-        </table>
-        
-        <h2>Linked Users</h2>
-        <table>
-            <tr>
-                <td>Naam</td>
-                <td>Achternaam</td>
-                <td>E-mail</td>
-            </tr>
-            <c:forEach items="${usersLinked}" var="u">
                 <tr>
-                    <td>${u.naam}</td>
-                    <td>${u.achternaam}</td>
-                    <td>${u.email}</td>
-                    <td><a href="removeUserFromAlarm.htm?uID=${u.id}&aID=${alarm.id}">Remove</a></td>
+                    <td>Title: </td>
+                    <td>${alarm.title}</td>
                 </tr>
-            </c:forEach>
-        </table>
-        
+                <tr>
+                    <td>Info: </td>
+                    <td>${alarm.info}</td>
+                </tr>
+                <tr>
+                    <td>Date: </td>
+                    <td>${alarm.eventDateTimeString}</td>
+                </tr>
+                <tr>
+                    <td>Repeated: </td>
+                    <td><label>
+                            <c:choose>
+                                <c:when test="${alarm.repeated == true}">
+                                    <i class="icon-check"></i>
+                                </c:when>
+                                <c:otherwise>
+                                    <i class="icon-remove"></i>
+                                </c:otherwise>
+                            </c:choose>
+                        </label>
+                    </td>
+                </tr>
+                <c:if test="${alarm.repeated == true}">
+                    <tr>
+                        <td>Repeat unit: </td>
+                        <td>${alarm.repeatunit}</td>
+                    </tr>
+                    <tr>
+                        <td>Repeat quantity: </td>
+                        <td>${alarm.repeatQuantity}</td>
+                    </tr>
+                    <tr>
+                        <td>Repeat End Date: </td>
+                        <td>${alarm.endRepeatDateTimeString}</td>
+                    </tr>
+                </c:if>
+            </table>
+
+            <legend>Available Users</legend>
+
+            <table class="table table-hover table-striped">
+                <tr>
+                    <th>Naam</th>
+                    <th>Achternaam</th>
+                    <th>E-mail</th>
+                    <th></th>
+                </tr>
+                <c:forEach items="${usersAvailable}" var="u">
+                    <tr>
+                        <td>${u.naam}</td>
+                        <td>${u.achternaam}</td>
+                        <td>${u.email}</td>
+                        <td><a href="addUserToAlarmAction.htm?uID=${u.id}&aID=${alarm.id}"><i class="icon-plus-sign"></i></a></td>
+                    </tr>
+                </c:forEach>
+            </table>
+
+            <legend>Linked Users</legend>
+            <table class="table table-hover table-striped">
+                <tr>
+                    <th>Naam</th>
+                    <th>Achternaam</th>
+                    <th>E-mail</th>
+                    <th></th>
+                </tr>
+                <c:forEach items="${usersLinked}" var="u">
+                    <tr>
+                        <td>${u.naam}</td>
+                        <td>${u.achternaam}</td>
+                        <td>${u.email}</td>
+                        <td><a href="removeUserFromAlarm.htm?uID=${u.id}&aID=${alarm.id}"><i class="icon-minus-sign"></i></a></td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </div>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
     </body>
 </html>

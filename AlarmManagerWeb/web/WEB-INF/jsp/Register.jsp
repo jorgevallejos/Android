@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <%@include file="../jspf/css.jspf" %>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
     </head>
@@ -27,11 +28,11 @@
                     </tr>
                     <tr>
                         <td>Paswoord: </td>
-                        <td><form:input path="paswoord"></form:input></td>
+                        <td><form:password path="paswoord"></form:password></td>
                     </tr>
                     <tr>
                         <td>Herhaal Paswoord: </td>
-                        <td><form:input path="paswoordRepeat"></form:input></td>
+                        <td><form:password path="paswoordRepeat"></form:password></td>
                     </tr>
                     <tr>
                         <td><input type="submit" value="Submit" /></td>

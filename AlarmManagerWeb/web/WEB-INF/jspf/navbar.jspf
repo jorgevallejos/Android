@@ -1,0 +1,27 @@
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container" style="width: 940px;">
+            <a class="brand" href="home.htm">AlarmManager</a>
+            <ul class="nav pull-left">
+                <li><a href="home.htm">Home</a></li>
+                <li><a href="about.htm">About</a></li>
+                <li><a href="contact.htm">Contact</a></li>
+            </ul>
+            <c:choose>
+                <c:when test="${user != null}">
+
+                        
+                        <a href="logout.htm" class="btn pull-right">Logout</a>
+                        <span class="navbar-text pull-right">U bent ingelogd als <c:out value="${user.naam}"/></span>
+
+                </c:when>
+                <c:otherwise>
+                    
+                    <a href="loginForm.htm"><button class="btn pull-right">Login</button></a>
+                    
+                </c:otherwise>
+            </c:choose>
+
+        </div>
+    </div>
+</div>

@@ -7,65 +7,80 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="stylesheet" type="text/css" href="css/AlarmManager.css">
+        <%@include file="../jspf/css.jspf" %>
         <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css">
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
         <script type="text/javascript" src="http://code.jquery.com/ui/1.10.0/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
         <script type="text/javascript" src="js/jquery-ui-sliderAccess.js"></script>
         <script type="text/javascript" src="js/functions.js"></script>
-        <title>Create Alarm</title>
+        <title>Alarm Editor</title>
     </head>
-    <body onload="createDatepickers();
-            createNumberPicker();">
+    <body onload="createDatepickers();">
 
-        <form:form commandName="editAlarm" method="POST">
-            <form:hidden path="id"></form:hidden>
-            <form:errors path="*" cssClass="error"/>
+        <%@include file="../jspf/navbar.jspf" %>
 
-            <table>
-                <tr>
-                    <td>Title: </td>
-                    <td><form:input path="title"></form:input> </td>
-                    </tr>
-                    <tr>
-                        <td>Description: </td>
-                        <td><form:input path="info"></form:input> </td>
-                    </tr>
-                    <tr>
-                        <td>Date: </td>
-                        <td><form:input path="eventDateTimeString" id="eventDate" readonly="true"></form:input></td>
-                    </tr>
-                    <tr>
-                        <td>Repeated: </td>
-                        <td><form:checkbox path="repeated" id="repeated"></form:checkbox> </td>
-                    </tr>
-                    <tr>
-                        <td>Repeat unit: </td>
-                        <td>
-                        <form:select path="repeatunit">
-                            <form:option value="MINUTE" label="Minute"></form:option>
-                            <form:option value="HOUR" label="Hour"></form:option>
-                            <form:option value="DAY" label="Day"></form:option>
-                            <form:option value="WEEK" label="Week"></form:option>
-                            <form:option value="MONTH" label="Month"></form:option>
-                            <form:option value="YEAR" label="Year"></form:option>
-                        </form:select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Repeat Quantity: </td>
-                    <td><form:input path="repeatQuantity" id="repeatQuantity" readonly="true"></form:input></td>
-                    </tr>
-                    <tr>
-                        <td>Repeat End Date: </td>
-                        <td><form:input path="endRepeatDateTimeString" id="endDate" readonly="true"></form:input></td>
-                    </tr>
-                    <tr>
-                        <td><input type="submit" value="submit" /></td>
-                    </tr>
-                </table>
+        <div id="container">
+            <div class="well">
+                <ul class="breadcrumb">
+                    <li><a href="home.htm">Home</a><span class="divider">/</span></li>
+                    <li><a href="alarms.htm">Alarms</a><span class="divider">/</span></li>
+                    <li class="active">Alarm Editor</li>
+                </ul>
+                <legend>Alarm Editor</legend>
+                <form:form commandName="editAlarm" method="POST">
+                    <form:hidden path="id"></form:hidden>
+                    <% if (request.getHeader("Referer") != null && request.getHeader("Referer").contains("alarmForm.htm")) {%>
+                    <div class="alert alert-error alert-block">
+                        <form:errors path="*"/>
+                    </div>
+                    <% }%>
+                    <table>
+                        <tr>
+                            <td><label>Title:</label> </td>
+                            <td><form:input path="title"></form:input> </td>
+                            </tr>
+                            <tr>
+                                <td><label>Description:</label></td>
+                                <td><form:input path="info"></form:input> </td>
+                            </tr>
+                            <tr>
+                                <td><label>Date:</label></td>
+                                <td><form:input path="eventDateTimeString" id="eventDate" readonly="true"></form:input></td>
+                            </tr>
+                            <tr>
+                                <td><label for="repeated">Repeated:</label></td>
+                                <td><form:checkbox cssClass="checkbox" path="repeated" id="repeated"></form:checkbox> </td>
+                            </tr>
+                            <tr>
+                                <td><label>Repeat unit:</label></td>
+                                <td>
+                                <form:select path="repeatunit">
+                                    <form:option value="MINUTE" label="Minute"></form:option>
+                                    <form:option value="HOUR" label="Hour"></form:option>
+                                    <form:option value="DAY" label="Day"></form:option>
+                                    <form:option value="WEEK" label="Week"></form:option>
+                                    <form:option value="MONTH" label="Month"></form:option>
+                                    <form:option value="YEAR" label="Year"></form:option>
+                                </form:select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>Repeat Quantity:</label></td>
+                            <td><form:input path="repeatQuantity" id="repeatQuantity" onkeypress="return numbersonly(this, event)"></form:input></td>
+                            </tr>
+                            <tr>
+                                <td><label>Repeat End Date:</label></td>
+                                <td><form:input path="endRepeatDateTimeString" id="endDate" readonly="true"></form:input></td>
+                            </tr>
+                            <tr>
+                                <td><input type="submit" value="submit" class="btn"/></td>
+                            </tr>
+                        </table>
 
-        </form:form>
+                </form:form>
+            </div>
+        </div>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
     </body>
 </html>

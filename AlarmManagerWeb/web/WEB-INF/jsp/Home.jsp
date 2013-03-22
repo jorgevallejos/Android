@@ -8,25 +8,25 @@
 
 <html>
     <head>
+        <%@include file="../jspf/css.jspf" %>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Welcome to Spring Web MVC project</title>
+        <title>Home</title>
     </head>
     <body>
-        <ul>
-            <li><a href="loginForm.htm">Login</a></li>
-            <li><a href="registerForm.htm">Register</a></li>
-            <li><a href="alarmForm.htm">Alarm Form</a></li>
-            <li><a href="alarms.htm">Alarms</a></li>
-            <li><a href="addUserToAlarm.htm?aID=409">Add user to alarm</a></li>
-            <li><a href="users.htm">Users</a></li>
-        </ul>
-        <c:choose>
-            <c:when test="${user != null}">
-                <p>U bent ingelogd als <c:out value="${user.naam}"/>!</p>
-            </c:when>
-            <c:otherwise>
-                <p>U bent niet ingelogd</p>
-            </c:otherwise>
-        </c:choose>
+        <%@include file="../jspf/navbar.jspf" %>
+        <div id="container">
+            <div class="well">
+                <ul class="breadcrumb">
+                    <li>Home</li>
+                </ul>
+                <legend>Managers</legend>
+                <a href="alarms.htm" class="btn" style="width:70px; text-align: left;"><i class="icon-cog"></i>Alarms</a>
+                <div style="height: 5px"></div>
+                <a href="users.htm" class="btn" style="width:70px; text-align: left;"><i class="icon-cog"></i>Users</a>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+
     </body>
 </html>
