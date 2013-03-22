@@ -58,7 +58,7 @@ public class AlarmsDataSource {
 
 	private ContentValues getRepeatedAlarmContentValues(RepeatedAlarm alarm) {
 		ContentValues values = new ContentValues();
-
+		values.put(AlarmSQLHelper.COLUMN_ID, alarm.getId());
 		values.put(AlarmSQLHelper.COLUMN_TITLE, alarm.getTitle());
 		values.put(AlarmSQLHelper.COLUMN_DESCR, alarm.getDescription());
 		values.put(AlarmSQLHelper.COLUMN_DATE, alarm.getDate().getTimeInMillis());
@@ -84,7 +84,7 @@ public class AlarmsDataSource {
 
 	private ContentValues getAlarmContentValues(Alarm alarm) {
 		ContentValues values = new ContentValues();
-
+		values.put(AlarmSQLHelper.COLUMN_ID, alarm.getId());
 		values.put(AlarmSQLHelper.COLUMN_TITLE, alarm.getTitle());
 		values.put(AlarmSQLHelper.COLUMN_DESCR, alarm.getDescription());
 		values.put(AlarmSQLHelper.COLUMN_DATE, alarm.getDate().getTimeInMillis());
@@ -112,12 +112,13 @@ public class AlarmsDataSource {
 		database.update(AlarmSQLHelper.TABLE_ALARMS, values, where, whereArgs);
 	}
 
-	public void updateRepeatedAlarm(RepeatedAlarm alarm)
+	public RepeatedAlarm updateRepeatedAlarm(RepeatedAlarm alarm)
 	{
 		ContentValues values = getRepeatedAlarmContentValues(alarm);
 		String where = "id=?";
 		String[] whereArgs = new String[] {String.valueOf(alarm.getId())};
 		database.update(AlarmSQLHelper.TABLE_ALARMS, values, where, whereArgs);
+		return (RepeatedAlarm) getAlarmById(alarm.getId());
 	}
 
 	public List<Alarm> getAllAlarms() throws DatabaseException 
@@ -247,10 +248,87 @@ public class AlarmsDataSource {
 			}
 			cursor.moveToNext();
 		}
-		
+
 		for(Long id : idsToDelete){
 			database.delete(AlarmSQLHelper.TABLE_ALARMS, AlarmSQLHelper.COLUMN_ID + " = " + id, null);
 		}
 		cursor.close();
 	}
+
+
+	public Alarm getAlarmById(long id){
+		Alarm alarm = null;
+		Cursor cursor = database.query(AlarmSQLHelper.TABLE_ALARMS, allColumns, null, null, null, null, null);
+		cursor.moveToFirst();
+		boolean found =false;
+		while(!cursor.isAfterLast() && !found){
+			// If repeating alarm
+			if(cursor.getInt(0) == id){
+				alarm = createAlarmFromCursor(cursor); 
+				found=true;
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+		return alarm;
+	}
+
+	public void deleteAlarmsByIds(ArrayList<Long> idsToDelete){
+		for(Long id : idsToDelete){
+			database.delete(AlarmSQLHelper.TABLE_ALARMS, AlarmSQLHelper.COLUMN_ID + " = " + id, null);
+		}
+	}
+
+	public void deleteAlarms(ArrayList<Alarm> alarms){
+		for(Alarm alarm : alarms){
+			if(alarm!=null){
+				database.delete(AlarmSQLHelper.TABLE_ALARMS, AlarmSQLHelper.COLUMN_ID + " = " + alarm.getId(), null);
+			}
+		}
+	}
+
+	public ArrayList<Alarm> getAllAlarmsExcept(ArrayList<Alarm> alarms){
+		ArrayList<Alarm> alarmsresult = new ArrayList<Alarm>();
+		Cursor cursor = database.query(AlarmSQLHelper.TABLE_ALARMS, allColumns, null, null, null, null, null);
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()){
+			long id = cursor.getLong(0);
+			boolean contains = false;
+			for(Alarm a : alarms){
+				if(id==a.getId()){
+					contains=true;
+				}
+			}
+			if(!contains){
+				alarmsresult.add(createAlarmFromCursor(cursor));
+			}
+			cursor.moveToNext();
+		}
+		cursor.close();
+		return alarmsresult;
+	}
+
+	private Alarm createAlarmFromCursor(Cursor cursor){
+		Alarm alarm = null;
+		if(cursor.getInt(4) == 1){
+			Calendar date = getMillis(cursor.getString(3));
+			Calendar enddate = getMillis(cursor.getString(7));
+			Repeat_Unit unit = Repeat_Unit.values()[cursor.getInt(5)];
+			int repeatUnitQuantity = cursor.getInt(6);
+			try {
+				alarm = new RepeatedAlarm(cursor.getLong(0), cursor.getString(1), cursor.getString(2), date, unit, repeatUnitQuantity, enddate);
+			} catch (AlarmException e) {
+				e.printStackTrace();
+			}
+		}else{
+			Calendar date = getMillis(cursor.getString(3));
+			try {
+				alarm = new Alarm(cursor.getLong(0), cursor.getString(1), cursor.getString(2), date);
+			} catch (AlarmException e) {
+				e.printStackTrace();
+			}
+		}
+		return alarm;
+	}
+
 }

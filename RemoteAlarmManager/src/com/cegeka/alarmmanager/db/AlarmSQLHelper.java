@@ -30,7 +30,7 @@ public class AlarmSQLHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_ALARMS + "(" 
-			+ COLUMN_ID	+ " integer primary key autoincrement, " 
+			+ COLUMN_ID	+ " integer primary key, " 
 			+ COLUMN_TITLE + " text not null, " 
 			+ COLUMN_DESCR + " text not null, "
 			+ COLUMN_DATE + " text,"

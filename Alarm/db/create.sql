@@ -13,6 +13,8 @@ title varchar(50) not null,
 info varchar(50) not null,
 repeated boolean not null,
 repeat_unit varchar(8),
+repeatquantity integer,
+repeat_enddate bigint,
 date_in_millis bigint not null,
 CONSTRAINT PRIMARY_KEY_ALARM PRIMARY KEY (AlarmId));
 

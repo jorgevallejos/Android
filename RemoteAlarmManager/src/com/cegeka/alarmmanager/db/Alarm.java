@@ -1,8 +1,10 @@
 package com.cegeka.alarmmanager.db;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import android.annotation.SuppressLint;
 import com.cegeka.alarmmanager.exceptions.AlarmException;
 
 public class Alarm implements Serializable{
@@ -16,16 +18,18 @@ public class Alarm implements Serializable{
 	private String description;
 
 	public Alarm(){
-
+		
 	}
 
-	public Alarm(String title, String description, Calendar date) throws AlarmException {
+	public Alarm(long id, String title, String description, Calendar date) throws AlarmException {
+		setId(id);
 		setDate(date);
 		setTitle(title);
 		setDescription(description);
 	}
 
 	public Alarm(Alarm alarm) throws AlarmException{
+		setId(alarm.getId());
 		setDate((Calendar) alarm.getDate().clone());
 		setTitle(alarm.getTitle());
 		setDescription(alarm.getDescription());
@@ -81,8 +85,18 @@ public class Alarm implements Serializable{
 		this.id = id;
 	}
 
+	@SuppressLint("SimpleDateFormat")
+	protected String SimpleDateFormatmethod(Calendar date) {
+		SimpleDateFormat dateformatter = new SimpleDateFormat("E dd.MM.yyyy 'at' hh:mm:ss a");
+		return dateformatter.format(date.getTime());
+	}
+
+	public String formattedString(){
+		return "ID: " + getId() + "\nTitel: " +getTitle() + "\nDescription: " + getDescription() + "\nTimeInMillis: " + getDate().getTimeInMillis() + "\nDate: " + SimpleDateFormatmethod(getDate());
+	}
+	
 	public String toString(){
-		return "ID: " + getId() + "\nTitel: " +getTitle() + "\nDescription: " + getDescription() + "\nTimeInMillis: " + getDate().getTimeInMillis();
+		return "Titel: " +getTitle() + "\nDescription: " + getDescription() + "\nDate: " + SimpleDateFormatmethod(getDate());
 	}
 
 
