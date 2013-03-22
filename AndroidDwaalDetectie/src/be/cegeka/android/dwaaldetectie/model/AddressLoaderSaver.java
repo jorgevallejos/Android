@@ -6,8 +6,16 @@ import android.content.SharedPreferences;
 import com.google.android.gms.maps.model.LatLng;
 
 
+/**
+ * Saves and loads the home location, address description of the home location
+ * and maximum allowed distance from the home location on the device.
+ */
 public class AddressLoaderSaver
 {
+	/**
+	 * Saves the home location, address description of the home location and
+	 * maximum allowed distance from the home location on the device.
+	 */
 	public static void saveAddress(Context ctx, LatLng latLng, String address, long maxDistance) throws IOException
 	{
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
@@ -18,8 +26,11 @@ public class AddressLoaderSaver
 		editor.putLong("distance", maxDistance);
 		editor.commit();
 	}
-	
-	
+
+
+	/**
+	 * Saves the maximum allowed distance from the home location on the device.
+	 */
 	public static void saveMaxDistance(Context ctx, long maxDistance)
 	{
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);
@@ -29,6 +40,9 @@ public class AddressLoaderSaver
 	}
 
 
+	/**
+	 * Loads the home location from the device.
+	 */
 	public static LatLng loadAddress(Context ctx)
 	{
 		LatLng latLng = null;
@@ -46,6 +60,9 @@ public class AddressLoaderSaver
 	}
 
 
+	/**
+	 * Loads the address description of the home location from the device.
+	 */
 	public static String loadAddressDescription(Context ctx)
 	{
 		String description = null;
@@ -60,6 +77,9 @@ public class AddressLoaderSaver
 	}
 
 
+	/**
+	 * Loads the maximum allowed distance from the home location from the device.
+	 */
 	public static long loadMaxDistance(Context context)
 	{
 		long maxDistance = -1;

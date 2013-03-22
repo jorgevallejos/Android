@@ -6,6 +6,7 @@ import java.util.Observable;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import be.cegeka.android.dwaaldetectie.utilities.LatLngLocationConverter;
 import be.cegeka.android.dwaaldetectie.view.listeners.LocationChangeListener;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -15,9 +16,10 @@ public class TrackingConfiguration extends Observable
 	/**
 	 * Result variables for starting the service
 	 */
-	public int RESULT_OK = 0;
-	public int RESULT_ERROR = 1;
-	public int RESULT_NO_ADDRESS_SET = 2;
+	public static int RESULT_OK = 0;
+	public static int RESULT_ERROR = 1;
+	public static int RESULT_NO_ADDRESS_SET = 2;
+	public static int RESULT_NO_MAX_DISTANCE = 3;
 
 	/**
 	 * Instance of GPSConfig (SINGLETON)
@@ -39,6 +41,10 @@ public class TrackingConfiguration extends Observable
 	}
 
 
+	/**
+	 * 
+	 * @return The one instance of TrackingConfiguration.
+	 */
 	public static TrackingConfiguration trackingConfig()
 	{
 		return INSTANCE;
@@ -89,23 +95,35 @@ public class TrackingConfiguration extends Observable
 
 	public void setDistanceInfo(String distanceInfo)
 	{
-		distance = distanceInfo;
+		this.distance = distanceInfo;
 	}
 
 
+	/**
+	 * Sets the LatLng location instance variable and also saves this value to
+	 * the device.
+	 * 
+	 * @param ctx
+	 * @param latLng
+	 * @throws IOException
+	 */
 	public void setLocation(Context ctx, LatLng latLng) throws IOException
 	{
-		location = latLng;
+		this.location = latLng;
 		AddressLoaderSaver.saveAddress(ctx, latLng, address, maxDistance);
 	}
 
 
-	public void setDistance(Location currentLocation)
+	/**
+	 * Updates the distance between the current location and the home location.
+	 * Notifies its observers of a change in distance.
+	 * 
+	 * @param currentLocation
+	 *            Current location of the user.
+	 */
+	public void updateDistance(Location currentLocation)
 	{
-		Location homeLocation = new Location("homeLocation");
-
-		homeLocation.setLatitude(location.latitude);
-		homeLocation.setLongitude(location.longitude);
+		Location homeLocation = LatLngLocationConverter.locationFromLatLng(location);
 
 		float distanceTo = homeLocation.distanceTo(currentLocation);
 
@@ -129,6 +147,16 @@ public class TrackingConfiguration extends Observable
 	}
 
 
+	/**
+	 * Tries to start the TrackingService. Tries to load the home location from
+	 * the device. Return the result as an int.
+	 * 
+	 * @param context
+	 *            Context of the Application.
+	 * @return 0 if the TrackingService was started, 1 if an unexpected error
+	 *         occurred, 2 if no address was stored on the device, 3 if no
+	 *         maximum distance was stored on the device.
+	 */
 	public int startTrackingService(Context context)
 	{
 		int result;
@@ -136,9 +164,13 @@ public class TrackingConfiguration extends Observable
 		LatLng latLng = AddressLoaderSaver.loadAddress(context);
 		address = AddressLoaderSaver.loadAddressDescription(context);
 		maxDistance = AddressLoaderSaver.loadMaxDistance(context);
-		if (latLng == null || address == null || maxDistance == -1)
+		if (latLng == null || address == null)
 		{
 			result = RESULT_NO_ADDRESS_SET;
+		}
+		else if(maxDistance == -1)
+		{
+			result = RESULT_NO_MAX_DISTANCE;
 		}
 		else
 		{

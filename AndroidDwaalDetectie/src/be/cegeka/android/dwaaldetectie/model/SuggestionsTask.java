@@ -11,6 +11,9 @@ import be.cegeka.android.dwaaldetectie.utilities.NetworkCheck;
 import be.cegeka.android.dwaaldetectie.view.MapView;
 
 
+/**
+ * Gets address suggestions from a GeoCoder for a partial address String.
+ */
 public class SuggestionsTask extends AsyncTask<MapView, Void, MapView>
 {
 	Geocoder geocoder;
@@ -18,6 +21,11 @@ public class SuggestionsTask extends AsyncTask<MapView, Void, MapView>
 	private String locationName;
 
 
+	/**
+	 * 
+	 * @param locationName
+	 *            Partial address String, suggestions are based on this String.
+	 */
 	public SuggestionsTask(String locationName)
 	{
 		super();
@@ -25,6 +33,11 @@ public class SuggestionsTask extends AsyncTask<MapView, Void, MapView>
 	}
 
 
+	/**
+	 * Code within this method is performed in the UI Thread before the actual
+	 * task is performed in a separate Thread. All interaction with UI
+	 * components has to be performed in the UI Thread.
+	 */
 	@Override
 	protected void onPreExecute()
 	{
@@ -32,6 +45,12 @@ public class SuggestionsTask extends AsyncTask<MapView, Void, MapView>
 	}
 
 
+	/**
+	 * This method is run in a separate Thread because getting a result from the
+	 * GeoCoder could take a long time. The GeoCoder will find up to 20 results
+	 * for the supplied String. "Belgium" is added to the String to make sure
+	 * most results are within Belgium.
+	 */
 	@Override
 	protected MapView doInBackground(MapView... params)
 	{
@@ -65,6 +84,12 @@ public class SuggestionsTask extends AsyncTask<MapView, Void, MapView>
 	}
 
 
+	/**
+	 * Code within this method is performed in the UI Thread after the actual
+	 * task is performed in a separate Thread. All interaction with UI
+	 * components has to be performed in the UI Thread. In this method the
+	 * AddressSuggestionListAdapter is updated with the result.
+	 */
 	@Override
 	protected void onPostExecute(MapView result)
 	{
