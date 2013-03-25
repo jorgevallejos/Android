@@ -218,7 +218,10 @@ public class RelationalDatabase implements DatabaseInterface {
         List<Alarm> alarms = getAllAlarms();
         for (Alarm a : alarms) {
             Calendar alarmCalendar = getCalendarFromMillis(a.getDateInMillis());
-            Calendar repeatEnd = getCalendarFromMillis(a.getRepeatEnddate().longValue());
+            Calendar repeatEnd = null;
+            if (a.getRepeated()) {
+                repeatEnd = getCalendarFromMillis(a.getRepeatEnddate().longValue());
+            }
             if ((alarmCalendar.before(Calendar.getInstance()) && !a.getRepeated()) || (a.getRepeated() && repeatEnd.before(Calendar.getInstance()))) {
                 deleteAlarm(a);
             }
@@ -251,8 +254,12 @@ public class RelationalDatabase implements DatabaseInterface {
         }
         Query q = em.createQuery("SELECT u FROM User u WHERE u.email = ?1", User.class);
         q.setParameter(1, email);
-        User u = (User) q.getSingleResult();
-        return u;
+        List<User> resultlist = q.getResultList();
+        if (resultlist.isEmpty()) {
+            return null;
+        } else {
+            return (User) resultlist.get(0);
+        }
     }
 
     @Override
@@ -268,7 +275,7 @@ public class RelationalDatabase implements DatabaseInterface {
             return false;
         }
     }
-    
+
     @Override
     public void clearAlarmsFromUser(User user) {
         // Delete all UserAlarms associated with this user.
