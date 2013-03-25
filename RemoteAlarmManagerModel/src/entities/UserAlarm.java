@@ -45,9 +45,13 @@ public class UserAlarm implements Serializable {
     public UserAlarm() {
     }
 
-    public UserAlarm(User user, Alarm alarm) {
-        this.userid = user;
-        this.alarmid = alarm;
+    public UserAlarm(Integer useralarmid) {
+        this.useralarmid = useralarmid;
+    }
+    
+    public UserAlarm(User user, Alarm alarm){
+        setUserid(user);
+        setAlarmid(alarm);
     }
 
     public Integer getUseralarmid() {

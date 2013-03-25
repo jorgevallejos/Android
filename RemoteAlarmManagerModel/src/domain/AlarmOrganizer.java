@@ -109,4 +109,12 @@ public class AlarmOrganizer {
     public boolean checkIfEmailExists(String email) throws DatabaseException{
         return db.checkIfEmailExists(email);
     }
+    
+    public void upgradeToAdmin(User source, User target) throws DatabaseException {
+        db.upgradeToAdmin(source, target);
+    }
+    
+    public void downgradeToUser(User source, User target) throws DatabaseException {
+        db.downgradeToUser(source, target);
+    }
 }

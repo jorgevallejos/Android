@@ -35,10 +35,11 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Alarm.findByInfo", query = "SELECT a FROM Alarm a WHERE a.info = :info"),
     @NamedQuery(name = "Alarm.findByRepeated", query = "SELECT a FROM Alarm a WHERE a.repeated = :repeated"),
     @NamedQuery(name = "Alarm.findByRepeatUnit", query = "SELECT a FROM Alarm a WHERE a.repeatUnit = :repeatUnit"),
-    @NamedQuery(name = "Alarm.findByDateInMillis", query = "SELECT a FROM Alarm a WHERE a.dateInMillis = :dateInMillis"),
     @NamedQuery(name = "Alarm.findByRepeatquantity", query = "SELECT a FROM Alarm a WHERE a.repeatquantity = :repeatquantity"),
-    @NamedQuery(name = "Alarm.findByRepeatEnddate", query = "SELECT a FROM Alarm a WHERE a.repeatEnddate = :repeatEnddate")})
+    @NamedQuery(name = "Alarm.findByRepeatEnddate", query = "SELECT a FROM Alarm a WHERE a.repeatEnddate = :repeatEnddate"),
+    @NamedQuery(name = "Alarm.findByDateInMillis", query = "SELECT a FROM Alarm a WHERE a.dateInMillis = :dateInMillis")})
 public class Alarm implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,17 +57,18 @@ public class Alarm implements Serializable {
     private boolean repeated;
     @Column(name = "repeat_unit")
     private String repeatUnit;
-    @Basic(optional = false)
-    @Column(name = "date_in_millis")
-    private long dateInMillis;
     @Column(name = "repeatquantity")
     private Integer repeatquantity;
     @Column(name = "repeat_enddate")
     private BigInteger repeatEnddate;
+    @Basic(optional = false)
+    @Column(name = "date_in_millis")
+    private long dateInMillis;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alarmid")
     private List<UserAlarm> userAlarmList;
-
-    public Alarm() {
+    
+    public Alarm(){
+        
     }
 
     public Alarm(Integer alarmid) {
@@ -100,7 +102,7 @@ public class Alarm implements Serializable {
         this.repeatquantity = repeatquantity;
         this.repeatEnddate = repeatEnddate;
     }
-    
+
     public Integer getAlarmid() {
         return alarmid;
     }
@@ -141,14 +143,6 @@ public class Alarm implements Serializable {
         this.repeatUnit = repeatUnit;
     }
 
-    public long getDateInMillis() {
-        return dateInMillis;
-    }
-
-    public void setDateInMillis(long dateInMillis) {
-        this.dateInMillis = dateInMillis;
-    }
-
     public Integer getRepeatquantity() {
         return repeatquantity;
     }
@@ -163,6 +157,14 @@ public class Alarm implements Serializable {
 
     public void setRepeatEnddate(BigInteger repeatEnddate) {
         this.repeatEnddate = repeatEnddate;
+    }
+
+    public long getDateInMillis() {
+        return dateInMillis;
+    }
+
+    public void setDateInMillis(long dateInMillis) {
+        this.dateInMillis = dateInMillis;
     }
 
     @XmlTransient
@@ -198,5 +200,4 @@ public class Alarm implements Serializable {
     public String toString() {
         return "entities.Alarm[ alarmid=" + alarmid + " ]";
     }
-    
 }

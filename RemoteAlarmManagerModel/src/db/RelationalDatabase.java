@@ -297,4 +297,38 @@ public class RelationalDatabase implements DatabaseInterface {
             em.getTransaction().commit();
         }
     }
+
+    @Override
+    public void upgradeToAdmin(User source, User target) throws DatabaseException {
+        if(source == null){
+            throw new DatabaseException("Source can't be null.");
+        }
+        if(target == null){
+            throw new DatabaseException("Target can't be null.");
+        }
+        if(!source.getAdmin()){
+            throw new DatabaseException("Source must be admin.");
+        }
+        target.setAdmin(true);
+        beginTransaction();
+        updateUser(target);
+        commitTransaction();
+    }
+
+    @Override
+    public void downgradeToUser(User source, User target) throws DatabaseException {
+        if(source == null){
+            throw new DatabaseException("Source can't be null.");
+        }
+        if(target == null){
+            throw new DatabaseException("Target can't be null.");
+        }
+        if(!source.getAdmin()){
+            throw new DatabaseException("Source must be admin.");
+        }
+        target.setAdmin(false);
+        beginTransaction();
+        updateUser(target);
+        commitTransaction();
+    }
 }
