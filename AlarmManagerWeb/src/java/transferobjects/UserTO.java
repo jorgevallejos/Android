@@ -8,12 +8,22 @@ public class UserTO {
     public String naam;
     public String achternaam;
     public String email;
+    public boolean admin;
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
     
     public UserTO(User user){
         id = user.getUserid();
         naam = user.getNaam();
         achternaam = user.getAchternaam();
         email = user.getEmail();
+        admin = user.getAdmin();
     }
 
     public Integer getId() {

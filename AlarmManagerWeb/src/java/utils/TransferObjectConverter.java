@@ -23,8 +23,7 @@ public class TransferObjectConverter {
         AlarmTO alarmTO = new AlarmTO(alarm.getAlarmid(), alarm.getTitle(), alarm.getInfo(), 
                 alarm.getRepeated(), alarm.getRepeatUnit(), alarm.getRepeatquantity(), alarm.getRepeatEnddate(), alarm.getDateInMillis());
         return alarmTO;
-    }
-    
+    }    
 
     public static Alarm getAlarm(AlarmTO alarmTO) throws ParseException{
         Alarm alarm = new Alarm(alarmTO.getId(), alarmTO.getTitle(), alarmTO.getInfo(), alarmTO.isRepeated(), 

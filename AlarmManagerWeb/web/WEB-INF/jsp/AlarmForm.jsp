@@ -14,7 +14,7 @@
         <script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
         <script type="text/javascript" src="js/jquery-ui-sliderAccess.js"></script>
         <script type="text/javascript" src="js/functions.js"></script>
-        <title>Alarm Editor</title>
+        <title>Alarm Editor | RemoteAlarmManager</title>
     </head>
     <body onload="createDatepickers();">
 

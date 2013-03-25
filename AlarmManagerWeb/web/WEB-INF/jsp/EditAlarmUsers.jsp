@@ -6,7 +6,7 @@
     <head>
         <%@include file="../jspf/css.jspf" %>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Edit Alarm Users</title>
+        <title>Edit Alarm Users | RemoteAlarmManager</title>
     </head>
     <body>
         <%@include file="../jspf/navbar.jspf" %>

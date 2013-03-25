@@ -7,7 +7,7 @@
     <head>
         <%@include file="../jspf/css.jspf" %>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Alarms</title>
+        <title>Alarms | RemoteAlarmManager</title>
     </head>
     <body>
         <%@include file="../jspf/navbar.jspf" %>

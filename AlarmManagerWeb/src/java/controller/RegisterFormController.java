@@ -40,7 +40,7 @@ public class RegisterFormController {
             return "Register";
         } else {
             try {
-                User user = new User(rUser.getNaam(), rUser.getAchternaam(), rUser.getPaswoord(), rUser.getEmail());
+                User user = new User(rUser.getNaam(), rUser.getAchternaam(), rUser.getPaswoord(), rUser.getEmail(), false);
                 // TODO: Setuserid moet weg.
                 user.setUserid(1000);
                 organizer.createUser(user);

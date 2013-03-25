@@ -18,12 +18,22 @@ public class DeleteController {
 
     @RequestMapping("/deleteAlarm")
     public ModelAndView deleteAlarm(HttpServletRequest request) throws Exception {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             Integer id = ServletRequestUtils.getIntParameter(request, "id");
             organizer.deleteAlarm(id);
             return new ModelAndView("redirect:alarms.htm");
         }
-        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in to view this page.'");
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
+    }
+    
+    @RequestMapping("/deleteUser")
+    public ModelAndView deleteUser(HttpServletRequest request) throws Exception {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
+            Integer id = ServletRequestUtils.getIntParameter(request, "uID");
+            organizer.deleteUser(id);
+            return new ModelAndView("redirect:users.htm");
+        }
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
     
     @RequestMapping("/cleanupAlarms")

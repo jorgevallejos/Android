@@ -28,10 +28,10 @@ public class AlarmFormController {
     //Show Form
     @RequestMapping(method = RequestMethod.GET)
     public String initForm(ModelMap model, HttpServletRequest request) throws Exception {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             return "AlarmForm";
         }
-        return "redirect:loginForm.htm?info='You have to be logged in to view this page.'";
+        return "redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'";
     }
 
     //Set Command Object
@@ -52,7 +52,7 @@ public class AlarmFormController {
     // Set submit processing
     @RequestMapping(method = RequestMethod.POST)
     public String processSubmit(@ModelAttribute("editAlarm") AlarmTO alarmTO, BindingResult result, HttpServletRequest request) throws Exception {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             AlarmValidator validator = new AlarmValidator();
             validator.validate(alarmTO, result);
             if (result.hasErrors()) {
@@ -67,7 +67,7 @@ public class AlarmFormController {
                 return "forward:/alarms.htm";
             }
         } else {
-            return "redirect:loginForm.htm?info='You have to be logged in to view this page.'";
+            return "redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'";
         }
     }
 

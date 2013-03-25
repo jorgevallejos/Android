@@ -23,7 +23,7 @@ public class OverviewController {
 
     @RequestMapping("/alarms")
     public ModelAndView showAlarms(HttpServletRequest request) {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             List<Alarm> alarms = organizer.getAllAlarms();
             List<AlarmTO> alarmTOs = new LinkedList<AlarmTO>();
             for (Alarm a : alarms) {
@@ -31,12 +31,12 @@ public class OverviewController {
             }
             return new ModelAndView("Alarms", "alarms", alarmTOs);
         }
-        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in to view this page.'");
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
 
     @RequestMapping("/users")
     public ModelAndView showUsers(HttpServletRequest request) {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             List<User> users = organizer.getAllUsers();
             List<UserTO> userTOs = new LinkedList<UserTO>();
             for (User u : users) {
@@ -44,6 +44,6 @@ public class OverviewController {
             }
             return new ModelAndView("Users", "users", userTOs);
         }
-        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in to view this page.'");
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
 }

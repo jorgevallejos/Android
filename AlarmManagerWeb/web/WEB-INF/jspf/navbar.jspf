@@ -2,7 +2,7 @@
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container" style="width: 940px;">
-            <a class="brand" href="home.htm">AlarmManager</a>
+            <a class="brand" href="home.htm">RemoteAlarmManager</a>
             <ul class="nav pull-left">
                 <li><a href="home.htm">Home</a></li>
                 <li><a href="about.htm">About</a></li>
@@ -11,7 +11,7 @@
             <c:choose>
                 <c:when test="${user != null}">
                     <a href="logout.htm" class="btn pull-right">Logout</a>
-                    <span class="navbar-text pull-right">U bent ingelogd als <c:out value="${user.naam}"/></span>
+                    <span class="navbar-text pull-right">U bent ingelogd als <a href="userinfopage.htm"><c:out value="${user.naam}"/></a></span>
                 </c:when>
                 <c:otherwise>
                     <a href="loginForm.htm" class="btn pull-right">Login</a>

@@ -28,7 +28,7 @@ public class AlarmUserRelationController {
 
     @RequestMapping("/editAlarmUsers")
     public ModelAndView goToAddUserToAlarm(HttpServletRequest request) throws Exception {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             // Create Model Map
             Map<String, Object> model = new HashMap<String, Object>();
 
@@ -57,31 +57,31 @@ public class AlarmUserRelationController {
 
             return new ModelAndView("EditAlarmUsers", model);
         }
-        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in to view this page.'");
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
 
     }
 
     @RequestMapping("/addUserToAlarmAction")
     public ModelAndView addUserToAlarm(HttpServletRequest request) throws Exception {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             Integer aID = addAlarmUserRelation(request).get("aID");
             return new ModelAndView("redirect:editAlarmUsers.htm?aID=" + aID);
         }
-        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in to view this page.'");
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
 
     @RequestMapping("/removeUserFromAlarm")
     public ModelAndView removeUserFromAlarm(HttpServletRequest request) throws Exception {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             Integer aID = removeAlarmUserRelation(request).get("aID");
             return new ModelAndView("redirect:editAlarmUsers.htm?aID=" + aID);
         }
-        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in to view this page.'");
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
 
     @RequestMapping("/editUserAlarms")
     public ModelAndView goToEditUserAlarms(HttpServletRequest request) throws Exception {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             // Create Model Map
             Map<String, Object> model = new HashMap<String, Object>();
 
@@ -110,25 +110,25 @@ public class AlarmUserRelationController {
 
             return new ModelAndView("EditUserAlarms", model);
         }
-        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in to view this page.'");
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
 
     @RequestMapping("/addAlarmToUserAction")
     public ModelAndView addAlarmToUserAction(HttpServletRequest request) throws Exception {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             Integer uID = addAlarmUserRelation(request).get("uID");
             return new ModelAndView("redirect:editUserAlarms.htm?uID=" + uID);
         }
-        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in to view this page.'");
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
 
     @RequestMapping("/removeAlarmFromUser")
     public ModelAndView removeAlarmFromUser(HttpServletRequest request) throws Exception {
-        if (LoginChecker.userLoggedIn(request)) {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
             Integer uID = removeAlarmUserRelation(request).get("uID");
             return new ModelAndView("redirect:editUserAlarms.htm?uID=" + uID);
         }
-        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in to view this page.'");
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
 
     private Map<String, Integer> addAlarmUserRelation(HttpServletRequest request) throws DatabaseException, ServletRequestBindingException {

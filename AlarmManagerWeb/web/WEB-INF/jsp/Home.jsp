@@ -10,16 +10,27 @@
     <head>
         <%@include file="../jspf/css.jspf" %>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Home</title>
+        <title>Home | RemoteAlarmManager</title>
     </head>
     <body>
         <%@include file="../jspf/navbar.jspf" %>
         <div id="container">
             <div class="well">
-                <legend>Managers</legend>
-                <a href="alarms.htm" class="btn" style="width:70px; text-align: left;"><i class="icon-cog"></i>Alarms</a>
-                <div style="height: 5px"></div>
-                <a href="users.htm" class="btn" style="width:70px; text-align: left;"><i class="icon-cog"></i>Users</a>
+                <legend>Tools</legend>
+                <c:choose>
+                    <c:when test="${user != null}">
+                        <c:if test="${user.admin == true}">
+                            <a href="alarms.htm" class="btn" style="width:80px; text-align: left;"><i class="icon-cog"></i>Alarms</a>
+                            <div style="height: 5px"></div>
+                            <a href="users.htm" class="btn" style="width:80px; text-align: left;"><i class="icon-cog"></i>Users</a>
+                            <div style="height: 5px"></div>
+                        </c:if>
+                        <a href="userinfopage.htm" class="btn" style="width: 80px; text-align: left;"><i class="icon-info-sign"></i>My Info</a>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="loginForm.htm">Login</a>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
 
