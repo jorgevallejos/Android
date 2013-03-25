@@ -25,24 +25,27 @@ public class AlarmReceiverActivity extends Activity {
 
 	private MediaPlayer mMediaPlayer;
 	private Alarm alarm;
-
+	boolean loaded = false;
+	Dialog mDialog; 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
-
-		final Dialog mDialog = new Dialog(this);
-
-		setAlarm((Alarm) getIntent().getSerializableExtra("Alarm"));
-
-		if(getAlarm() instanceof RepeatedAlarm) {
+		mDialog = new Dialog(this);
+		this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		
+		//setAlarm((Alarm) getIntent().getSerializableExtra("Alarm"));
+		Object o = getIntent().getSerializableExtra("Alarm");
+		if(o instanceof RepeatedAlarm) {
+			setAlarm((RepeatedAlarm) o);
 			setNextAlarm();
+		}else{
+			setAlarm((Alarm) o);
 		}
 
 		mDialog.setTitle(getAlarm().getTitle());
-		
+		mDialog.setCancelable(false);
 		mDialog.setContentView(R.layout.alarm);
-		
+
 		TextView descrfield = (TextView) mDialog.findViewById(R.id.description);
 		descrfield.setText(getAlarm().getDescription());
 
@@ -59,23 +62,28 @@ public class AlarmReceiverActivity extends Activity {
 		});
 		mDialog.show();
 		playSound(this, getAlarmUri());
-		deleteAlarm(getAlarm());
+		if(!(getAlarm() instanceof RepeatedAlarm)){
+			deleteAlarm(getAlarm());
+		}
 	}
+
 
 	private void playSound(Context context, Uri alert) {
 		mMediaPlayer = new MediaPlayer();
+		((Activity) context).setVolumeControlStream(AudioManager.STREAM_MUSIC); 
 		try {
 			mMediaPlayer.setDataSource(context, alert);
 			final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-			if (audioManager.getStreamVolume(AudioManager.STREAM_ALARM) != 0) {
-				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-				mMediaPlayer.setVolume(0.02f, 0.02f);
+			if (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) != 0) {
+				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+				//mMediaPlayer.setVolume(0.01f, 0.01f);
 				mMediaPlayer.prepare();
 				mMediaPlayer.start();
 			}
 		} catch (IOException e) {
 			System.out.println("OOPS");
 		}
+
 	}
 
 
@@ -127,10 +135,10 @@ public class AlarmReceiverActivity extends Activity {
 
 				if(newCal.before(repAlarm.getRepeatEndDate())){
 					repAlarm.setDate(newCal);
-					RepeatedAlarm newAlarm = new RepeatedAlarm(repAlarm);
+					//					RepeatedAlarm newAlarm = new RepeatedAlarm(repAlarm);
 					AlarmsDataSource alarmDS = new AlarmsDataSource(this);
 					alarmDS.open();
-					newAlarm = alarmDS.createRepeatedAlarm(newAlarm);
+					RepeatedAlarm newAlarm = alarmDS.updateRepeatedAlarm(repAlarm);
 					alarmDS.close();
 
 					AlarmScheduler.scheduleAlarm(this, newAlarm);

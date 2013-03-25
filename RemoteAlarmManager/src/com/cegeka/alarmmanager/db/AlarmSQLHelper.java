@@ -1,14 +1,8 @@
 package com.cegeka.alarmmanager.db;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
 import android.util.Log;
 
 public class AlarmSQLHelper extends SQLiteOpenHelper {
@@ -30,7 +24,7 @@ public class AlarmSQLHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_ALARMS + "(" 
-			+ COLUMN_ID	+ " integer primary key autoincrement, " 
+			+ COLUMN_ID	+ " integer primary key, " 
 			+ COLUMN_TITLE + " text not null, " 
 			+ COLUMN_DESCR + " text not null, "
 			+ COLUMN_DATE + " text,"

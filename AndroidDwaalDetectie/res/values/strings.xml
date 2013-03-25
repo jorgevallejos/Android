@@ -37,5 +37,10 @@
     <string name="map_dialog_not_found_button">Okay :(</string>
     <string name="error_unable_to_start">Dwaaldetectie kon door een probleem niet worden gestart</string>
     <string name="error_unable_to_save">Het adres kon niet opgeslagen worden</string>
+    <string name="error_error">Probleem</string>
+    <string name="error_no_address_saved">Er is momenteel nog geen adres ingesteld. Gelieve op de kaart een adres in te stellen.</string>
+    <string name="error_no_max_distance_saved">Er is momenteel nog geen maximale afstand tot de thuislocatie ingesteld. Gelieve een afstand in te stellen.</string>
+    <string name="error_button_positive">Instellen</string>
+    <string name="error_no_valid_number">De afstand die u ingaf kan niet gebruikt worden. Gelieve een andere afstand in te geven.</string>
     
 </resources>

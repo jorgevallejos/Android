@@ -6,7 +6,7 @@ import android.content.Context;
 import android.location.Location;
 import android.widget.Toast;
 import be.cegeka.android.dwaaldetectie.R;
-import com.google.android.gms.maps.model.LatLng;
+import be.cegeka.android.dwaaldetectie.utilities.LatLngLocationConverter;
 
 
 /**
@@ -40,12 +40,12 @@ public class LocationChangeListener extends LocationChangeAdapter
 	{
 		if (trackingConfig().getLocation() != null)
 		{
-			if (isBetterLocation(location, locationFromLatLng(trackingConfig().getLocation())))
+			if (isBetterLocation(location, LatLngLocationConverter.locationFromLatLng(trackingConfig().getLocation())))
 			{
-				trackingConfig().setDistance(location);
+				trackingConfig().updateDistance(location);
 			}
 
-			if (location.distanceTo(locationFromLatLng(trackingConfig().getLocation())) > trackingConfig().getMaxDistance())
+			if (location.distanceTo(LatLngLocationConverter.locationFromLatLng(trackingConfig().getLocation())) > trackingConfig().getMaxDistance())
 			{
 				toast.show();
 			}
@@ -54,24 +54,6 @@ public class LocationChangeListener extends LocationChangeAdapter
 				toast.cancel();
 			}
 		}
-	}
-
-
-	/**
-	 * Converts a LatLng object into a Location object. The distance between two
-	 * point can only be calculated on the Location object, therefore the LatLng
-	 * object needs to be converted sometimes.
-	 * 
-	 * @param latLng LatLng object that needs to be converted.
-	 * @return Location.
-	 */
-	private Location locationFromLatLng(LatLng latLng)
-	{
-		Location location = new Location("location");
-		location.setLatitude(latLng.latitude);
-		location.setLongitude(latLng.longitude);
-
-		return location;
 	}
 
 

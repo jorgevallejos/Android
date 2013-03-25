@@ -6,6 +6,12 @@ import android.content.Context;
 import android.widget.ArrayAdapter;
 
 
+/**
+ * Own implementation of an ArrayAdapter to be used as the Adapter providing the
+ * data to the suggestions list when the user searches for an address. Needed
+ * because a standard ArrayAdapter will filter results from the list, while in
+ * this case we want all results put into the Adapter to be returned.
+ */
 public class AddressSuggestionListAdapter extends ArrayAdapter<String>
 {
 	private ArrayList<String> adapter;

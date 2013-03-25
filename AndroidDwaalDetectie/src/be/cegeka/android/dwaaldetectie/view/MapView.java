@@ -323,7 +323,7 @@ public class MapView extends Activity
 			AlertDialog.Builder dialog = new AlertDialog.Builder(MapView.this)
 					.setTitle(getString(R.string.map_dialog_title))
 					.setMessage(getString(R.string.map_dialog_message) + "\n" + addressDescription)
-					.setNegativeButton(getString(R.string.map_dialog_button_negative), new DialogNegativeClickListener())
+					.setNegativeButton(getString(R.string.map_dialog_button_negative), new DialogDismissListener())
 					.setPositiveButton(getString(R.string.map_dialog_button_positive), new NewAddressClickListener());
 
 			dialog.create().show();
@@ -361,19 +361,6 @@ public class MapView extends Activity
 				Toast.makeText(MapView.this, getString(R.string.map_address_fail), Toast.LENGTH_LONG).show();
 				finish();
 			}
-		}
-	}
-
-
-	/**
-	 * OnClickListener to close cancel a dialog.
-	 */
-	private class DialogNegativeClickListener implements DialogInterface.OnClickListener
-	{
-		@Override
-		public void onClick(DialogInterface dialog, int which)
-		{
-			dialog.dismiss();
 		}
 	}
 }

@@ -19,6 +19,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 import be.cegeka.android.dwaaldetectie.R;
 import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
+import be.cegeka.android.dwaaldetectie.model.TrackingConfiguration;
 import be.cegeka.android.dwaaldetectie.model.TrackingService;
 import be.cegeka.android.dwaaldetectie.utilities.NetworkCheck;
 import be.cegeka.android.dwaaldetectie.view.listeners.DialogDismissListener;
@@ -136,6 +137,45 @@ public class MainActivity extends Activity implements Observer
 	}
 
 
+	/**
+	 * Handles the problems that can occur when the user tries to start the
+	 * service. Based on the problem code an appropriate error dialog is shown.
+	 */
+	private void handleProblemStart(int problem)
+	{
+		if (problem == TrackingConfiguration.RESULT_NO_ADDRESS_SET)
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+					.setTitle(getString(R.string.error_error))
+					.setMessage(getString(R.string.error_no_address_saved))
+					.setPositiveButton(getString(R.string.error_button_positive), new ConfigureAddressClickListener())
+					.setNegativeButton(getString(R.string.button_cancel), new DialogDismissListener());
+
+			builder.create().show();
+		}
+		else if (problem == TrackingConfiguration.RESULT_NO_MAX_DISTANCE)
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+					.setTitle(getString(R.string.error_error))
+					.setMessage(getString(R.string.error_no_max_distance_saved))
+					.setPositiveButton(getString(R.string.error_button_positive), new ConfigureMaxDistanceClickListener())
+					.setNegativeButton(getString(R.string.button_cancel), new DialogDismissListener());
+
+			builder.create().show();
+		}
+		else
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+					.setTitle(getString(R.string.error_error))
+					.setMessage(getString(R.string.error_unable_to_start))
+					.setNegativeButton(getString(R.string.button_cancel), null);
+
+			builder.create().show();
+		}
+
+	}
+
+
 	@Override
 	public void update(Observable observable, Object data)
 	{
@@ -160,8 +200,9 @@ public class MainActivity extends Activity implements Observer
 
 	/**
 	 * OnClickListener for the start button. Starts the Service if the button
-	 * gets enabled and a home address is set, stops the Service if the button
-	 * gets disabled. Sends the user to the map if no address is set.
+	 * gets enabled and a home address and maximum distance to the home address
+	 * is set, stops the Service if the button gets disabled. Uses the
+	 * problemStart method if the result of the start is not RESULT_OK
 	 */
 	private class StartButtonListener implements OnClickListener
 	{
@@ -176,18 +217,15 @@ public class MainActivity extends Activity implements Observer
 			else
 			{
 				int result = trackingConfig().startTrackingService(MainActivity.this);
-				if (result == trackingConfig().RESULT_NO_ADDRESS_SET)
+
+				if (result != TrackingConfiguration.RESULT_OK)
 				{
 					startButton.setChecked(false);
-					handleShowMap(null);
-				}
-				else if (result == trackingConfig().RESULT_OK)
-				{
-					updateDistance();
+					handleProblemStart(result);
 				}
 				else
 				{
-					Toast.makeText(MainActivity.this, R.string.error_unable_to_start, Toast.LENGTH_LONG).show();
+					updateDistance();
 				}
 			}
 		}
@@ -222,8 +260,42 @@ public class MainActivity extends Activity implements Observer
 			}
 			catch (NumberFormatException e)
 			{
-				e.printStackTrace();
+				AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
+						.setTitle(getString(R.string.error_error))
+						.setMessage(getString(R.string.error_no_valid_number))
+						.setPositiveButton(getString(R.string.error_button_positive), new ConfigureMaxDistanceClickListener())
+						.setNegativeButton(getString(R.string.button_cancel), new DialogDismissListener());
+
+				builder.create().show();
 			}
+		}
+	}
+
+
+	/**
+	 * OnClickListener for the error dialog if the maximum distance is not set
+	 * when the user tries to start the TrackingService.
+	 */
+	private class ConfigureMaxDistanceClickListener implements DialogInterface.OnClickListener
+	{
+		@Override
+		public void onClick(DialogInterface dialog, int which)
+		{
+			handleMaxDistance(null);
+		}
+	}
+
+
+	/**
+	 * OnClickListener for the error dialog if the address is not set when the
+	 * user tries to start the TrackingService.
+	 */
+	private class ConfigureAddressClickListener implements DialogInterface.OnClickListener
+	{
+		@Override
+		public void onClick(DialogInterface dialog, int which)
+		{
+			handleShowMap(null);
 		}
 	}
 }

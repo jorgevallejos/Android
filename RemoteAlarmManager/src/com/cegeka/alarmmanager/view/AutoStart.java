@@ -1,7 +1,5 @@
 package com.cegeka.alarmmanager.view;
 
-import com.cegeka.debug.LogFileWriter;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
