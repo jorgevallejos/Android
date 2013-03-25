@@ -16,9 +16,6 @@
         <%@include file="../jspf/navbar.jspf" %>
         <div id="container">
             <div class="well">
-                <ul class="breadcrumb">
-                    <li>Home</li>
-                </ul>
                 <legend>Managers</legend>
                 <a href="alarms.htm" class="btn" style="width:70px; text-align: left;"><i class="icon-cog"></i>Alarms</a>
                 <div style="height: 5px"></div>

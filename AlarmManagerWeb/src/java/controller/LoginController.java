@@ -24,7 +24,7 @@ public class LoginController {
 
     @Autowired
     AlarmOrganizer organizer;
-    
+
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView initForm(ModelMap model, HttpServletRequest request) throws Exception {
         String info = ServletRequestUtils.getStringParameter(request, "info");
@@ -32,27 +32,24 @@ public class LoginController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView login(@ModelAttribute("login") LoginUser lUser, HttpServletRequest request) {
+    public ModelAndView login(@ModelAttribute("login") LoginUser lUser, HttpServletRequest request) throws DatabaseException {
         return loginAction(lUser, request);
     }
 
-    private ModelAndView loginAction(LoginUser lUser, HttpServletRequest request) {
-        try {
-            String username = lUser.getName();
-            String password = lUser.getPass();
-            User user = organizer.getUser(username);
-            if (user.authenticate(password)) {
-                HttpSession session = request.getSession();
-                UserTO sUser = new UserTO(user);
-                session.setAttribute("user", sUser);
-                return new ModelAndView("Home");
-            }
-        } catch (DatabaseException ex) {
-            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);
+    private ModelAndView loginAction(LoginUser lUser, HttpServletRequest request) throws DatabaseException {
+        String username = lUser.getName();
+        String password = lUser.getPass();
+        User user = organizer.getUser(username);
+        if (user != null && user.authenticate(password)) {
+            HttpSession session = request.getSession();
+            UserTO sUser = new UserTO(user);
+            session.setAttribute("user", sUser);
+            return new ModelAndView("Home");
+        } else {
+            return new ModelAndView("Login", "error", "Username or password were wrong.");
         }
-        return new ModelAndView("index", "message", "Somethin's wrong nigga");
     }
-    
+
     @ModelAttribute("login")
     private LoginUser formBackingObject(HttpServletRequest request) {
         return new LoginUser();

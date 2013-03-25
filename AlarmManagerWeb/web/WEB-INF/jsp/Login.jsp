@@ -13,6 +13,15 @@
     <body>
         <%@include file="../jspf/navbar.jspf" %>
         <div id="container" class="well" style="width: 350px;">
+            <ul class="breadcrumb">
+                <li><a href="home.htm">Home</a><span class="divider">/</span></li>
+                <li class="active">Login</li>
+            </ul>
+            <c:if test="${error != null}">
+                <div class="alert alert-error">
+                    <p><c:out value="${error}"></c:out></p>
+                </div>
+            </c:if>
             <c:if test="${info != null}">
                 <div class="alert alert-info">
                     <p style="text-align: center;">

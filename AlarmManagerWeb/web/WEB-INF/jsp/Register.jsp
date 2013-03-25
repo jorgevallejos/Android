@@ -9,37 +9,51 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <%@include file="../jspf/navbar.jspf" %>
+        <div id="container">
+            <div class="well" margin: 0 auto;">
+                 <ul class="breadcrumb">
+                    <li><a href="home.htm">Home</a><span class="divider">/</span></li>
+                    <li class="active">Register</li>
+                </ul>
+                <legend>Register</legend>
 
-        <form:form commandName="registerUser" method="POST">
-            <form:errors path="*" cssClass="error"/>
+                <form:form commandName="registerUser" method="POST">
 
-            <table>
-                <tr>
-                    <td>Naam: </td>
-                    <td><form:input path="naam"></form:input></td>
-                    </tr>
-                    <tr>
-                        <td>Achternaam: </td>
-                        <td><form:input path="achternaam"></form:input></td>
-                    </tr>
-                    <tr>
-                        <td>E-mail: </td>
-                        <td><form:input path="email"></form:input></td>
-                    </tr>
-                    <tr>
-                        <td>Paswoord: </td>
-                        <td><form:password path="paswoord"></form:password></td>
-                    </tr>
-                    <tr>
-                        <td>Herhaal Paswoord: </td>
-                        <td><form:password path="paswoordRepeat"></form:password></td>
-                    </tr>
-                    <tr>
-                        <td><input type="submit" value="Submit" /></td>
-                    </tr>
-                </table>
+                    <table>
+                        <tr>
+                            <td><label>Name:</label></td>
+                            <td><form:input path="naam"></form:input></td>
+                            <td><span class="help-inline control-group"><form:errors path="naam"/></span></td>
+                        </tr>
+                        <tr>
+                            <td><label>Last Name:</label></td>
+                            <td><form:input path="achternaam"></form:input></td>
+                            <td><span class="help-inline control-group"><form:errors path="achternaam"/></span></td>
+                        </tr>
+                        <tr>
+                            <td><label>E-mail:</label></td>
+                            <td><form:input path="email"></form:input></td>
+                            <td><span class="help-inline control-group"><form:errors path="email"/></span></td>
+                        </tr>
+                        <tr>
+                            <td><label>Password:</label></td>
+                            <td><form:password path="paswoord"></form:password></td>
+                            <td><span class="help-inline control-group"><form:errors path="paswoord"/></span></td>
+                        </tr>
+                        <tr>
+                            <td><label>Repeat Password:</label></td>
+                            <td><form:password path="paswoordRepeat"></form:password></td>
+                            <td><span class="help-inline control-group"><form:errors path="paswoordRepeat"/></span></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="text-align: right;"><input type="submit" class="btn" value="Submit" /></td>
+                        </tr>
+                    </table>
 
-        </form:form>
-
+                </form:form>
+            </div>
+        </div>
     </body>
 </html>

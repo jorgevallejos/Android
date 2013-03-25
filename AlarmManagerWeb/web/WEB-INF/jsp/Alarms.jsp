@@ -11,7 +11,6 @@
     </head>
     <body>
         <%@include file="../jspf/navbar.jspf" %>
-
         <div id="container" class="well">
             <ul class="breadcrumb">
                 <li><a href="home.htm">Home</a><span class="divider">/</span></li>
@@ -79,9 +78,10 @@
             </table>
 
             <div style="height: 15px"></div>
-            <a href="alarmForm.htm" class="btn"><i class="icon-plus"></i>Add</a>
+            <a href="alarmForm.htm" class="btn pull-left" style="margin-right: 10px;"><i class="icon-plus"></i>Add</a>
+            <a href="cleanupAlarms.htm" class="btn"><i class="icon-trash"></i>Clean</a>
             <div style="height: 15px"></div>
-
+            
             <h1 style="font-size: 14pt; margin-bottom: -5px;">Symbols</h1>
             <table class="table table-condensed">
                 <tr>
@@ -103,10 +103,6 @@
                 <tr>
                     <td><i class="icon-ban-circle"></i> </td>
                     <td>This icon means that it's not a repeated alarm.</td>
-                </tr>
-                <tr>
-                    <td><i class="icon-plus"></i></td>
-                    <td>Click here to add a new alarm to the database.</td>
                 </tr>
             </table>
         </div>

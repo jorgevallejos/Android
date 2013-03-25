@@ -9,6 +9,10 @@
 .ui-timepicker-rtl dl { text-align: right; }
 .ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }
 
+body {
+    background-color: #FAF8E9;
+}
+
 #container {
     width: 940px;
     margin: 0 auto;
@@ -17,7 +21,7 @@
 
 .overview td {
     text-align: center;
-    padding: 3px;
+    padding: 5px;
     overflow: hidden;
 }
 

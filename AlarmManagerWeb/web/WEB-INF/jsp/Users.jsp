@@ -14,7 +14,7 @@
         <div id="container" class="well">
             <ul class="breadcrumb">
                 <li><a href="home.htm">Home</a><span class="divider">/</span></li>
-                <li>Users</li>
+                <li class="active">Users</li>
             </ul>
             <legend>Users Overview</legend>
             <table class="table-striped table-bordered table-hover overview" style="width: 940px;">
