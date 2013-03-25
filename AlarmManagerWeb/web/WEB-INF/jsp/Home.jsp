@@ -16,7 +16,7 @@
         <%@include file="../jspf/navbar.jspf" %>
         <div id="container">
             <div class="well">
-                <legend>Tools</legend>
+                <legend>Home</legend>
                 <c:choose>
                     <c:when test="${user != null}">
                         <c:if test="${user.admin == true}">
@@ -28,7 +28,8 @@
                         <a href="userinfopage.htm" class="btn" style="width: 80px; text-align: left;"><i class="icon-info-sign"></i>My Info</a>
                     </c:when>
                     <c:otherwise>
-                        <a href="loginForm.htm">Login</a>
+                        <p>To use this application, please log in.</p>
+                        <a href="loginForm.htm" class="btn">Login</a>
                     </c:otherwise>
                 </c:choose>
             </div>
