@@ -88,6 +88,7 @@ public class RelationalDatabase implements DatabaseInterface {
         if (user == null) {
             throw new DatabaseException("User can't be null.");
         }
+        beginTransaction();
         Query q = em.createQuery("SELECT ua.alarmid FROM UserAlarm ua WHERE ua.userid = ?1");
         q.setParameter(1, user);
         ArrayList<Alarm> alarms = new ArrayList<>(q.getResultList());
@@ -116,11 +117,14 @@ public class RelationalDatabase implements DatabaseInterface {
         if (alarm == null) {
             throw new DatabaseException("Alarm can't be null.");
         }
+        // Delete all useralarms associated with this alarm.
         beginTransaction();
         Query q = em.createQuery("DELETE FROM UserAlarm ua WHERE ua.alarmid = ?1");
         q.setParameter(1, alarm);
         q.executeUpdate();
-        em.flush();
+        commitTransaction();
+        // Delete Alarm
+        beginTransaction();
         em.remove(alarm);
         commitTransaction();
     }
@@ -169,9 +173,6 @@ public class RelationalDatabase implements DatabaseInterface {
         if (checkIfUserAlarmExists(user, alarm)) {
             throw new DatabaseException("The user already has this alarm.");
         }
-        if (user.getUserid() == null || alarm.getAlarmid() == null) {
-            throw new DatabaseException("User or Alarm is not persisted yet.");
-        }
         UserAlarm userAlarm = new UserAlarm(user, alarm);
         user.getUserAlarmList().add(userAlarm);
         updateUser(user);
@@ -217,7 +218,11 @@ public class RelationalDatabase implements DatabaseInterface {
         List<Alarm> alarms = getAllAlarms();
         for (Alarm a : alarms) {
             Calendar alarmCalendar = getCalendarFromMillis(a.getDateInMillis());
-            if (alarmCalendar.before(Calendar.getInstance())) {
+            Calendar repeatEnd = null;
+            if (a.getRepeated()) {
+                repeatEnd = getCalendarFromMillis(a.getRepeatEnddate().longValue());
+            }
+            if ((alarmCalendar.before(Calendar.getInstance()) && !a.getRepeated()) || (a.getRepeated() && repeatEnd.before(Calendar.getInstance()))) {
                 deleteAlarm(a);
             }
         }
@@ -249,9 +254,12 @@ public class RelationalDatabase implements DatabaseInterface {
         }
         Query q = em.createQuery("SELECT u FROM User u WHERE u.email = ?1", User.class);
         q.setParameter(1, email);
-        User u = (User) q.getSingleResult();
-
-        return u;
+        List<User> resultlist = q.getResultList();
+        if (resultlist.isEmpty()) {
+            return null;
+        } else {
+            return (User) resultlist.get(0);
+        }
     }
 
     @Override
@@ -268,6 +276,7 @@ public class RelationalDatabase implements DatabaseInterface {
         }
     }
 
+    @Override
     public void clearAlarmsFromUser(User user) {
         // Delete all UserAlarms associated with this user.
         beginTransaction();
@@ -287,5 +296,39 @@ public class RelationalDatabase implements DatabaseInterface {
         if (em.getTransaction().isActive()) {
             em.getTransaction().commit();
         }
+    }
+
+    @Override
+    public void upgradeToAdmin(User source, User target) throws DatabaseException {
+        if(source == null){
+            throw new DatabaseException("Source can't be null.");
+        }
+        if(target == null){
+            throw new DatabaseException("Target can't be null.");
+        }
+        if(!source.getAdmin()){
+            throw new DatabaseException("Source must be admin.");
+        }
+        target.setAdmin(true);
+        beginTransaction();
+        updateUser(target);
+        commitTransaction();
+    }
+
+    @Override
+    public void downgradeToUser(User source, User target) throws DatabaseException {
+        if(source == null){
+            throw new DatabaseException("Source can't be null.");
+        }
+        if(target == null){
+            throw new DatabaseException("Target can't be null.");
+        }
+        if(!source.getAdmin()){
+            throw new DatabaseException("Source must be admin.");
+        }
+        target.setAdmin(false);
+        beginTransaction();
+        updateUser(target);
+        commitTransaction();
     }
 }

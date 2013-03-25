@@ -34,7 +34,7 @@ import org.junit.BeforeClass;
     
     @Before
     public void setUp() {
-        user = new User("Lord", "Foo", "pass", "foo@bar.com");
+        user = new User("Lord", "Foo", "pass", "foo@bar.com", true);
         alarm = new Alarm("Testalarm", "Dit is een testalarm", false, Calendar.getInstance().getTimeInMillis());
         db = RelationalDatabase.getInstance();
     }

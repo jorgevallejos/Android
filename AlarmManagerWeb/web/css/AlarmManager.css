@@ -9,3 +9,26 @@
 .ui-timepicker-rtl dl { text-align: right; }
 .ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }
 
+#container {
+    width: 940px;
+    margin: 0 auto;
+    margin-top: 75px;
+}
+
+.overview td {
+    text-align: center;
+    padding: 5px;
+    overflow: hidden;
+}
+
+input[readonly="readonly"]{
+    background-color: white;
+    cursor: pointer;
+}
+
+i[class*="icon"] {
+    margin-right:5px;
+    line-height: 1;
+}
+
+

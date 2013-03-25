@@ -17,102 +17,118 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import transferobjects.AlarmTO;
 import transferobjects.UserTO;
+import utils.LoginChecker;
 import utils.TransferObjectConverter;
 
 @Controller
 public class AlarmUserRelationController {
-    
+
     @Autowired
     private AlarmOrganizer organizer;
-    
+
     @RequestMapping("/editAlarmUsers")
-    public ModelAndView goToAddUserToAlarm(HttpServletRequest request) throws Exception{
-        // Create Model Map
-        Map<String, Object> model = new HashMap<String, Object>();
-        
-        // Get Alarm to add to
-        Integer id = ServletRequestUtils.getIntParameter(request, "aID");
-        Alarm alarm = organizer.getAlarm(id);
-        AlarmTO alarmTO = TransferObjectConverter.getAlarmTO(alarm);
-        
-        // Create list of users to show and a list of users already linked
-        List<UserTO> userTOsLinked = new LinkedList<UserTO>();
-        List<UserTO> userTOsAvailable = new LinkedList<UserTO>();
-        
-        List<User> allUsers = organizer.getAllUsers();
-        List<User> usersLinked = organizer.getUsersFromAlarm(alarm);
-        for(User u : allUsers){
-            System.out.println(u.getUserid());
-            if(usersLinked.contains(u)){
-                System.out.println("Linked:" + u.getUserid());
-                userTOsLinked.add(TransferObjectConverter.getUserTO(u));
+    public ModelAndView goToAddUserToAlarm(HttpServletRequest request) throws Exception {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
+            // Create Model Map
+            Map<String, Object> model = new HashMap<String, Object>();
+
+            // Get Alarm to add to
+            Integer id = ServletRequestUtils.getIntParameter(request, "aID");
+            Alarm alarm = organizer.getAlarm(id);
+            AlarmTO alarmTO = TransferObjectConverter.getAlarmTO(alarm);
+
+            // Create list of users to show and a list of users already linked
+            List<UserTO> userTOsLinked = new LinkedList<UserTO>();
+            List<UserTO> userTOsAvailable = new LinkedList<UserTO>();
+
+            List<User> allUsers = organizer.getAllUsers();
+            List<User> usersLinked = organizer.getUsersFromAlarm(alarm);
+            for (User u : allUsers) {
+                if (usersLinked.contains(u)) {
+                    userTOsLinked.add(TransferObjectConverter.getUserTO(u));
+                } else {
+                    userTOsAvailable.add(TransferObjectConverter.getUserTO(u));
+                }
             }
-            else {
-                userTOsAvailable.add(TransferObjectConverter.getUserTO(u));
-            }
+
+            model.put("usersAvailable", userTOsAvailable);
+            model.put("usersLinked", userTOsLinked);
+            model.put("alarm", alarmTO);
+
+            return new ModelAndView("EditAlarmUsers", model);
         }
-        
-        model.put("usersAvailable", userTOsAvailable);
-        model.put("usersLinked", userTOsLinked);
-        model.put("alarm", alarmTO);
-        
-        return new ModelAndView("EditAlarmUsers", model);
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
+
     }
-    
+
     @RequestMapping("/addUserToAlarmAction")
-    public ModelAndView addUserToAlarm(HttpServletRequest request) throws Exception{
-        Integer aID = addAlarmUserRelation(request).get("aID");
-        return new ModelAndView("redirect:editAlarmUsers.htm?aID=" + aID);
+    public ModelAndView addUserToAlarm(HttpServletRequest request) throws Exception {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
+            Integer aID = addAlarmUserRelation(request).get("aID");
+            return new ModelAndView("redirect:editAlarmUsers.htm?aID=" + aID);
+        }
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
-    
+
     @RequestMapping("/removeUserFromAlarm")
-    public ModelAndView removeUserFromAlarm(HttpServletRequest request) throws Exception{
-        Integer aID = removeAlarmUserRelation(request).get("aID");
-        return new ModelAndView("redirect:editAlarmUsers.htm?aID=" + aID);
+    public ModelAndView removeUserFromAlarm(HttpServletRequest request) throws Exception {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
+            Integer aID = removeAlarmUserRelation(request).get("aID");
+            return new ModelAndView("redirect:editAlarmUsers.htm?aID=" + aID);
+        }
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
-    
+
     @RequestMapping("/editUserAlarms")
     public ModelAndView goToEditUserAlarms(HttpServletRequest request) throws Exception {
-        // Create Model Map
-        Map<String, Object> model = new HashMap<String, Object>();
-        
-        // Get Alarm to add to
-        Integer id = ServletRequestUtils.getIntParameter(request, "uID");
-        User user = organizer.getUser(id);
-        UserTO userTO = TransferObjectConverter.getUserTO(user);
-        
-        // Create list of users to show and a list of users already linked
-        List<AlarmTO> alarmTOsLinked = new LinkedList<AlarmTO>();
-        List<AlarmTO> alarmTOsAvailable = new LinkedList<AlarmTO>();
-        
-        List<Alarm> allAlarms = organizer.getAllAlarms();
-        List<Alarm> alarmsLinked = organizer.getAlarmsFromUser(user);
-        for(Alarm a : allAlarms){
-            if(alarmsLinked.contains(a)){
-                alarmTOsLinked.add(TransferObjectConverter.getAlarmTO(a));
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
+            // Create Model Map
+            Map<String, Object> model = new HashMap<String, Object>();
+
+            // Get Alarm to add to
+            Integer id = ServletRequestUtils.getIntParameter(request, "uID");
+            User user = organizer.getUser(id);
+            UserTO userTO = TransferObjectConverter.getUserTO(user);
+
+            // Create list of users to show and a list of users already linked
+            List<AlarmTO> alarmTOsLinked = new LinkedList<AlarmTO>();
+            List<AlarmTO> alarmTOsAvailable = new LinkedList<AlarmTO>();
+
+            List<Alarm> allAlarms = organizer.getAllAlarms();
+            List<Alarm> alarmsLinked = organizer.getAlarmsFromUser(user);
+            for (Alarm a : allAlarms) {
+                if (alarmsLinked.contains(a)) {
+                    alarmTOsLinked.add(TransferObjectConverter.getAlarmTO(a));
+                } else {
+                    alarmTOsAvailable.add(TransferObjectConverter.getAlarmTO(a));
+                }
             }
-            else {
-                alarmTOsAvailable.add(TransferObjectConverter.getAlarmTO(a));
-            }
+
+            model.put("alarmsAvailable", alarmTOsAvailable);
+            model.put("alarmsLinked", alarmTOsLinked);
+            model.put("user", userTO);
+
+            return new ModelAndView("EditUserAlarms", model);
         }
-        
-        model.put("alarmsAvailable", alarmTOsAvailable);
-        model.put("alarmsLinked", alarmTOsLinked);
-        model.put("user", userTO);
-        
-        return new ModelAndView("EditUserAlarms", model);
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
-    
+
     @RequestMapping("/addAlarmToUserAction")
-    public ModelAndView addAlarmToUserAction(HttpServletRequest request) throws Exception{
-        Integer uID = addAlarmUserRelation(request).get("uID");
-        return new ModelAndView("redirect:editUserAlarms.htm?uID=" + uID);
+    public ModelAndView addAlarmToUserAction(HttpServletRequest request) throws Exception {
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
+            Integer uID = addAlarmUserRelation(request).get("uID");
+            return new ModelAndView("redirect:editUserAlarms.htm?uID=" + uID);
+        }
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
-    
+
     @RequestMapping("/removeAlarmFromUser")
     public ModelAndView removeAlarmFromUser(HttpServletRequest request) throws Exception {
-        Integer uID = removeAlarmUserRelation(request).get("uID");
-        return new ModelAndView("redirect:editUserAlarms.htm?uID=" + uID);
+        if (LoginChecker.userLoggedInAndAdmin(request)) {
+            Integer uID = removeAlarmUserRelation(request).get("uID");
+            return new ModelAndView("redirect:editUserAlarms.htm?uID=" + uID);
+        }
+        return new ModelAndView("redirect:loginForm.htm?info='You have to be logged in as admin to view this page.'");
     }
 
     private Map<String, Integer> addAlarmUserRelation(HttpServletRequest request) throws DatabaseException, ServletRequestBindingException {

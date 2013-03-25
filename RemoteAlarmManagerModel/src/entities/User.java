@@ -5,11 +5,7 @@
 package entities;
 
 import domain.PasswordEncrypter;
-import exceptions.DatabaseException;
 import java.io.Serializable;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -39,7 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "User.findByAchternaam", query = "SELECT u FROM User u WHERE u.achternaam = :achternaam"),
     @NamedQuery(name = "User.findByPaswoord", query = "SELECT u FROM User u WHERE u.paswoord = :paswoord"),
     @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
-    @NamedQuery(name = "User.findBySalt", query = "SELECT u FROM User u WHERE u.salt = :salt")})
+    @NamedQuery(name = "User.findBySalt", query = "SELECT u FROM User u WHERE u.salt = :salt"),
+    @NamedQuery(name = "User.findByAdmin", query = "SELECT u FROM User u WHERE u.admin = :admin")})
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,6 +60,8 @@ public class User implements Serializable {
     @Basic(optional = false)
     @Column(name = "salt")
     private String salt;
+    @Column(name = "admin")
+    private Boolean admin;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userid")
     private List<UserAlarm> userAlarmList;
 
@@ -73,11 +72,12 @@ public class User implements Serializable {
         this.userid = userid;
     }
 
-    public User(String naam, String achternaam, String paswoord, String email) {
+    public User(String naam, String achternaam, String paswoord, String email, boolean admin) {
         setNaam(naam);
         setAchternaam(achternaam);
         setPaswoord(paswoord);
         setEmail(email);
+        setAdmin(admin);
     }
 
     public Integer getUserid() {
@@ -105,7 +105,7 @@ public class User implements Serializable {
     }
 
     public String getPaswoord() {
-        return this.paswoord;
+        return paswoord;
     }
 
     public void setPaswoord(String paswoord) {
@@ -130,6 +130,14 @@ public class User implements Serializable {
         this.salt = salt;
     }
 
+    public Boolean getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
+    }
+
     @XmlTransient
     public List<UserAlarm> getUserAlarmList() {
         return userAlarmList;
@@ -144,44 +152,6 @@ public class User implements Serializable {
         int hash = 0;
         hash += (userid != null ? userid.hashCode() : 0);
         return hash;
-    }
-
-    public boolean authenticate(String password) {
-        return PasswordEncrypter.isCorrect(getPaswoord(), password, getSalt());
-    }
-
-    private String md5(String input) throws DatabaseException {
-        String md5 = null;
-        if (null == input) {
-            return null;
-        }
-        try {
-
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(input.getBytes(), 0, input.length());
-            md5 = new BigInteger(1, digest.digest()).toString(16);
-
-        } catch (NoSuchAlgorithmException e) {
-            throw new DatabaseException(e);
-        }
-        return md5;
-    }
-
-    private String sha1(String input) throws DatabaseException {
-        String sha1 = null;
-        if (null == input) {
-            return null;
-        }
-        try {
-
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            digest.update(input.getBytes(), 0, input.length());
-            sha1 = new BigInteger(1, digest.digest()).toString(16);
-
-        } catch (NoSuchAlgorithmException e) {
-            throw new DatabaseException(e);
-        }
-        return sha1;
     }
 
     @Override
@@ -200,5 +170,9 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "entities.User[ userid=" + userid + " ]";
+    }
+
+    public boolean authenticate(String password) {
+        return PasswordEncrypter.isCorrect(getPaswoord(), password, getSalt());
     }
 }

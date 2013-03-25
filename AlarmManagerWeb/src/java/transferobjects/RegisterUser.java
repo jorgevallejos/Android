@@ -15,6 +15,15 @@ public class RegisterUser {
     private String email;
     private String paswoord;
     private String paswoordRepeat;
+    private boolean admin;
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
 
     public String getPaswoordRepeat() {
         return paswoordRepeat;

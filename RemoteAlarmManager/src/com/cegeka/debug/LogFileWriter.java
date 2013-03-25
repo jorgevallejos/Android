@@ -3,7 +3,6 @@ package com.cegeka.debug;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Date;
 
 import android.os.Environment;

@@ -16,14 +16,15 @@ public class RepeatedAlarm extends Alarm {
 
 	}
 
-	public RepeatedAlarm(String title, String description, Calendar date, Repeat_Unit repeatUnit, int repeatQuantity, Calendar repeatEndDate) throws AlarmException{
-		super(title, description, date);
+	public RepeatedAlarm(long id, String title, String description, Calendar date, Repeat_Unit repeatUnit, int repeatQuantity, Calendar repeatEndDate) throws AlarmException{
+		super(id, title, description, date);
 		setRepeatUnit(repeatUnit);
 		setRepeatUnitQuantity(repeatQuantity);
 		setRepeatEndDate(repeatEndDate);
 	}
 
 	public RepeatedAlarm(RepeatedAlarm repeatedAlarm) throws AlarmException{
+		setId(repeatedAlarm.getId());
 		setTitle(repeatedAlarm.getTitle());
 		setDescription(repeatedAlarm.getDescription());
 		setDate((Calendar) repeatedAlarm.getDate().clone());
@@ -31,33 +32,29 @@ public class RepeatedAlarm extends Alarm {
 		setRepeatUnitQuantity(repeatedAlarm.getRepeatUnitQuantity());
 		setRepeatEndDate((Calendar) repeatedAlarm.getRepeatEndDate().clone());
 	}
+	
+	
 
 	public Repeat_Unit getRepeatUnit() {
-		
 		return repeatUnit;
 	}
 
 	public void setRepeatUnit(Repeat_Unit repeatUnit) {
-		
 		this.repeatUnit = repeatUnit;
 	}
 
 	public int getRepeatUnitQuantity() {
-		
 		return repeatUnitQuantity;
 	}
 
 	public void setRepeatUnitQuantity(int repeatUnitQuantity) throws AlarmException {
-		
 		if(repeatUnitQuantity <= 0){
 			throw new AlarmException("The repeatUnitQuantity can't be 0 or negative.");
 		}
-		
 		this.repeatUnitQuantity = repeatUnitQuantity;
 	}
 
 	public Calendar getRepeatEndDate() {
-		
 		return repeatEndDate;
 	}
 
@@ -79,6 +76,12 @@ public class RepeatedAlarm extends Alarm {
 
 		this.repeatEndDate = repeatEndDate;
 	}
+	
+	public String toString(){
+		return "ID: " + getId() + "\nTitel: " +getTitle() + "\nDescription: " + getDescription() + "\nTimeInMillis: " + getDate().getTimeInMillis() + "\nDate: " 
+					+ SimpleDateFormatmethod(getDate()) + "\nRepeatEdnDate: " + SimpleDateFormatmethod(getRepeatEndDate());
+	}
+
 
 	// Enum die aangeeft met welk repeat unit er wordt gewerkt.
 	public enum Repeat_Unit {
@@ -94,5 +97,6 @@ public class RepeatedAlarm extends Alarm {
 
 		}
 	}
+
 
 }
