@@ -1,15 +1,16 @@
 package be.cegeka.android.dwaaldetectie.model;
 
-import static be.cegeka.android.dwaaldetectie.model.TrackingConfiguration.trackingConfig;
 import java.util.Timer;
 import java.util.TimerTask;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import be.cegeka.android.dwaaldetectie.view.listeners.LocationChangeListener;
 
 
 public class TrackingService extends Service
@@ -17,14 +18,13 @@ public class TrackingService extends Service
 	private LocationManager lm;
 	private Timer timer;
 	private static boolean running;
-	private static boolean receivingLocationUpdates;
+	private LocationListener locationChangeListener;
 
 
 	public TrackingService()
 	{
 		timer = new Timer();
 		running = false;
-		receivingLocationUpdates = true;
 	}
 
 
@@ -48,47 +48,46 @@ public class TrackingService extends Service
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
+		TrackingConfiguration.trackingConfig().loadVariables(this);
 		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+		if (locationChangeListener == null)
+		{
+			locationChangeListener = new LocationChangeListener(this);
+		}
 
 		if (!running)
 		{
 			running = true;
-			receivingLocationUpdates = true;
 
-			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, trackingConfig().getChangeListener());
-			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, trackingConfig().getChangeListener());
+			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, locationChangeListener);
+			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, locationChangeListener);
 
 			timer.scheduleAtFixedRate(new TimerTask()
 			{
-				Handler handler;
-
-
 				@Override
 				public void run()
 				{
-					if (receivingLocationUpdates)
+					new Handler(Looper.getMainLooper()).post(new Runnable()
 					{
-						lm.removeUpdates(trackingConfig().getChangeListener());
-
-						receivingLocationUpdates = false;
-					}
-					else
-					{
-						handler = new Handler(Looper.getMainLooper());
-						handler.post(new Runnable()
+						@Override
+						public void run()
 						{
-							@Override
-							public void run()
-							{
-								lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, trackingConfig().getChangeListener());
-								lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, trackingConfig().getChangeListener());
-							}
-						});
+							lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, locationChangeListener);
+							lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, locationChangeListener);
+						}
+					});
 
-						receivingLocationUpdates = true;
-					}
+					new Timer().schedule(new TimerTask()
+					{
+						@Override
+						public void run()
+						{
+							lm.removeUpdates(locationChangeListener);
+						}
+					}, 10000);
 				}
-			}, 10000, 10000);
+			}, 1000, 40000);
 		}
 
 		return START_STICKY;
@@ -102,11 +101,9 @@ public class TrackingService extends Service
 	public void onDestroy()
 	{
 		TrackingConfiguration.trackingConfig().setDistanceInfo("");
-		lm.removeUpdates(trackingConfig().getChangeListener());
+		lm.removeUpdates(locationChangeListener);
 		timer.cancel();
-
 		running = false;
-		receivingLocationUpdates = false;
 
 		super.onDestroy();
 	}

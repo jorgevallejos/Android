@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import be.cegeka.android.dwaaldetectie.utilities.LatLngLocationConverter;
-import be.cegeka.android.dwaaldetectie.view.listeners.LocationChangeListener;
 import com.google.android.gms.maps.model.LatLng;
 
 
@@ -26,7 +25,6 @@ public class TrackingConfiguration extends Observable
 	 */
 	private static final TrackingConfiguration INSTANCE = new TrackingConfiguration();
 
-	private LocationChangeListener changeListener;
 	private LatLng location;
 	private String address;
 	private String distance = "";
@@ -72,12 +70,6 @@ public class TrackingConfiguration extends Observable
 	public LatLng getLocation()
 	{
 		return location;
-	}
-
-
-	public LocationChangeListener getChangeListener()
-	{
-		return changeListener;
 	}
 
 
@@ -148,8 +140,8 @@ public class TrackingConfiguration extends Observable
 
 
 	/**
-	 * Tries to start the TrackingService. Tries to load the home location from
-	 * the device. Return the result as an int.
+	 * Starts the TrackingService if all the needed variables can be loaded from
+	 * memory. Returns the result.
 	 * 
 	 * @param context
 	 *            Context of the Application.
@@ -158,6 +150,29 @@ public class TrackingConfiguration extends Observable
 	 *         maximum distance was stored on the device.
 	 */
 	public int startTrackingService(Context context)
+	{
+		int result = loadVariables(context);
+
+		if (result == TrackingConfiguration.RESULT_OK)
+		{
+			context.startService(new Intent(context, TrackingService.class));
+		}
+
+		return result;
+	}
+
+
+	/**
+	 * Loads needed variables from memory into class variables (if in
+	 * existence).
+	 * 
+	 * @param context
+	 *            Context of the Application.
+	 * @return 0 if the TrackingService was started, 1 if an unexpected error
+	 *         occurred, 2 if no address was stored on the device, 3 if no
+	 *         maximum distance was stored on the device.
+	 */
+	public int loadVariables(Context context)
 	{
 		int result;
 
@@ -168,26 +183,14 @@ public class TrackingConfiguration extends Observable
 		{
 			result = RESULT_NO_ADDRESS_SET;
 		}
-		else if(maxDistance == -1)
+		else if (maxDistance == -1)
 		{
 			result = RESULT_NO_MAX_DISTANCE;
 		}
 		else
 		{
-			try
-			{
-				setLocation(context, latLng);
-			}
-			catch (Exception e)
-			{
-				result = RESULT_ERROR;
-			}
-			if (changeListener == null)
-			{
-				changeListener = new LocationChangeListener(context);
-			}
+			this.location = latLng;
 
-			context.startService(new Intent(context, TrackingService.class));
 			result = RESULT_OK;
 		}
 
