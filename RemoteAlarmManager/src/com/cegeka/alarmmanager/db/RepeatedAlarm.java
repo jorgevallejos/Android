@@ -2,8 +2,10 @@ package com.cegeka.alarmmanager.db;
 
 import java.util.Calendar;
 
+import android.annotation.SuppressLint;
 import com.cegeka.alarmmanager.exceptions.AlarmException;
 
+@SuppressLint("DefaultLocale")
 public class RepeatedAlarm extends Alarm {
 
 	private static final long serialVersionUID = 1963194492622085969L;
@@ -78,25 +80,38 @@ public class RepeatedAlarm extends Alarm {
 	}
 	
 	public String toString(){
-		return "ID: " + getId() + "\nTitel: " +getTitle() + "\nDescription: " + getDescription() + "\nTimeInMillis: " + getDate().getTimeInMillis() + "\nDate: " 
-					+ SimpleDateFormatmethod(getDate()) + "\nRepeatEdnDate: " + SimpleDateFormatmethod(getRepeatEndDate());
+		return "Titel: " +getTitle() +"\n"+ SimpleDateFormatmethod(getDate()) + "\nRepeated";
+	}
+	
+	public String formattedString(){
+		return "ID: " + getId() + "\nTitel: " +getTitle() + "\nDescription: " + getDescription() + "\nTimeInMillis: " + getDate().getTimeInMillis() + "\nDate: " + SimpleDateFormatmethod(getDate());
 	}
 
+	@SuppressLint("DefaultLocale")
+	public String getFullInformation(){
+		String result = "";
+		result +=  getDescription() +"\n\n";
+		
+		if(getRepeatUnitQuantity()>1){
+			result += "Repeat every " + getRepeatUnitQuantity() + " " + getRepeatUnit().toString().toLowerCase() +"s\n";
+		}else{
+			result += "Repeat every " + getRepeatUnit().toString().toLowerCase() +"\n";
+		}
+		result += "From:\n";
+		result += SimpleDateFormatmethod(getDate()) +"\n\n";
+		result += "Until:\n";
+		result += SimpleDateFormatmethod(getRepeatEndDate());
+		return result;
+	}
 
 	// Enum die aangeeft met welk repeat unit er wordt gewerkt.
 	public enum Repeat_Unit {
-
 		MINUTE,
 		HOUR,
 		DAY,
 		WEEK,
 		MONTH,
 		YEAR;
-
-		Repeat_Unit(){
-
-		}
+		Repeat_Unit(){}
 	}
-
-
 }

@@ -42,30 +42,44 @@
         android:text="@string/paswoordTextViewString" />
 
     <EditText
-        android:id="@+id/paswoordTextBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/loginButton"
-        android:ems="10"
-        android:inputType="textPassword" />
-
-    <EditText
         android:id="@+id/emailtextBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/textView1"
+        android:layout_alignBottom="@+id/textViewOffline"
         android:layout_alignLeft="@+id/paswoordTextBox"
         android:ems="10"
         android:inputType="textEmailAddress" />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/textViewOffline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/paswoordTextBox"
         android:layout_alignLeft="@+id/textView2"
         android:layout_marginBottom="20dp"
         android:text="@string/emailTextViewString" />
+
+    <EditText
+        android:id="@+id/paswoordTextBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@+id/textView2"
+        android:ems="10"
+        android:inputType="textPassword" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/loginButton"
+        android:layout_alignBottom="@+id/loginButton"
+        android:layout_alignLeft="@+id/paswoordTextBox"
+        android:onClick="redirectToUpdate"
+        android:text="View alarms offline" />
 
 </RelativeLayout>

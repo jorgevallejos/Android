@@ -8,7 +8,6 @@ package com.cegeka.alarmmanager.connection.model;
 
 /**
  *
- * @author davidm
  */
 public class User {
     

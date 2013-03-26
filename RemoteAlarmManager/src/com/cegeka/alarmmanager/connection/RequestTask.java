@@ -12,7 +12,10 @@ import android.os.AsyncTask;
 import com.cegeka.alarmmanager.connection.model.Alarm;
 import com.cegeka.alarmmanager.connection.model.User;
 
-
+/**
+ * The class that makes the connection with the web service using SOAP messages.
+ *
+ */
 public class RequestTask extends AsyncTask<String, String, SoapObject>{
 	//METHOD NAME
 	private static String METHOD_NAME = "getAlarmsFromUser";
@@ -30,7 +33,8 @@ public class RequestTask extends AsyncTask<String, String, SoapObject>{
 
 	public static String GET_USER = "getUser";
 	public static String GET_ALARMS_FROM_USER = "getAlarmsFromUser";
-
+	
+	
 	@Override
 	protected SoapObject doInBackground(String... uri) {
 		done=false;
@@ -84,7 +88,14 @@ public class RequestTask extends AsyncTask<String, String, SoapObject>{
 		super.onPostExecute(result);
 	}
 
-
+	/**
+	 * Connects to the web service asking the web service for a user with this login credentials.
+	 * @param username The username.
+	 * @param paswoord The password of the {@link User}.
+	 * @return A soapobject if the login credentials were correct or null of they were incorrect.
+	 * @throws IOException
+	 * @throws XmlPullParserException
+	 */
 	private SoapObject getUserResponse(String username, String paswoord) throws IOException, XmlPullParserException{
 		timeout=false;
 		SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);          
@@ -105,7 +116,10 @@ public class RequestTask extends AsyncTask<String, String, SoapObject>{
 		return response;
 	}
 
-
+	/**
+	 * Make a {@link User} object from the response from the server.
+	 * @param response
+	 */
 	private void setUser(SoapObject response){
 		User u;
 		String achternaam = response.getPropertySafelyAsString("achternaam").toString();
@@ -116,6 +130,14 @@ public class RequestTask extends AsyncTask<String, String, SoapObject>{
 		user= u;
 	}
 
+	/**
+	 * Connects to the web service asking the web service for a the alarms of the user with these login credentials.
+	 * @param username The username.
+	 * @param paswoord The password of the {@link User}.
+	 * @return A {@link SoapObject} if the user exists else null.
+	 * @throws IOException
+	 * @throws XmlPullParserException
+	 */
 	private SoapObject soapGetAlarmsFromUserResponse(String username, String paswoord) throws IOException, XmlPullParserException {
 		setTimeout(false);
 		SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);          
@@ -135,6 +157,10 @@ public class RequestTask extends AsyncTask<String, String, SoapObject>{
 		return response;
 	}
 
+	/**
+	 * Make the {@link Alarm} objects from the response.
+	 * @param response A {@link SoapObject} containing the response.
+	 */
 	private void getAlarms(SoapObject response){
 		ArrayList<Alarm> alarms = new ArrayList<Alarm>();
 		for(int i= 0; i< response.getPropertyCount(); i++){
@@ -155,6 +181,10 @@ public class RequestTask extends AsyncTask<String, String, SoapObject>{
 		setAlarms(alarms);
 	}
 
+	/**
+	 * Check if this {@link AsyncTask} has finished.
+	 * @return <code>true</code> if the task has finished else <code>false</code>.
+	 */
 	public boolean isDone() {
 		return done;
 	}
@@ -179,6 +209,10 @@ public class RequestTask extends AsyncTask<String, String, SoapObject>{
 		this.alarms = alarms;
 	}
 
+	/**
+	 * Check if the request has timed out.
+	 * @return Returns <code>true</code> if the request has timed out else <code>false</code>.
+	 */
 	public boolean isTimeout() {
 		return timeout;
 	}

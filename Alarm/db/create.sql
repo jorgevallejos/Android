@@ -1,10 +1,11 @@
-﻿CREATE TABLE Users
+CREATE TABLE Users
 ( UserId SERIAL not null,
 Naam varchar(40) not null,
 Achternaam varchar(50) not null,
 Paswoord varchar(40) not null,
 Email varchar(100) not null unique,
 Salt char(20) not null,
+admin boolean not null default false,
 CONSTRAINT PRIMARY_KEY_USER PRIMARY KEY (UserId));
 
 CREATE TABLE Alarm

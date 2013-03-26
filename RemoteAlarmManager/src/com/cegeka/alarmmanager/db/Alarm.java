@@ -87,7 +87,7 @@ public class Alarm implements Serializable{
 
 	@SuppressLint("SimpleDateFormat")
 	protected String SimpleDateFormatmethod(Calendar date) {
-		SimpleDateFormat dateformatter = new SimpleDateFormat("E dd.MM.yyyy 'at' hh:mm:ss a");
+		SimpleDateFormat dateformatter = new SimpleDateFormat("'Day: 'E dd.MM.yyyy '\nHour: ' HH:mm:ss");
 		return dateformatter.format(date.getTime());
 	}
 
@@ -96,9 +96,14 @@ public class Alarm implements Serializable{
 	}
 	
 	public String toString(){
-		return "Titel: " +getTitle() + "\nDescription: " + getDescription() + "\nDate: " + SimpleDateFormatmethod(getDate());
+		return "Titel: " +getTitle() + "\n" + SimpleDateFormatmethod(getDate());
 	}
 
-
+	public String getFullInformation(){
+		String result = "";
+		result +=  getDescription() +"\n\n";
+		result += SimpleDateFormatmethod(getDate());
+		return result;
+	}
 
 }
