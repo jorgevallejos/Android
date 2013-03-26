@@ -45,7 +45,7 @@
     </target>
     <target name="wsimport-client-AlarmWebService" depends="wsimport-init">
         <mkdir dir="${build.generated.dir}/jax-wsCache/AlarmWebService"/>
-        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/AlarmWebService" destdir="${build.generated.dir}/jax-wsCache/AlarmWebService" wsdl="${basedir}/${conf-dir}xml-resources/web-service-references/AlarmWebService/wsdl/localhost_8080/AlarmWebService/AlarmWebService.wsdl" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" wsdlLocation="http://localhost:8080/AlarmWebService/AlarmWebService?wsdl" xnocompile="true" xendorsed="true" package="be.cegeka_client">
+        <wsimport sourcedestdir="${build.generated.dir}/jax-wsCache/AlarmWebService" destdir="${build.generated.dir}/jax-wsCache/AlarmWebService" wsdl="${basedir}/${conf-dir}xml-resources/web-service-references/AlarmWebService/wsdl/localhost_8080/AlarmWebService/AlarmWebService.wsdl" catalog="catalog.xml" encoding="${source.encoding}" extension="true" verbose="true" wsdlLocation="http://172.31.207.79:8080/AlarmWebService/AlarmWebService?wsdl" xnocompile="true" xendorsed="true" package="be.cegeka_client">
             <depends file="${basedir}/${conf-dir}xml-resources/web-service-references/AlarmWebService/wsdl/localhost_8080/AlarmWebService/AlarmWebService.wsdl"/>
             <produces dir="${build.generated.dir}/jax-wsCache/AlarmWebService"/>
         </wsimport>

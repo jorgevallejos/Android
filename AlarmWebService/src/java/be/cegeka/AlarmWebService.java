@@ -57,7 +57,10 @@ public class AlarmWebService {
     
 
     /**
-     * Web service operation
+     * Get all alarms from a User. 
+     * @param emailadres The email-address of the user.
+     * @param passwoord The password of the User.
+     * @return An ArrayList containing the Alarms.
      */
     @WebMethod(operationName = "getAlarmsFromUser")
     public ArrayList<Alarm> getAlarmsFromUser(@WebParam(name = "emailadres") String emailadres, @WebParam(name = "paswoord") String passwoord) {

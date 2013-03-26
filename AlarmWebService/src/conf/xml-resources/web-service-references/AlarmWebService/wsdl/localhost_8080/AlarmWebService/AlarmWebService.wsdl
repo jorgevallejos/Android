@@ -4,31 +4,61 @@
 <xsd:import namespace="http://cegeka.be/" schemaLocation="http://localhost:8080/AlarmWebService/AlarmWebService?xsd=1"/>
 </xsd:schema>
 </types>
-<message name="add">
-<part name="parameters" element="tns:add"/>
+<message name="getUser">
+<part name="parameters" element="tns:getUser"/>
 </message>
-<message name="addResponse">
-<part name="parameters" element="tns:addResponse"/>
+<message name="getUserResponse">
+<part name="parameters" element="tns:getUserResponse"/>
 </message>
-<message name="hello">
-<part name="parameters" element="tns:hello"/>
+<message name="getAlarmsFromUser">
+<part name="parameters" element="tns:getAlarmsFromUser"/>
 </message>
-<message name="helloResponse">
-<part name="parameters" element="tns:helloResponse"/>
+<message name="getAlarmsFromUserResponse">
+<part name="parameters" element="tns:getAlarmsFromUserResponse"/>
+</message>
+<message name="addAlarmByDate">
+<part name="parameters" element="tns:addAlarmByDate"/>
+</message>
+<message name="addAlarmByDateResponse">
+<part name="parameters" element="tns:addAlarmByDateResponse"/>
+</message>
+<message name="createUser">
+<part name="parameters" element="tns:createUser"/>
+</message>
+<message name="createUserResponse">
+<part name="parameters" element="tns:createUserResponse"/>
+</message>
+<message name="addAlarm">
+<part name="parameters" element="tns:addAlarm"/>
+</message>
+<message name="addAlarmResponse">
+<part name="parameters" element="tns:addAlarmResponse"/>
 </message>
 <portType name="AlarmWebService">
-<operation name="add">
-<input wsam:Action="http://cegeka.be/AlarmWebService/addRequest" message="tns:add"/>
-<output wsam:Action="http://cegeka.be/AlarmWebService/addResponse" message="tns:addResponse"/>
+<operation name="getUser">
+<input wsam:Action="http://cegeka.be/AlarmWebService/getUserRequest" message="tns:getUser"/>
+<output wsam:Action="http://cegeka.be/AlarmWebService/getUserResponse" message="tns:getUserResponse"/>
 </operation>
-<operation name="hello">
-<input wsam:Action="http://cegeka.be/AlarmWebService/helloRequest" message="tns:hello"/>
-<output wsam:Action="http://cegeka.be/AlarmWebService/helloResponse" message="tns:helloResponse"/>
+<operation name="getAlarmsFromUser">
+<input wsam:Action="http://cegeka.be/AlarmWebService/getAlarmsFromUserRequest" message="tns:getAlarmsFromUser"/>
+<output wsam:Action="http://cegeka.be/AlarmWebService/getAlarmsFromUserResponse" message="tns:getAlarmsFromUserResponse"/>
+</operation>
+<operation name="addAlarmByDate">
+<input wsam:Action="http://cegeka.be/AlarmWebService/addAlarmByDateRequest" message="tns:addAlarmByDate"/>
+<output wsam:Action="http://cegeka.be/AlarmWebService/addAlarmByDateResponse" message="tns:addAlarmByDateResponse"/>
+</operation>
+<operation name="createUser">
+<input wsam:Action="http://cegeka.be/AlarmWebService/createUserRequest" message="tns:createUser"/>
+<output wsam:Action="http://cegeka.be/AlarmWebService/createUserResponse" message="tns:createUserResponse"/>
+</operation>
+<operation name="addAlarm">
+<input wsam:Action="http://cegeka.be/AlarmWebService/addAlarmRequest" message="tns:addAlarm"/>
+<output wsam:Action="http://cegeka.be/AlarmWebService/addAlarmResponse" message="tns:addAlarmResponse"/>
 </operation>
 </portType>
 <binding name="AlarmWebServicePortBinding" type="tns:AlarmWebService">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-<operation name="add">
+<operation name="getUser">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -37,7 +67,34 @@
 <soap:body use="literal"/>
 </output>
 </operation>
-<operation name="hello">
+<operation name="getAlarmsFromUser">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="addAlarmByDate">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="createUser">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="addAlarm">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
