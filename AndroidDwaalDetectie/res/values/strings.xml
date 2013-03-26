@@ -35,7 +35,7 @@
     <string name="map_dialog_not_found_title">Geen resultaat</string>
     <string name="map_dialog_not_found_message">Het ingevoerde adres kon niet gevonden worden</string>
     <string name="map_dialog_not_found_button">Okay :(</string>
-    <string name="error_unable_to_start">Dwaaldetectie kon door een probleem niet worden gestart</string>
+    <string name="error_unable_to_start">Dwaaldetectie kon niet worden gestart. Open de applicatie om Dwaaldetectie te starten.</string>
     <string name="error_unable_to_save">Het adres kon niet opgeslagen worden</string>
     <string name="error_error">Probleem</string>
     <string name="error_no_address_saved">Er is momenteel nog geen adres ingesteld. Gelieve op de kaart een adres in te stellen.</string>

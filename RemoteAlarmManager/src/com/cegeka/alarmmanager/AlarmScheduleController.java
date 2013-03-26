@@ -2,7 +2,11 @@ package com.cegeka.alarmmanager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import android.app.AlarmManager;
 import android.content.Context;
+import android.content.res.Resources.Theme;
+
 import com.cegeka.alarmmanager.db.Alarm;
 import com.cegeka.alarmmanager.db.AlarmsDataSource;
 import com.cegeka.alarmmanager.db.RepeatedAlarm;
@@ -13,37 +17,40 @@ import com.cegeka.alarmmanager.view.AlarmScheduler;
 
 public class AlarmScheduleController {
 
-	public static void scheduleAlarm(Alarm alarm, Context ctx){
-		AlarmsDataSource alarmDS = new AlarmsDataSource(ctx);
-		alarmDS.open();
-		try {
-			if(alarmDS.getAlarmById(alarm.getId()) == null){
-				alarm = alarmDS.createAlarm(alarm);
-				AlarmScheduler.scheduleAlarm(ctx, alarm);
-			}
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-		}finally{
-			alarmDS.close();
-		}
-		alarmDS.close();
-	}
+	
 
-	public static void scheduleAlarms(ArrayList<Alarm> alarms, Context ctx){
+	/**
+	 * Tries to add all the {@link Alarm} objects gto the database and schedule them.
+	 * If the {@link Alarm} given does not already exists in the database it adds the {@link Alarm} to the SQLite database and 
+	 * also schedules the {@link Alarm} using the {@link AlarmScheduler} else it does nothin with the particular {@link Alarm}.
+	 * It also removes Alarms from the scheduler and removes Alarms from the database if the {@link ArrayList} of {@link Alarm} objects given does not contain them anymore.
+	 * @param alarm The {@link Alarm} to schedule
+	 * @param ctx A context needed for the {@link AlarmScheduler}.
+	 */
+	public static void updateAlarms(ArrayList<Alarm> alarms, Context ctx){
 		AlarmsDataSource alarmDS = new AlarmsDataSource(ctx);
 		alarmDS.open();
 		try {
 			
 			for(Alarm a : alarms){
-				if(alarmDS.getAlarmById(a.getId()) == null){
+				Alarm alarm = alarmDS.getAlarmById(a.getId());
+				if(alarm == null){
 					if(a instanceof RepeatedAlarm){
 						RepeatedAlarm ra = (RepeatedAlarm) a;
 						a = alarmDS.createRepeatedAlarm(ra);
 					}else{
 						a = alarmDS.createAlarm(a);
 					}
-					AlarmScheduler.scheduleAlarm(ctx, a);
+					
+				}else{
+					if(a instanceof RepeatedAlarm){
+						RepeatedAlarm ra = (RepeatedAlarm) a;
+						a = alarmDS.updateRepeatedAlarm(ra);
+					}else{
+						a = alarmDS.updateAlarm(a);
+					}
 				}
+				AlarmScheduler.scheduleAlarm(ctx, a);
 			}
 			ArrayList<Alarm> removeAlarmsList = alarmDS.getAllAlarmsExcept(alarms);
 			alarmDS.deleteAlarms(removeAlarmsList);
@@ -57,11 +64,30 @@ public class AlarmScheduleController {
 		alarmDS.close();
 	}
 
-
-	public static void cancelAlarm(Alarm alarm, Context ctx){
-
+	/**
+	 * Cancels the given Alarms and removes them from the database
+	 * @param alarmen The {@link Alarm} objects to cancel.
+	 * @param ctx The context
+	 */
+	public static void cancelAlarms(ArrayList<Alarm> alarmen, Context ctx){
+		AlarmScheduler.cancelAlarms(ctx, alarmen);
+		AlarmsDataSource alarmDS = new AlarmsDataSource(ctx);
+		alarmDS.open();
+		try{
+			alarmDS.deleteAlarms(alarmen);
+		}catch(Exception e){
+			
+		}finally{
+			alarmDS.close();
+		}
 	}
 
+	/**
+	 * Converts an {@link com.cegeka.alarmmanager.connection.model.Alarm} object to an {@link Alarm} object.
+	 * 
+	 * @param a The {@link com.cegeka.alarmmanager.connection.model.Alarm} object to convert
+	 * @return An {@link Alarm} object.
+	 */
 	public static Alarm convertAlarm(com.cegeka.alarmmanager.connection.model.Alarm a) {
 		Alarm alarm = null;
 
@@ -86,7 +112,13 @@ public class AlarmScheduleController {
 		return alarm;
 	}
 
-	private static Alarm resetDateRepeatedAlarm(com.cegeka.alarmmanager.connection.model.Alarm alarm) throws AlarmException{
+	/**
+	 * Converts an {@link com.cegeka.alarmmanager.connection.model.Alarm} to an {@link RepeatedAlarm} while setting its end_date correctly.
+	 * @param alarm The {@link com.cegeka.alarmmanager.connection.model.Alarm} object to convert.
+	 * @return A {@link RepeatedAlarm}
+	 * @throws AlarmException Thrown when the date of the alarm falls in the past.
+	 */
+	private static RepeatedAlarm resetDateRepeatedAlarm(com.cegeka.alarmmanager.connection.model.Alarm alarm) throws AlarmException{
 		Calendar repeatEndDate = getMillis(alarm.getRepeatEndDate());
 		Calendar date = getMillis(alarm.getDate());
 		Repeat_Unit unit = Repeat_Unit.valueOf(alarm.getRepeatUnit());
@@ -116,6 +148,11 @@ public class AlarmScheduleController {
 		return repeatedAlarm;
 	}
 	
+	/**
+	 * Get a {@link Calendar} from milliseconds.
+	 * @param millis
+	 * @return A {@link Calendar} object
+	 */
 	private static Calendar getMillis(long millis)
 	{
 		Calendar cal = Calendar.getInstance();

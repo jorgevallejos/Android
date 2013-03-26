@@ -46,7 +46,7 @@ public class LoginActivity extends Activity {
 	}
 
 	public void login(View view){
-		if(isNetworkAvailable()){
+		if(InternetChecker.isNetworkAvailable(this)){
 			final ProgressDialog myPd_ring=ProgressDialog.show(LoginActivity.this, "Please wait", "Loading please wait..", true);
 			myPd_ring.setCancelable(true);
 			new Thread(new Runnable() {  
@@ -63,12 +63,8 @@ public class LoginActivity extends Activity {
 			finish();
 		}
 	}
-	private boolean isNetworkAvailable() {
-		ConnectivityManager connectivityManager 
-		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-	}
+	
+	
 	private void doLogin() {
 		String email = emailEditText.getText().toString();
 		String pass = paswoordEditText.getText().toString();
@@ -118,6 +114,10 @@ public class LoginActivity extends Activity {
 				}
 			});
 		}
+	}
+	
+	public void redirectToUpdate(View view){
+		redirectToUpdateActivity();
 	}
 
 	private void redirectToUpdateActivity() {

@@ -13,6 +13,12 @@ import com.cegeka.alarmmanager.db.Alarm;
 public class AlarmScheduler {
 	
 	public static HashMap<Long, PendingIntent> alarmIntents = new HashMap<Long,PendingIntent>();
+	
+	/**
+	 * schedule an {@link Alarm} in the {@link AlarmManager}.
+	 * @param context The context
+	 * @param alarm The {@link Alarm} to be scheduled.
+	 */
  	public static void scheduleAlarm(Context context, Alarm alarm) {
 		// Create intent
 		Intent intent = new Intent(context, AlarmReceiverActivity.class);
@@ -26,7 +32,11 @@ public class AlarmScheduler {
 		am.set(AlarmManager.RTC_WAKEUP, alarm.getDate().getTimeInMillis(), pendingIntent);
 	}
 	
-	
+	/**
+	 * Cancel the given Alarms from the {@link AlarmManager}.
+	 * @param context The context.
+	 * @param alarmen The alarms to cancel.
+	 */
 	public static void cancelAlarms(Context context, ArrayList<Alarm> alarmen){
 		AlarmManager am = (AlarmManager) context.getSystemService(Activity.ALARM_SERVICE);
 		for(Alarm a : alarmen){

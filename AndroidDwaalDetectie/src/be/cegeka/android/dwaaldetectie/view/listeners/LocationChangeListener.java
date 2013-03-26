@@ -47,11 +47,11 @@ public class LocationChangeListener extends LocationChangeAdapter
 
 			if (location.distanceTo(LatLngLocationConverter.locationFromLatLng(trackingConfig().getLocation())) > trackingConfig().getMaxDistance())
 			{
-				toast.show();
+				 toast.show();
 			}
 			else
 			{
-				toast.cancel();
+				 toast.cancel();
 			}
 		}
 	}
@@ -123,7 +123,9 @@ public class LocationChangeListener extends LocationChangeAdapter
 	}
 
 
-	/** Checks whether two providers are the same */
+	/**
+	 * Checks whether two providers are the same
+	 * */
 	private boolean isSameProvider(String provider1, String provider2)
 	{
 		if (provider1 == null)

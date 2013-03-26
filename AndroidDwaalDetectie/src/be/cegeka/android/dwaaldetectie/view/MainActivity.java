@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import be.cegeka.android.dwaaldetectie.R;
+import be.cegeka.android.dwaaldetectie.dialogs.HandleProblemStartFactory;
+import be.cegeka.android.dwaaldetectie.dialogs.HandleProblemStartInterface;
 import be.cegeka.android.dwaaldetectie.model.AddressLoaderSaver;
 import be.cegeka.android.dwaaldetectie.model.TrackingConfiguration;
 import be.cegeka.android.dwaaldetectie.model.TrackingService;
@@ -36,18 +38,25 @@ public class MainActivity extends Activity implements Observer
 	private ToggleButton startButton;
 	private TextView textView;
 
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+	}
 
+
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+
+		trackingConfig().loadVariables(this);
+		trackingConfig().addObserver(this);
+		
 		initFields();
 		initListeners();
-		updateDistance();
-
-		trackingConfig().addObserver(this);
 	}
 
 
@@ -57,11 +66,13 @@ public class MainActivity extends Activity implements Observer
 	private void initFields()
 	{
 		networkCheck = new NetworkCheck(this);
-		textView = (TextView) findViewById(R.id.textView1);
-		startButton = (ToggleButton) findViewById(R.id.startButton);
+		textView = (TextView) findViewById(R.id.textView2);
+		startButton = (ToggleButton) findViewById(R.id.startButton1);
+		System.out.println(TrackingService.isRunning());
 		if (TrackingService.isRunning())
 		{
 			startButton.setChecked(true);
+			updateDisplay();
 		}
 	}
 
@@ -124,7 +135,7 @@ public class MainActivity extends Activity implements Observer
 	 * Updates the textView that shows the home address and distance from the
 	 * home address.
 	 */
-	private void updateDistance()
+	private void updateDisplay()
 	{
 		if (trackingConfig().getAddress() != null)
 		{
@@ -134,6 +145,8 @@ public class MainActivity extends Activity implements Observer
 		{
 			textView.setText(trackingConfig().getDistance());
 		}
+		
+		startButton.setChecked(true);
 	}
 
 
@@ -143,43 +156,47 @@ public class MainActivity extends Activity implements Observer
 	 */
 	private void handleProblemStart(int problem)
 	{
-		if (problem == TrackingConfiguration.RESULT_NO_ADDRESS_SET)
-		{
-			AlertDialog.Builder builder = new AlertDialog.Builder(this)
-					.setTitle(getString(R.string.error_error))
-					.setMessage(getString(R.string.error_no_address_saved))
-					.setPositiveButton(getString(R.string.error_button_positive), new ConfigureAddressClickListener())
-					.setNegativeButton(getString(R.string.button_cancel), new DialogDismissListener());
-
-			builder.create().show();
-		}
-		else if (problem == TrackingConfiguration.RESULT_NO_MAX_DISTANCE)
-		{
-			AlertDialog.Builder builder = new AlertDialog.Builder(this)
-					.setTitle(getString(R.string.error_error))
-					.setMessage(getString(R.string.error_no_max_distance_saved))
-					.setPositiveButton(getString(R.string.error_button_positive), new ConfigureMaxDistanceClickListener())
-					.setNegativeButton(getString(R.string.button_cancel), new DialogDismissListener());
-
-			builder.create().show();
-		}
-		else
-		{
-			AlertDialog.Builder builder = new AlertDialog.Builder(this)
-					.setTitle(getString(R.string.error_error))
-					.setMessage(getString(R.string.error_unable_to_start))
-					.setNegativeButton(getString(R.string.button_cancel), null);
-
-			builder.create().show();
-		}
-
+		//Handling the dialog is passed on.
+		HandleProblemStartInterface handleProblemStart = new HandleProblemStartFactory().getHandleProblemStart(problem);
+		handleProblemStart.handle(this);
+		
+//		OLD CODE ---
+//		if (problem == TrackingConfiguration.RESULT_NO_ADDRESS_SET)
+//		{
+//			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+//					.setTitle(getString(R.string.error_error))
+//					.setMessage(getString(R.string.error_no_address_saved))
+//					.setPositiveButton(getString(R.string.error_button_positive), new ConfigureAddressClickListener())
+//					.setNegativeButton(getString(R.string.button_cancel), new DialogDismissListener());
+//
+//			builder.create().show();
+//		}
+//		else if (problem == TrackingConfiguration.RESULT_NO_MAX_DISTANCE)
+//		{
+//			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+//					.setTitle(getString(R.string.error_error))
+//					.setMessage(getString(R.string.error_no_max_distance_saved))
+//					.setPositiveButton(getString(R.string.error_button_positive), new ConfigureMaxDistanceClickListener())
+//					.setNegativeButton(getString(R.string.button_cancel), new DialogDismissListener());
+//
+//			builder.create().show();
+//		}
+//		else
+//		{
+//			AlertDialog.Builder builder = new AlertDialog.Builder(this)
+//					.setTitle(getString(R.string.error_error))
+//					.setMessage(getString(R.string.error_unable_to_start))
+//					.setNegativeButton(getString(R.string.button_cancel), new DialogDismissListener());
+//
+//			builder.create().show();
+//		}
 	}
 
 
 	@Override
 	public void update(Observable observable, Object data)
 	{
-		updateDistance();
+		updateDisplay();
 	}
 
 
@@ -225,7 +242,7 @@ public class MainActivity extends Activity implements Observer
 				}
 				else
 				{
-					updateDistance();
+					updateDisplay();
 				}
 			}
 		}
@@ -276,7 +293,7 @@ public class MainActivity extends Activity implements Observer
 	 * OnClickListener for the error dialog if the maximum distance is not set
 	 * when the user tries to start the TrackingService.
 	 */
-	private class ConfigureMaxDistanceClickListener implements DialogInterface.OnClickListener
+	public class ConfigureMaxDistanceClickListener implements DialogInterface.OnClickListener
 	{
 		@Override
 		public void onClick(DialogInterface dialog, int which)
@@ -290,7 +307,7 @@ public class MainActivity extends Activity implements Observer
 	 * OnClickListener for the error dialog if the address is not set when the
 	 * user tries to start the TrackingService.
 	 */
-	private class ConfigureAddressClickListener implements DialogInterface.OnClickListener
+	public class ConfigureAddressClickListener implements DialogInterface.OnClickListener
 	{
 		@Override
 		public void onClick(DialogInterface dialog, int which)

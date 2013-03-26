@@ -121,7 +121,7 @@ public class AlarmWebService {
         return null;
     }
     
-     @WebMethod(operationName = "addAlarmByDate")
+    @WebMethod(operationName = "addAlarmByDate")
     public Alarm addAlarmByDate(@WebParam(name = "titel") String titel,@WebParam(name = "info") String info,@WebParam(name = "repeated") boolean repeated, @WebParam(name = "repeat_unit") String repeat_unit, @WebParam(name = "datum") Calendar datum, @WebParam(name = "repeatquantity") int repeatquantity, @WebParam(name = "repeat_enddate") long repeat_enddate) {
         try {
             Class.forName("org.postgresql.Driver");
@@ -143,7 +143,10 @@ public class AlarmWebService {
     }
 
     /**
-     * Web service operation
+     * Connects to the database and returns the user if any exists.
+     * @param emailadres The email-address of the User.
+     * @param paswoord The password of the User.
+     * @return 
      */
     @WebMethod(operationName = "getUser")
     public User getUser(@WebParam(name = "emailadres") String emailadres, @WebParam(name = "paswoord") String paswoord) { 
@@ -151,14 +154,15 @@ public class AlarmWebService {
        try {
             Class.forName("org.postgresql.Driver");
             Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "postgres");
-            PreparedStatement st = con.prepareStatement("SELECT * from users WHERE email = ? and paswoord = ?");
+            PreparedStatement st = con.prepareStatement("SELECT * from users WHERE email = ?");
             st.setString(1, emailadres);
-            st.setString(2, paswoord);
             // execute select SQL stetement
             ResultSet rs = st.executeQuery();
             int userid;
             while (rs.next()) {
-                u = new User(rs.getInt("userid"), rs.getString("naam"), rs.getString("achternaam"), rs.getString("email"));
+                if(PasswordEncrypter.isCorrect(rs.getString("paswoord"), paswoord, rs.getString("salt"))){
+                    u = new User(rs.getInt("userid"), rs.getString("naam"), rs.getString("achternaam"), rs.getString("email"));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
