@@ -13,11 +13,9 @@ public class UserLoaderSaver
 {
 
 	/**
-	 * Save the numbers. The numbers file will be completely overwritten.
+	 *  Save the {@link User} from the {@link SharedPreferences}
 	 * 
-	 * @param selectedNumbers
-	 *            An {@link ArrayList} of Strings representing the numbers that
-	 *            need to be saved.
+	 * @param user The {@link User} to be saved in the {@link SharedPreferences}.
 	 * @throws IOException
 	 */
 	public static void saveUser(Context ctx, User user) throws IOException
@@ -34,9 +32,9 @@ public class UserLoaderSaver
 
 
 	/**
-	 * Load all the numbers saved by this app.
+	 * Load the {@link User} from the {@link SharedPreferences}
 	 * 
-	 * @return An {@link ArrayList} of the cell-phone numbers.
+	 * @return A {@link User} if the user was saved else null
 	 */
 	public static User loadUser(Context ctx)
 	{
@@ -58,7 +56,11 @@ public class UserLoaderSaver
 		return user;
 	}
 	
-	
+	/**
+	 * Delete the User from the {@link SharedPreferences}.
+	 * @param ctx The {@link Context}.
+	 * @throws IOException
+	 */
 	public static void deleteUser(Context ctx) throws IOException
 	{
 		SharedPreferences settings = ctx.getSharedPreferences("file", 0);

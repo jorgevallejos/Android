@@ -4,8 +4,8 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/textView1"
-        android:layout_width="208dp"
+        android:id="@+id/textViewOffline"
+        android:layout_width="wrap_content"
         android:layout_height="83dp"
         android:text="@string/noInternetConnection" />
 
@@ -15,5 +15,12 @@
         android:layout_height="wrap_content"
         android:onClick="retry"
         android:text="Retry connection" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="redirectToUpdate"
+        android:text="View alarms offline" />
 
 </LinearLayout>

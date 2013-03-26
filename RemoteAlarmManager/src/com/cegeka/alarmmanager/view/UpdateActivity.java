@@ -1,32 +1,37 @@
 package com.cegeka.alarmmanager.view;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-
 import com.cegeka.alarmmanager.AlarmScheduleController;
 import com.cegeka.alarmmanager.connection.UserLoaderSaver;
 import com.cegeka.alarmmanager.connection.WebServiceConnector;
 import com.cegeka.alarmmanager.connection.model.User;
 import com.cegeka.alarmmanager.db.Alarm;
+import com.cegeka.alarmmanager.db.AlarmsDataSource;
+import com.cegeka.alarmmanager.exceptions.DatabaseException;
 import com.cegeka.alarmtest.R;
-
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class UpdateActivity extends Activity {
 	private ListView listView;
 	private static ArrayList<Alarm> alarmen = new ArrayList<Alarm>();
+	private Button updateButton;
+	private Button logOutButton;
+	private TextView textViewOffline;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,20 +42,64 @@ public class UpdateActivity extends Activity {
 
 	private void initWidgets() {
 		listView = (ListView) findViewById(R.id.listViewAlarms);
-		try {
-			initListview(alarmen);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		updateButton = (Button) findViewById(R.id.updateButton);
+		logOutButton = (Button) findViewById(R.id.logOutButton);
+		textViewOffline = (TextView) findViewById(R.id.textViewOffline);
+		initListview(alarmen);
+		initializeListOnShow();
+		if(!InternetChecker.isNetworkAvailable(this) || UserLoaderSaver.loadUser(this)==null){
+			updateButton.setVisibility(View.INVISIBLE);
+			logOutButton.setVisibility(View.INVISIBLE);
+			textViewOffline.setText("You are viewing the alarms offline.");
+			textViewOffline.setTextSize(17);
 		}
 	}
 
-	private void initListview(ArrayList<Alarm> alarms) throws FileNotFoundException {
+	private void initializeListOnShow(){
+		AlarmsDataSource alarmDB =new AlarmsDataSource(this);
+		alarmDB.open();
+		try {
+			alarmen =alarmDB.getAllAlarms();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+		}finally{
+			alarmDB.close();
+		}
+
+		initListview(alarmen);
+
+	}
+
+	private void initListview(ArrayList<Alarm> alarms) {
 		ArrayAdapter<Alarm> arrayAdapter = new ArrayAdapter<Alarm>(this,android.R.layout.simple_list_item_1, alarms);
 		listView.setAdapter(arrayAdapter); 
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,long arg3) {
+				final Alarm alarm = (Alarm) listView.getItemAtPosition(position);
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						final AlertDialog alertDialog = new AlertDialog.Builder(UpdateActivity.this).create();
+						alertDialog.setTitle(alarm.getTitle());
+						alertDialog.setMessage(alarm.getFullInformation());
+						alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								alertDialog.cancel();
+							}
+						});
+						//alertDialog.setIcon(R.drawable.ic_launcher);
+						alertDialog.show();
+					}
+				});
+			}
+		});
 	}
 
 	public void updateAlarms(View view){
-		if(isNetworkAvailable()){
+		if(InternetChecker.isNetworkAvailable(this)){
 			final ProgressDialog myPd_ring=ProgressDialog.show(UpdateActivity.this, "Please wait", "Loading please wait..", true);
 			myPd_ring.setCancelable(true);
 			new UpdateThread(myPd_ring).start();
@@ -58,13 +107,6 @@ public class UpdateActivity extends Activity {
 			redirectToMainActivity();
 			finish();
 		}
-	}
-
-	private boolean isNetworkAvailable() {
-		ConnectivityManager connectivityManager 
-		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
 
 	public void logOut(View view){
@@ -126,7 +168,7 @@ public class UpdateActivity extends Activity {
 						alarmen.add(alarm);
 					}
 					alarmen.removeAll(Collections.singleton(null));
-					AlarmScheduleController.scheduleAlarms(alarmen, UpdateActivity.this);
+					AlarmScheduleController.updateAlarms(alarmen, UpdateActivity.this);
 					runInitializeList();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -141,11 +183,7 @@ public class UpdateActivity extends Activity {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					try {
-						initListview(alarmen);
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					}
+					initListview(alarmen);
 				}
 			});
 		}

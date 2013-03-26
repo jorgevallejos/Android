@@ -104,12 +104,13 @@ public class AlarmsDataSource {
 
 	}
 
-	public void updateAlarm(Alarm alarm)
+	public Alarm updateAlarm(Alarm alarm)
 	{
 		ContentValues values = getAlarmContentValues(alarm);
 		String where = "id=?";
 		String[] whereArgs = new String[] {String.valueOf(alarm.getId())};
 		database.update(AlarmSQLHelper.TABLE_ALARMS, values, where, whereArgs);
+		return (Alarm) getAlarmById(alarm.getId());
 	}
 
 	public RepeatedAlarm updateRepeatedAlarm(RepeatedAlarm alarm)
@@ -121,10 +122,10 @@ public class AlarmsDataSource {
 		return (RepeatedAlarm) getAlarmById(alarm.getId());
 	}
 
-	public List<Alarm> getAllAlarms() throws DatabaseException 
+	public ArrayList<Alarm> getAllAlarms() throws DatabaseException 
 	{
 
-		List<Alarm> alarms = new ArrayList<Alarm>();
+		ArrayList<Alarm> alarms = new ArrayList<Alarm>();
 
 		Cursor cursor = database.query(AlarmSQLHelper.TABLE_ALARMS, allColumns, null, null, null, null, null);
 

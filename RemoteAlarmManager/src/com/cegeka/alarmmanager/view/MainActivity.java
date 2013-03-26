@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
 
 	private void initializeStart() {
 		u = UserLoaderSaver.loadUser(this);
-		if(isNetworkAvailable()){
+		if(InternetChecker.isNetworkAvailable(this)){
 			if(u==null){
 				redirectToLoginActivity();
 			}else{
@@ -52,18 +52,13 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 	}
 
-	private boolean isNetworkAvailable() {
-		ConnectivityManager connectivityManager 
-		= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-	}
-
-
-
 	private void redirectToUpdateActivity() {
 		Intent intent = new Intent(MainActivity.this, UpdateActivity.class);
 		startActivity(intent);
+	}
+	
+	public void redirectToUpdate(View view){
+		redirectToUpdateActivity();
 	}
 
 	private void redirectToLoginActivity() {

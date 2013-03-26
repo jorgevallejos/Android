@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import com.cegeka.alarmmanager.db.Alarm;
@@ -27,12 +29,13 @@ public class AlarmReceiverActivity extends Activity {
 	private Alarm alarm;
 	boolean loaded = false;
 	Dialog mDialog; 
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mDialog = new Dialog(this);
 		this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-		
+
 		//setAlarm((Alarm) getIntent().getSerializableExtra("Alarm"));
 		Object o = getIntent().getSerializableExtra("Alarm");
 		if(o instanceof RepeatedAlarm) {
@@ -54,11 +57,11 @@ public class AlarmReceiverActivity extends Activity {
 
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				mMediaPlayer.stop();
-				finish();
-				mDialog.cancel();
+				stopActivityAndMediaplayer();
 				return false;
 			}
+
+
 		});
 		mDialog.show();
 		playSound(this, getAlarmUri());
@@ -67,6 +70,29 @@ public class AlarmReceiverActivity extends Activity {
 		}
 	}
 
+	@Override
+	public void onAttachedToWindow() {
+		this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD);
+		super.onAttachedToWindow();
+	}
+
+	private void stopActivityAndMediaplayer() {
+		mMediaPlayer.stop();
+		finish();
+		mDialog.cancel();
+	}
+
+	@Override
+	protected void onPause() {
+		//if the lock screen is on then we don't need to stop de mediaplayer cause the onPause method will be called.
+		// If the screen is locked the sound still has to continue playing.
+		KeyguardManager kgMgr = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+		boolean showing = kgMgr.inKeyguardRestrictedInputMode();
+		if(!showing){
+			stopActivityAndMediaplayer();
+		}
+		super.onPause();
+	}
 
 	private void playSound(Context context, Uri alert) {
 		mMediaPlayer = new MediaPlayer();
@@ -145,7 +171,6 @@ public class AlarmReceiverActivity extends Activity {
 				}
 			}
 		}
-
 		catch(Exception e){
 			e.printStackTrace();
 		}
