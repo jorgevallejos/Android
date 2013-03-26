@@ -35,6 +35,7 @@ public class RelationalDatabase implements DatabaseInterface {
             throw new DatabaseException("User can't be null.");
         }
         beginTransaction();
+        user.setEmail(user.getEmail().toLowerCase());
         em.persist(user);
         commitTransaction();
         return user;
