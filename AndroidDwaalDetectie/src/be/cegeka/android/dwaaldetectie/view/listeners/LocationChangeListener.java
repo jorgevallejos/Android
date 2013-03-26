@@ -38,7 +38,6 @@ public class LocationChangeListener extends LocationChangeAdapter
 	@Override
 	public void onLocationChanged(Location location)
 	{
-		System.out.println("location change");
 		if (trackingConfig().getLocation() != null)
 		{
 			if (isBetterLocation(location, LatLngLocationConverter.locationFromLatLng(trackingConfig().getLocation())))
@@ -48,7 +47,6 @@ public class LocationChangeListener extends LocationChangeAdapter
 
 			if (location.distanceTo(LatLngLocationConverter.locationFromLatLng(trackingConfig().getLocation())) > trackingConfig().getMaxDistance())
 			{
-				System.out.println("too far");
 				 toast.show();
 			}
 			else
