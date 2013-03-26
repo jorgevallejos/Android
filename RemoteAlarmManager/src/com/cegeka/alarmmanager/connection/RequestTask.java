@@ -3,12 +3,16 @@ package com.cegeka.alarmmanager.connection;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collections;
+
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
+
 import android.os.AsyncTask;
+
 import com.cegeka.alarmmanager.connection.model.Alarm;
 import com.cegeka.alarmmanager.connection.model.User;
 
@@ -31,8 +35,10 @@ public class RequestTask extends AsyncTask<String, String, SoapObject>{
 	private ArrayList<Alarm> alarms = new ArrayList<Alarm>();
 	private boolean timeout;
 
+	//Method names.
 	public static String GET_USER = "getUser";
 	public static String GET_ALARMS_FROM_USER = "getAlarmsFromUser";
+	
 	
 	
 	@Override
@@ -202,6 +208,7 @@ public class RequestTask extends AsyncTask<String, String, SoapObject>{
 	}
 
 	public ArrayList<Alarm> getAlarms() {
+		alarms.removeAll(Collections.singleton(null));
 		return alarms;
 	} 
 

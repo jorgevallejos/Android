@@ -20,9 +20,9 @@ public class AlarmScheduleController {
 	
 
 	/**
-	 * Tries to add all the {@link Alarm} objects gto the database and schedule them.
+	 * Tries to add all the {@link Alarm} objects to the database and schedule them.
 	 * If the {@link Alarm} given does not already exists in the database it adds the {@link Alarm} to the SQLite database and 
-	 * also schedules the {@link Alarm} using the {@link AlarmScheduler} else it does nothin with the particular {@link Alarm}.
+	 * also schedules the {@link Alarm} using the {@link AlarmScheduler} else it does nothing with the particular {@link Alarm}.
 	 * It also removes Alarms from the scheduler and removes Alarms from the database if the {@link ArrayList} of {@link Alarm} objects given does not contain them anymore.
 	 * @param alarm The {@link Alarm} to schedule
 	 * @param ctx A context needed for the {@link AlarmScheduler}.

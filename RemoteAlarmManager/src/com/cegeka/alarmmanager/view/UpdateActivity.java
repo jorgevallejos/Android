@@ -55,6 +55,9 @@ public class UpdateActivity extends Activity {
 		}
 	}
 
+	/**
+	 * Initialize the list the first time with alarms already in the database withot updating.
+	 */
 	private void initializeListOnShow(){
 		AlarmsDataSource alarmDB =new AlarmsDataSource(this);
 		alarmDB.open();
@@ -70,6 +73,10 @@ public class UpdateActivity extends Activity {
 
 	}
 
+	/**
+	 * Initialize the list of alarms.
+	 * @param alarms The alarms the list should show.
+	 */
 	private void initListview(ArrayList<Alarm> alarms) {
 		ArrayAdapter<Alarm> arrayAdapter = new ArrayAdapter<Alarm>(this,android.R.layout.simple_list_item_1, alarms);
 		listView.setAdapter(arrayAdapter); 
@@ -162,7 +169,7 @@ public class UpdateActivity extends Activity {
 				try {
 					u = UserLoaderSaver.loadUser(UpdateActivity.this);
 					alarmsFromDB = connector.getAlarmsFromUser(u);
-					alarmsFromDB.removeAll(Collections.singleton(null));
+//					alarmsFromDB.removeAll(Collections.singleton(null));
 					for(com.cegeka.alarmmanager.connection.model.Alarm a : alarmsFromDB){
 						Alarm alarm = AlarmScheduleController.convertAlarm(a);
 						alarmen.add(alarm);

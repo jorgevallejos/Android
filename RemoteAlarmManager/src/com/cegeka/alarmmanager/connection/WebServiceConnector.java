@@ -1,6 +1,8 @@
 package com.cegeka.alarmmanager.connection;
 
 import java.util.ArrayList;
+import java.util.Collections;
+
 import com.cegeka.alarmmanager.connection.model.Alarm;
 import com.cegeka.alarmmanager.connection.model.User;
 import com.cegeka.alarmmanager.exceptions.WebserviceException;
