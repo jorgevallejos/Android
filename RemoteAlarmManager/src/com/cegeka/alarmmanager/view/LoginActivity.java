@@ -1,30 +1,32 @@
 package com.cegeka.alarmmanager.view;
 
-import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
-import com.cegeka.alarmmanager.connection.UserLoaderSaver;
-import com.cegeka.alarmmanager.connection.WebServiceConnector;
-import com.cegeka.alarmmanager.connection.model.User;
-import com.cegeka.alarmmanager.exceptions.WebserviceException;
-import com.cegeka.alarmtest.R;
-
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 
-public class LoginActivity extends Activity {
+import com.cegeka.alarmmanager.infrastructure.InternetChecker;
+import com.cegeka.alarmmanager.model.User;
+import com.cegeka.alarmmanager.services.ServiceStarterStopper;
+import com.cegeka.alarmmanager.sync.remoteSync.remoteDBConnection.RemoteDBConnectionInterface;
+import com.cegeka.alarmmanager.sync.remoteSync.remoteDBConnection.RemoteDBWebConnection;
+import com.cegeka.alarmmanager.utilities.UserLoginLogOut;
+import com.cegeka.alarmtest.R;
+
+public class LoginActivity extends Activity implements Observer {
 	private EditText emailEditText;
 	private EditText paswoordEditText;
-
+	private RemoteDBConnectionInterface connector = new RemoteDBWebConnection();
+	private String pass;
+	private ProgressDialog myPd_ring;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,78 +47,27 @@ public class LoginActivity extends Activity {
 		paswoordEditText = (EditText) findViewById(R.id.paswoordTextBox);
 	}
 
-	public void login(View view){
-		if(InternetChecker.isNetworkAvailable(this)){
-			final ProgressDialog myPd_ring=ProgressDialog.show(LoginActivity.this, "Please wait", "Loading please wait..", true);
+	public void login(View view) {
+		if (InternetChecker.isNetworkAvailable(this)) {
+			myPd_ring = ProgressDialog.show(LoginActivity.this, "Please wait",
+					"Loading please wait..", true);
 			myPd_ring.setCancelable(true);
-			new Thread(new Runnable() {  
-				@Override
-				public void run() {
-					doLogin();
-					myPd_ring.dismiss();
-				}
-
-
-			}).start();
-		}else{
+			startLogin();
+		} else {
 			redirectToMainActivity();
 			finish();
 		}
 	}
-	
-	
-	private void doLogin() {
+
+	private void startLogin() {
 		String email = emailEditText.getText().toString();
 		String pass = paswoordEditText.getText().toString();
-
-		final WebServiceConnector connector = new WebServiceConnector();
-		User u = null;
-		try {
-			u = connector.getUser(email, pass);
-			if(u!=null){
-				System.out.println(u);
-				u.setPaswoord(pass);
-				try {
-					UserLoaderSaver.saveUser(LoginActivity.this, u);
-					redirectToUpdateActivity();
-					finish();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}else{
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						final AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this).create();
-						alertDialog.setTitle("Login failed.");
-						alertDialog.setMessage("Your username or password is incorrect. Try again.");
-						alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								alertDialog.cancel();
-							}
-						});
-						//alertDialog.setIcon(R.drawable.ic_launcher);
-						alertDialog.show();
-					}
-				});
-			}
-		} catch (WebserviceException e1) {
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this).create();
-					alertDialog.setTitle("Login failed.");
-					alertDialog.setMessage("The connection timed out. Check your internet connection.");
-					//alertDialog.setIcon(R.drawable.ic_launcher);
-					alertDialog.show();
-				}
-			});
-		}
+		this.pass = pass;
+		connector.startUserLogin(email, pass);
+		connector.addObserver(this);
 	}
-	
-	public void redirectToUpdate(View view){
+
+	public void onClickRedirectToUpdate(View view) {
 		redirectToUpdateActivity();
 	}
 
@@ -128,6 +79,38 @@ public class LoginActivity extends Activity {
 	private void redirectToMainActivity() {
 		Intent intent = new Intent(LoginActivity.this, MainActivity.class);
 		startActivity(intent);
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		User u = connector.getUser();
+		myPd_ring.dismiss();
+
+		if (u != null) {
+			u.setPaswoord(pass);
+			UserLoginLogOut.logInUser(LoginActivity.this, u);
+			ServiceStarterStopper.startSyncService(this);
+			redirectToUpdateActivity();
+			finish();
+		} else {
+			showAlartDialog();
+		}
+	}
+
+	private void showAlartDialog() {
+		final AlertDialog alertDialog = new AlertDialog.Builder(
+				LoginActivity.this).create();
+		alertDialog.setTitle("Login failed.");
+		alertDialog
+				.setMessage("Your username or password is incorrect. Try again.");
+		alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						alertDialog.cancel();
+					}
+				});
+		alertDialog.show();
 	}
 
 }

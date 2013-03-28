@@ -1,22 +1,14 @@
 package com.cegeka.alarmmanager.view;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import com.cegeka.alarmmanager.AlarmScheduleController;
-import com.cegeka.alarmmanager.connection.UserLoaderSaver;
-import com.cegeka.alarmmanager.connection.WebServiceConnector;
-import com.cegeka.alarmmanager.connection.model.User;
-import com.cegeka.alarmmanager.db.Alarm;
-import com.cegeka.alarmmanager.db.AlarmsDataSource;
-import com.cegeka.alarmmanager.exceptions.DatabaseException;
-import com.cegeka.alarmtest.R;
-import android.os.Bundle;
+import java.util.Observable;
+import java.util.Observer;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,28 +18,42 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class UpdateActivity extends Activity {
+import com.cegeka.alarmmanager.db.LocalAlarmRepository;
+import com.cegeka.alarmmanager.infrastructure.InternetChecker;
+import com.cegeka.alarmmanager.model.Alarm;
+import com.cegeka.alarmmanager.sync.AlarmSyncer;
+import com.cegeka.alarmmanager.utilities.UserLoginLogOut;
+import com.cegeka.alarmtest.R;
+
+public class UpdateActivity extends Activity implements Observer
+{
 	private ListView listView;
-	private static ArrayList<Alarm> alarmen = new ArrayList<Alarm>();
 	private Button updateButton;
 	private Button logOutButton;
 	private TextView textViewOffline;
+	private ProgressDialog progressDialog;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_update);
+		AlarmSyncer.getInstance().addObserver(this);
 		initWidgets();
 	}
 
-	private void initWidgets() {
+	private void initWidgets()
+	{
 		listView = (ListView) findViewById(R.id.listViewAlarms);
 		updateButton = (Button) findViewById(R.id.updateButton);
 		logOutButton = (Button) findViewById(R.id.logOutButton);
 		textViewOffline = (TextView) findViewById(R.id.textViewOffline);
-		initListview(alarmen);
-		initializeListOnShow();
-		if(!InternetChecker.isNetworkAvailable(this) || UserLoaderSaver.loadUser(this)==null){
+
+		initListview();
+
+		if (!InternetChecker.isNetworkAvailable(this)
+				|| !UserLoginLogOut.userLoggedIn(this))
+		{
 			updateButton.setVisibility(View.INVISIBLE);
 			logOutButton.setVisibility(View.INVISIBLE);
 			textViewOffline.setText("You are viewing the alarms offline.");
@@ -56,144 +62,96 @@ public class UpdateActivity extends Activity {
 	}
 
 	/**
-	 * Initialize the list the first time with alarms already in the database withot updating.
-	 */
-	private void initializeListOnShow(){
-		AlarmsDataSource alarmDB =new AlarmsDataSource(this);
-		alarmDB.open();
-		try {
-			alarmen =alarmDB.getAllAlarms();
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-		}finally{
-			alarmDB.close();
-		}
-
-		initListview(alarmen);
-
-	}
-
-	/**
 	 * Initialize the list of alarms.
-	 * @param alarms The alarms the list should show.
+	 * 
+	 * @param alarms
+	 *            The alarms the list should show.
 	 */
-	private void initListview(ArrayList<Alarm> alarms) {
-		ArrayAdapter<Alarm> arrayAdapter = new ArrayAdapter<Alarm>(this,android.R.layout.simple_list_item_1, alarms);
-		listView.setAdapter(arrayAdapter); 
-		listView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position,long arg3) {
-				final Alarm alarm = (Alarm) listView.getItemAtPosition(position);
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						final AlertDialog alertDialog = new AlertDialog.Builder(UpdateActivity.this).create();
-						alertDialog.setTitle(alarm.getTitle());
-						alertDialog.setMessage(alarm.getFullInformation());
-						alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								alertDialog.cancel();
-							}
-						});
-						//alertDialog.setIcon(R.drawable.ic_launcher);
-						alertDialog.show();
-					}
-				});
-			}
-		});
+	private void initListview()
+	{
+		ArrayAdapter<Alarm> arrayAdapter = new ArrayAdapter<Alarm>(this,
+				android.R.layout.simple_list_item_1,
+				LocalAlarmRepository.getLocalAlarms(this));
+		listView.setAdapter(arrayAdapter);
+		listView.setOnItemClickListener(new AlarmListItemClickListener());
 	}
 
-	public void updateAlarms(View view){
-		if(InternetChecker.isNetworkAvailable(this)){
-			final ProgressDialog myPd_ring=ProgressDialog.show(UpdateActivity.this, "Please wait", "Loading please wait..", true);
-			myPd_ring.setCancelable(true);
-			new UpdateThread(myPd_ring).start();
-		}else{
+	public void updateAlarms(View view)
+	{
+		if (InternetChecker.isNetworkAvailable(this))
+		{
+			progressDialog = ProgressDialog.show(UpdateActivity.this,
+					"Please wait", "Loading please wait..", true);
+			progressDialog.setCancelable(true);
+			AlarmSyncer.getInstance().syncAllAlarms(this);
+
+		} else
+		{
 			redirectToMainActivity();
 			finish();
 		}
 	}
 
-	public void logOut(View view){
-		try {
-			UserLoaderSaver.deleteUser(this);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		getAlarmen().clear();
+	public void logOut(View view)
+	{
+		UserLoginLogOut.logOutUser(this);
 		redirectToMainActivity();
 		finish();
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		getMenuInflater().inflate(R.menu.update, menu);
 		return true;
 	}
 
-
-	public ArrayList<Alarm> getAlarmen() {
-		return alarmen;
-	}
-
-	public void setAlarmen(ArrayList<Alarm> alarmen) {
-		UpdateActivity.alarmen = alarmen;
-	}
-
-	private void redirectToMainActivity() {
+	private void redirectToMainActivity()
+	{
 		Intent intent = new Intent(UpdateActivity.this, MainActivity.class);
 		startActivity(intent);
 	}
 
+	@Override
+	public void update(Observable observable, Object data)
+	{
+		initListview();
 
-	//*************************INNER CLASSES*************************************
-
-	private class UpdateThread extends Thread{
-		private ProgressDialog dialog;
-
-		public UpdateThread(ProgressDialog progressDialog){
-			this.dialog=progressDialog;
+		if (progressDialog != null)
+		{
+			progressDialog.dismiss();
 		}
+	}
 
+	private class AlarmListItemClickListener implements OnItemClickListener
+	{
 		@Override
-		public void run() {
-			try
+		public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+				long arg3)
+		{
+			final Alarm alarm = (Alarm) listView.getItemAtPosition(position);
+			runOnUiThread(new Runnable()
 			{
-				alarmen.clear();
-				ArrayList<com.cegeka.alarmmanager.connection.model.Alarm> alarmsFromDB = null;
-				WebServiceConnector connector = new WebServiceConnector();
-				User u;
-				try {
-					u = UserLoaderSaver.loadUser(UpdateActivity.this);
-					alarmsFromDB = connector.getAlarmsFromUser(u);
-//					alarmsFromDB.removeAll(Collections.singleton(null));
-					for(com.cegeka.alarmmanager.connection.model.Alarm a : alarmsFromDB){
-						Alarm alarm = AlarmScheduleController.convertAlarm(a);
-						alarmen.add(alarm);
-					}
-					alarmen.removeAll(Collections.singleton(null));
-					AlarmScheduleController.updateAlarms(alarmen, UpdateActivity.this);
-					runInitializeList();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-			dialog.dismiss();
-		}
-
-		private void runInitializeList() {
-			runOnUiThread(new Runnable() {
 				@Override
-				public void run() {
-					initListview(alarmen);
+				public void run()
+				{
+					final AlertDialog alertDialog = new AlertDialog.Builder(
+							UpdateActivity.this).create();
+					alertDialog.setTitle(alarm.getTitle());
+					alertDialog.setMessage(alarm.getFullInformation());
+					alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+							new DialogInterface.OnClickListener()
+							{
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which)
+								{
+									alertDialog.cancel();
+								}
+							});
+					alertDialog.show();
 				}
 			});
 		}
 	}
-
 }

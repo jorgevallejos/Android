@@ -79,7 +79,7 @@
         android:layout_alignBaseline="@+id/loginButton"
         android:layout_alignBottom="@+id/loginButton"
         android:layout_alignLeft="@+id/paswoordTextBox"
-        android:onClick="redirectToUpdate"
+        android:onClick="onClickRedirectToUpdate"
         android:text="View alarms offline" />
 
 </RelativeLayout>

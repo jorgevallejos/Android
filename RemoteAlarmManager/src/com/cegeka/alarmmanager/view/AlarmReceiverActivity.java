@@ -1,7 +1,7 @@
 package com.cegeka.alarmmanager.view;
 
 import java.io.IOException;
-import java.util.Calendar;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.KeyguardManager;
@@ -17,10 +17,11 @@ import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-import com.cegeka.alarmmanager.db.Alarm;
-import com.cegeka.alarmmanager.db.AlarmsDataSource;
-import com.cegeka.alarmmanager.db.RepeatedAlarm;
-import com.cegeka.alarmmanager.db.RepeatedAlarm.Repeat_Unit;
+
+import com.cegeka.alarmmanager.db.LocalAlarmRepository;
+import com.cegeka.alarmmanager.model.Alarm;
+import com.cegeka.alarmmanager.model.RepeatedAlarm;
+import com.cegeka.alarmmanager.sync.localSync.AlarmToAndroidSchedulerSyncer;
 import com.cegeka.alarmtest.R;
 
 public class AlarmReceiverActivity extends Activity {
@@ -28,23 +29,30 @@ public class AlarmReceiverActivity extends Activity {
 	private MediaPlayer mMediaPlayer;
 	private Alarm alarm;
 	boolean loaded = false;
-	Dialog mDialog; 
+	Dialog mDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mDialog = new Dialog(this);
 		this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		checkAlarm();
+		initAndShowViews();
+		playSound(this, getAlarmUri());
+		deleteIfNotRepeatedAlarm();
+	}
 
-		//setAlarm((Alarm) getIntent().getSerializableExtra("Alarm"));
+	private void checkAlarm() {
 		Object o = getIntent().getSerializableExtra("Alarm");
-		if(o instanceof RepeatedAlarm) {
+		if (o instanceof RepeatedAlarm) {
 			setAlarm((RepeatedAlarm) o);
 			setNextAlarm();
-		}else{
+		} else {
 			setAlarm((Alarm) o);
 		}
+	}
 
+	private void initAndShowViews() {
+		mDialog = new Dialog(this);
 		mDialog.setTitle(getAlarm().getTitle());
 		mDialog.setCancelable(false);
 		mDialog.setContentView(R.layout.alarm);
@@ -60,14 +68,8 @@ public class AlarmReceiverActivity extends Activity {
 				stopActivityAndMediaplayer();
 				return false;
 			}
-
-
 		});
 		mDialog.show();
-		playSound(this, getAlarmUri());
-		if(!(getAlarm() instanceof RepeatedAlarm)){
-			deleteAlarm(getAlarm());
-		}
 	}
 
 	@Override
@@ -84,11 +86,12 @@ public class AlarmReceiverActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-		//if the lock screen is on then we don't need to stop de mediaplayer cause the onPause method will be called.
+		// if the lock screen is on then we don't need to stop the mediaplayer
+		// cause the onPause method will be called.
 		// If the screen is locked the sound still has to continue playing.
 		KeyguardManager kgMgr = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 		boolean showing = kgMgr.inKeyguardRestrictedInputMode();
-		if(!showing){
+		if (!showing) {
 			stopActivityAndMediaplayer();
 		}
 		super.onPause();
@@ -96,13 +99,13 @@ public class AlarmReceiverActivity extends Activity {
 
 	private void playSound(Context context, Uri alert) {
 		mMediaPlayer = new MediaPlayer();
-		((Activity) context).setVolumeControlStream(AudioManager.STREAM_MUSIC); 
+		((Activity) context).setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		try {
 			mMediaPlayer.setDataSource(context, alert);
-			final AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+			final AudioManager audioManager = (AudioManager) context
+					.getSystemService(Context.AUDIO_SERVICE);
 			if (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) != 0) {
 				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-				//mMediaPlayer.setVolume(0.01f, 0.01f);
 				mMediaPlayer.prepare();
 				mMediaPlayer.start();
 			}
@@ -112,11 +115,8 @@ public class AlarmReceiverActivity extends Activity {
 
 	}
 
-
-
 	private Uri getAlarmUri() {
-		Uri alert = RingtoneManager
-				.getDefaultUri(RingtoneManager.TYPE_ALARM);
+		Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 		if (alert == null) {
 			alert = RingtoneManager
 					.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -128,52 +128,21 @@ public class AlarmReceiverActivity extends Activity {
 		return alert;
 	}
 
-	private void deleteAlarm(Alarm alarm){
-		AlarmsDataSource alarmDS = new AlarmsDataSource(getApplicationContext());
-		alarmDS.open();
-		alarmDS.deleteAlarm(alarm);
-		alarmDS.close();
+	private void deleteIfNotRepeatedAlarm() {
+		if (!(getAlarm() instanceof RepeatedAlarm)) {
+			deleteAlarm(getAlarm());
+		}
+	}
+
+	private void deleteAlarm(Alarm alarm) {
+		LocalAlarmRepository.deleteAlarm(getApplicationContext(), alarm);
 	}
 
 	private void setNextAlarm() {
-
-		try {
-
-			RepeatedAlarm repAlarm = (RepeatedAlarm) getAlarm();
-
-			Repeat_Unit unit = repAlarm.getRepeatUnit();
-			int repeatQuantity = repAlarm.getRepeatUnitQuantity();
-			Calendar calRepeat = repAlarm.getRepeatEndDate();
-
-			if(calRepeat.after(Calendar.getInstance())){
-				Calendar newCal = (Calendar) repAlarm.getDate().clone();
-
-				switch(unit){
-
-				case MINUTE	:	newCal.add(Calendar.MINUTE, repeatQuantity); break;
-				case HOUR	:	newCal.add(Calendar.HOUR, repeatQuantity); break;
-				case DAY	: 	newCal.add(Calendar.DATE, repeatQuantity); break;
-				case WEEK	: 	newCal.add(Calendar.WEEK_OF_YEAR, repeatQuantity); break;
-				case MONTH	: 	newCal.add(Calendar.MONTH, repeatQuantity); break;
-				case YEAR	: 	newCal.add(Calendar.YEAR, repeatQuantity); break;
-
-				}
-
-				if(newCal.before(repAlarm.getRepeatEndDate())){
-					repAlarm.setDate(newCal);
-					//					RepeatedAlarm newAlarm = new RepeatedAlarm(repAlarm);
-					AlarmsDataSource alarmDS = new AlarmsDataSource(this);
-					alarmDS.open();
-					RepeatedAlarm newAlarm = alarmDS.updateRepeatedAlarm(repAlarm);
-					alarmDS.close();
-
-					AlarmScheduler.scheduleAlarm(this, newAlarm);
-				}
-			}
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
+		RepeatedAlarm repeatedAlarm = (RepeatedAlarm) getAlarm();
+		repeatedAlarm = LocalAlarmRepository.updateRepeatedAlarm(this,
+				repeatedAlarm);
+		AlarmToAndroidSchedulerSyncer.scheduleAlarm(this, repeatedAlarm);
 	}
 
 	public Alarm getAlarm() {
