@@ -19,6 +19,7 @@ public class LoginChecker {
         if (session.getAttribute("user") == null) {
             return false;
         }
+        //
         UserTO user = (UserTO) session.getAttribute("user");
         if(user.isAdmin()){
             return true;
